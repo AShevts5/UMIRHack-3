@@ -4,7 +4,7 @@
 
 <br>
 
-**Команда «[НАЗВАНИЕ КОМАНДЫ]»** · кейс UMIR 3 «Онлайн-деканат» · [репозиторий]([ССЫЛКА НА GITHUB])
+**Команда «Баги по колено»** · кейс UMIR 3 «Онлайн-деканат»
 
 <br>
 
@@ -16,7 +16,7 @@
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 ![evaluate.py](https://img.shields.io/badge/evaluate.py-1.0_%C2%B7_1.0_%C2%B7_1.0-1F9D63?style=flat-square)
-![тесты](https://img.shields.io/badge/тесты-165-1F9D63?style=flat-square)
+![тесты](https://img.shields.io/badge/тесты-253-1F9D63?style=flat-square)
 ![внешние API](https://img.shields.io/badge/внешние_API-0-1F9D63?style=flat-square)
 ![работает офлайн](https://img.shields.io/badge/работает-офлайн-2A4C99?style=flat-square)
 

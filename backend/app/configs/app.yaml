@@ -2,7 +2,7 @@
 # Правим тут, в код не лезем. Любое значение можно перебить переменной
 # окружения: UMIR_TEAM_NAME, UMIR_REPO_URL, UMIR_APP_VERSION, UMIR_DEFAULT_UNIVERSITY.
 
-team_name: "Название команды"   # TODO: вписать название команды для футера «© Команда «…», 2026»
+team_name: "Баги по колено"   # название команды для футера «© Команда «…», 2026»
 year: 2026
 repo_url: "https://github.com/AShevts5/UMIRHack-3"
 version: "1.1.0"

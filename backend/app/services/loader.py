@@ -1,12 +1,12 @@
-"""Загрузка входного файла: PNG/JPG/PDF -> массив RGB + серая картинка.
+"""Грузим входной файл: PNG/JPG/PDF -> массив RGB + серая картинка.
 
 Что тут проверяем (см. README, раздел про ограничения):
 
-* принимаем только ``.png``, ``.jpg``, ``.jpeg`` и ``.pdf``;
-* ограничиваем размер файла, число пикселей в картинке и число страниц PDF;
-* PDF рендерим локально через PyMuPDF — без сети и без внешних рендереров;
-* на битом или зашифрованном файле отдаём понятную ошибку, а не трассировку;
-* на диск ничего не пишем, всё держим в памяти.
+* пускаем только ``.png``, ``.jpg``, ``.jpeg`` и ``.pdf``;
+* режем по размеру файла, числу пикселей в картинке и числу страниц PDF;
+* PDF рендерим у себя через PyMuPDF — без сети и без внешних рендереров;
+* на битом или зашифрованном файле отдаём нормальную ошибку, а не простыню трассировки;
+* на диск ничего не пишем, всё живёт в памяти.
 """
 
 from __future__ import annotations
@@ -21,18 +21,18 @@ from PIL import Image, ImageFile, ImageOps
 from ..config import Limits, settings
 
 ImageFile.LOAD_TRUNCATED_IMAGES = False
-Image.MAX_IMAGE_PIXELS = None  # свой лимит по пикселям проверяем сами
+Image.MAX_IMAGE_PIXELS = None  # лимит по пикселям у нас свой, проверяем сами
 
 PDF_RENDER_DPI = 200
 
 
 class DocumentLoadError(Exception):
-    """Файл не подходит по формату или не читается."""
+    """Файл не того формата или вообще не читается."""
 
 
 @dataclass
 class DocumentImage:
-    """Одна страница документа, готовая к OCR и поиску отметок."""
+    """Одна страница документа, уже готовая к OCR и поиску отметок."""
 
     rgb: np.ndarray  # HxWx3, uint8
     grey: np.ndarray  # HxW, uint8
@@ -42,7 +42,7 @@ class DocumentImage:
     render_dpi: int | None = None
     inverted_preview: bool = False
     #: "clean" — скан или рендер, "photo" — выровненное и пересвеченное фото,
-    #: "lowres" — увеличенное фото; ставит enhance.py, читает предобработка OCR.
+    #: "lowres" — увеличенное фото; выставляет enhance.py, а смотрит предобработка OCR.
     quality: str = "clean"
 
     @property
@@ -118,7 +118,7 @@ def _render_pdf(data: bytes, limits: Limits, name: str) -> tuple[np.ndarray, int
 
 
 def load_document_bytes(data: bytes, filename: str, limits: Limits | None = None) -> DocumentImage:
-    """Загружаем присланный документ из сырых байтов."""
+    """Грузим присланный документ прямо из сырых байтов."""
     limits = limits or settings.limits
     _check_size(len(data), limits)
     suffix = _validate_suffix(filename, limits)
@@ -152,7 +152,7 @@ def load_document_bytes(data: bytes, filename: str, limits: Limits | None = None
 
 
 def load_document(path: str | Path, limits: Limits | None = None) -> DocumentImage:
-    """Загружаем документ с диска — этим пользуется CLI и пакетный режим."""
+    """Грузим документ с диска — это для CLI и пакетного режима."""
     file_path = Path(path)
     if not file_path.is_file():
         raise DocumentLoadError(f"Файл не найден: {file_path.name}")

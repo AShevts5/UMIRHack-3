@@ -1,0 +1,654 @@
+# ЮФУ — запись в реестре вузов (backend/app/services/universities.py).
+# Факультеты и корпуса брали только с официального сайта https://sfedu.ru, у каждой записи есть sources.
+# Что не подтвердили — оставили пустым (null), от себя не додумываем. Новый вуз = новый такой файл, без кода.
+
+id: sfedu
+name: Южный федеральный университет
+short_name: ЮФУ
+city: Ростов-на-Дону
+site: https://sfedu.ru
+logo: /universities/sfedu/logo.svg
+sections:
+  dean: soon
+  faculties: available
+  map: available
+  history: available
+regulation: null
+hall:
+  title: Добро пожаловать в ЮФУ
+  welcome: справка по институтам и карта корпусов уже работают, проверка документов — скоро.
+  building_image: /universities/_default/building.svg
+  building_caption: Условная иллюстрация учебного корпуса
+  hall_image: /universities/_default/hall.svg
+  hall_caption: Условная иллюстрация холла
+hall_doors:
+- 0.625
+- 0.85
+full_name: Федеральное государственное автономное образовательное учреждение высшего образования "Южный федеральный университет"
+coords:
+- 47.224812
+- 39.728548
+data_note: Данные собраны 11.10.2026 вручную с официального сайта sfedu.ru. Если поле пустое, на сайте этих сведений нет —
+  уточните на посту охраны или в деканате. Координаты корпусов — OpenStreetMap (Nominatim) по адресу с сайта.
+buildings:
+- id: s1
+  name: ул. Большая Садовая, 105/42
+  address: 344006, Ростовская обл., г. Ростов-на-Дону, ул. Большая Садовая, 105/42
+  city: Ростов-на-Дону
+  coords:
+  - 47.224812
+  - 39.728548
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s2
+  name: пр. Буденновский, 39
+  address: 344082, г. Ростов-на-Дону, пр. Буденновский, 39
+  city: Ростов-на-Дону
+  coords:
+  - 47.222755
+  - 39.706151
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9300000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s3
+  name: пр. Стачки 194/1
+  address: 344090, г. Ростов-на-Дону, пр. Стачки 194/1
+  city: Ростов-на-Дону
+  coords:
+  - 47.214288
+  - 39.6309
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9100000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s4
+  name: пр. Михаила Нагибина, 13
+  address: 344065, Ростов-на-Дону, пр. Михаила Нагибина, 13
+  city: Ростов-на-Дону
+  coords:
+  - 47.245727
+  - 39.711717
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9600000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s5
+  name: ул. Р. Зорге, 5
+  address: 344065, г. Ростов-на-Дону, ул. Р. Зорге, 5
+  city: Ростов-на-Дону
+  coords:
+  - 47.215753
+  - 39.631966
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9200000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/18000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s6
+  name: ул. Мильчакова, 10
+  address: 344090, г. Ростов-на-Дону, ул. Мильчакова, 10
+  city: Ростов-на-Дону
+  coords:
+  - 47.218905
+  - 39.627388
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/101000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s7
+  name: ул. Пушкинская, 140
+  address: г. Ростов-на-Дону, ул. Пушкинская, 140
+  city: Ростов-на-Дону
+  coords:
+  - 47.226613
+  - 39.723916
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/5
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s8
+  name: ул. Мильчакова, 8-А
+  address: 344090, г. Ростов-на-Дону, ул. Мильчакова, 8-А
+  city: Ростов-на-Дону
+  coords:
+  - 47.216661
+  - 39.628633
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/2000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s9
+  name: ул. Р. Зорге, 40
+  address: 344090, г. Ростов-на-Дону, ул. Р. Зорге, 40
+  city: Ростов-на-Дону
+  coords:
+  - 47.217493
+  - 39.634255
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/5000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10768
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s10
+  name: ул. Пушкинская, 160
+  address: 344006, г. Ростов-на-Дону, ул. Пушкинская, 160
+  city: Ростов-на-Дону
+  coords:
+  - 47.227618
+  - 39.727928
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/4
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s11
+  name: ул. 23-я линия, 43
+  address: 344019, г. Ростов-на-Дону, ул. 23-я линия, 43
+  city: Ростов-на-Дону
+  coords:
+  - 47.225385
+  - 39.767656
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/11174
+  - https://hsb.sfedu.ru/contacts-copy/
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s12
+  name: пер. Университетский, 93
+  address: 344006, г. Ростов-на-Дону, пер. Университетский, 93
+  city: Ростов-на-Дону
+  coords:
+  - 47.226773
+  - 39.726763
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/4000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s13
+  name: пер. Днепровский, 116
+  address: 344065, г. Ростов-на-Дону, пер. Днепровский, 116
+  city: Ростов-на-Дону
+  coords:
+  - 47.285673
+  - 39.759718
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/3
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s14
+  name: пр. Стачки 200/1, корп. 1
+  address: 344090, г. Ростов-на-Дону, пр. Стачки 200/1, корп. 1
+  city: Ростов-на-Дону
+  coords:
+  - 47.213887
+  - 39.627445
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/6
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10602
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s15
+  name: ул. Р. Зорге, 7
+  address: 344090, г. Ростов-на-Дону, ул. Р. Зорге, 7
+  city: Ростов-на-Дону
+  coords:
+  - 47.216726
+  - 39.631144
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/32000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: s16
+  name: ул. М. Горького, 88
+  address: г. Ростов-на-Дону, ул. М. Горького, 88
+  city: Ростов-на-Дону
+  coords:
+  - 47.225255
+  - 39.709863
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/45000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: t1
+  name: Таганрог, пер. Некрасовский, 44
+  address: 347922, г. Таганрог, пер. Некрасовский, 44
+  city: Таганрог
+  coords:
+  - 47.202149
+  - 38.93517
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9500000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10768
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: t2
+  name: Таганрог, ул. Чехова, 2
+  address: 347922, г. Таганрог, ул. Чехова, 2
+  city: Таганрог
+  coords:
+  - 47.20403
+  - 38.943945
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000876
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: t3
+  name: Таганрог, ул. Шевченко, 2, корпус Е
+  address: 347922, г. Таганрог, ул. Шевченко, 2, корпус Е
+  city: Таганрог
+  coords:
+  - 47.204734
+  - 38.944407
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000872
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+- id: t4
+  name: корпус "Г"
+  address: 347922, г. Таганрог, пер.Некрасовский, 44, корпус "Г"
+  city: Таганрог
+  coords:
+  - 47.202149
+  - 38.93517
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000870
+- id: t5
+  name: Таганрог, ул. Чехова, 22
+  address: 347928, г. Таганрог, ул. Чехова, 22
+  city: Таганрог
+  coords:
+  - 47.205327
+  - 38.940779
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000873
+  - https://sfedu.ru/www/stat_pages22.show?p=GOV/main/M
+faculties:
+- id: aai
+  name: Академия архитектуры и искусств
+  kind: академия
+  building_id: s2
+  floor: null
+  room: null
+  dean: Чемерисова Наталья Васильевна
+  hours: null
+  phone: 'Приемная директора Академии: +7 (863) 218-40-00, доб.20073, доб.20039'
+  email: aai@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9300000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9300000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: 'dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Юридический адрес: ул. Большая
+    Садовая, 105/42; фактический: пр. Буденновский, 39.'
+- id: abm
+  name: Академия биологии и медицины им. Дмитрия Иосифовича Ивановского
+  kind: академия
+  building_id: s3
+  floor: null
+  room: null
+  dean: Казеев Камиль Шагидуллович
+  hours: null
+  phone: +7(863) 218-40-00 доб. 14101
+  email: biolog@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9100000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9100000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://biolog.sfedu.ru/?page_id=150
+  note: dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Страница «Дирекция и деканат»
+    biolog.sfedu.ru/?page_id=150 (через WebFetch) не содержит кабинета/часов.
+- id: app
+  name: Академия психологии и педагогики
+  kind: академия
+  building_id: s4
+  floor: null
+  room: '101'
+  dean: Кирик Владимир Александрович
+  hours: null
+  phone: 8 (863) 218 4000 доб.11635, 8 961 296 92 02 (приемная директора)
+  email: app@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9600000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9600000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: 'dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Адрес на странице: «пр. Михаила
+    Нагибина, 13, каб. 101» — каб. 101 относится к адресу подразделения (вероятно приемная), не подтверждено что это деканат.'
+- id: afks
+  name: Академия физической культуры и спорта
+  kind: академия
+  building_id: s5
+  floor: null
+  room: null
+  dean: Степанова Татьяна Анатольевна
+  hours: null
+  phone: (863) 219-97-40 - директор; 219-97-45 - деканат
+  email: academsport@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9200000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9200000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: 'dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. На странице: «образовательная
+    деятельность осуществляется по адресам указанным в лицензии».'
+- id: ivtipt
+  name: Институт высоких технологий и пьезотехники
+  kind: институт
+  building_id: s6
+  floor: null
+  room: null
+  dean: Панич Александр Анатольевич
+  hours: null
+  phone: +7(863) 243-48-11
+  email: fvt@fvt.sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/101000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/101000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Сайт института https://ivtipt.ru
+    не на домене sfedu.ru — не использовался.
+- id: iimo
+  name: Институт истории и международных отношений
+  kind: институт
+  building_id: s7
+  floor: null
+  room: null
+  dean: null
+  hours: null
+  phone: +7 863 218 40 05
+  email: history@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/5
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/5
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://sfedu.ru/www/stat_pages22.show?p=ELs/sotr/D&x=ELS/5
+  note: Директор не указан на странице подразделения и в списке сотрудников; сайт http://iimo-sfedu.ru/ не на домене sfedu.ru
+    — не использовался.
+- id: mmcs
+  name: Институт математики, механики и компьютерных наук им. И.И. Воровича
+  kind: институт
+  building_id: s8
+  floor: null
+  room: null
+  dean: Карякин Михаил Игорьевич
+  hours: null
+  phone: '+7(863) 2975-111 (деканат), факс: +7(863) 2-975-113'
+  email: null
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/2000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/2000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Email подразделения не указан
+    (karyakin@sfedu.ru — email директора).
+- id: inz
+  name: Институт наук о Земле
+  kind: институт
+  building_id: s9
+  floor: null
+  room: null
+  dean: Кузнецов Андрей Николаевич
+  hours: null
+  phone: 'тел/факс: +7(863) 222-57-01, +79612701904'
+  email: dek_geo@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/5000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/5000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://geo.sfedu.ru/?page_id=27
+  note: dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru.
+- id: isir
+  name: Институт социологии и регионоведения
+  kind: институт
+  building_id: s10
+  floor: null
+  room: null
+  dean: Бедрик Андрей Владимирович
+  hours: null
+  phone: 'приемная: +7(863) 218-40-00 доб.12-702, +7(863)264-17-55'
+  email: director@isir.sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/4
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/4
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru.
+- id: itski
+  name: Институт туризма, сервиса и креативных индустрий
+  kind: институт
+  building_id: s11
+  floor: null
+  room: null
+  dean: Горяйнов Сергей Геннадьевич
+  hours: null
+  phone: +7 (863) 218-40-40, +7 (863) 218-40-41, +7 (863) 218-40-43, +7 (863) 218-40-47
+  email: hsb@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/11174
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/11174
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://hsb.sfedu.ru/contacts-copy/
+  note: dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Телефоны и email — со страницы
+    контактов hsb.sfedu.ru (получена через WebFetch, curl получил 403); на странице sfedu.ru телефон подразделения не указан.
+- id: ifzhmkk
+  name: Институт филологии, журналистики и межкультурной коммуникации
+  kind: институт
+  building_id: s12
+  floor: null
+  room: null
+  dean: Дмитрова Анна Владимировна
+  hours: null
+  phone: +7 (863) 218-40-94 (Дирекция ИФЖиМКК)
+  email: philology@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/4000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/4000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru.
+- id: ifspn
+  name: Институт философии и социально-политических наук
+  kind: институт
+  building_id: s13
+  floor: 2-й этаж
+  room: null
+  dean: Сердюкова Елена Владимировна
+  hours: null
+  phone: 'Деканат дневного отделения: тел./факс 8 (863) 218-40-00 доб. 210-22; Деканат заочного отделения: 218-40-00 доб.
+    210-28'
+  email: ipsps@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/3
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/3
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: 'dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Адрес на странице: «пер. Днепровский,
+    116 (2-й этаж)». Сайт ipsps.sfedu.ru недоступен (connection reset).'
+- id: mimoiai
+  name: Международный институт междисциплинарного образования и иберо-американских исследований
+  kind: институт
+  building_id: s1
+  floor: null
+  room: '310'
+  dean: Карповская Наталья Валерьевна
+  hours: null
+  phone: +7(863) 218-40-00 доб. 12420; +7(8634) 68-08-90 доб. 12420 +7(863) 218-40-95
+  email: inter-edu@sfedu.ru, podfak@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10735
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10735
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://inter-edu-centr.sfedu.ru/ru/contacts
+  note: 'dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru. Адрес на странице: «Г.Ростов-на-Дону,
+    ул. Б. Садовая 105/42, к. 310».'
+- id: capitany
+  name: Факультет бизнеса "Капитаны"
+  kind: факультет
+  building_id: s14
+  floor: 4 этаж
+  room: null
+  dean: Шустова Марина Сергеевна
+  hours: null
+  phone: +78632184000 - доб.13200; +79305048834 (по вопросам поступления)
+  email: captains@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10602
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10602
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://sfedu.ru/www/stat_pages22.show?p=ELs/sotr/D&x=ELS/10602
+  note: 'Декан — из списка сотрудников подразделения на sfedu.ru («Декан факультета»). Адрес на странице: «г. Ростов-на-Дону,
+    пр. Стачки 200/1 к1, 4 этаж».'
+- id: fu
+  name: Факультет управления
+  kind: факультет
+  building_id: s14
+  floor: null
+  room: '205'
+  dean: Шевченко Дмитрий Александрович
+  hours: null
+  phone: +7 (863) 201-98-14, +7(863)218-4000 Доб. 13-106
+  email: management_dep@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/6
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/6
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://management.sfedu.ru/kontakty
+  - https://management.sfedu.ru/fakultet/dekanat
+  note: 'Каб. 205 — из контактов факультета на management.sfedu.ru: «344000, г. Ростов-на-Дону, пр. Стачки, 200/1, каб. 205»
+    (индекс там 344000, на sfedu.ru — 344090).'
+- id: phys
+  name: Факультет физический
+  kind: факультет
+  building_id: s5
+  floor: null
+  room: null
+  dean: Мануилов Михаил Борисович
+  hours: null
+  phone: 'факс: +7(863) 297-51-20'
+  email: physdekan@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/18000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/18000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: Сайт phys.sfedu.ru недоступен (503 / connection reset).
+- id: chem
+  name: Факультет химический
+  kind: факультет
+  building_id: s15
+  floor: null
+  room: null
+  dean: Коршунова Евгения Васильевна
+  hours: null
+  phone: тел/факс +7(863) 297-51-51
+  email: chimfak@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/32000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/32000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://www.chimfak.sfedu.ru/faculty/podrazdeleniya/dekanat
+  note: 'Указана как «И.о. декана». На странице деканата chimfak.sfedu.ru (через WebFetch) телефон: +7(863)2184000, доб. 14200;
+    кабинет и часы там не указаны.'
+- id: econ
+  name: Факультет экономический
+  kind: факультет
+  building_id: s16
+  floor: null
+  room: null
+  dean: Косолапова Наталья Алексеевна
+  hours: null
+  phone: +7 (863) 250-59-50 (доб. 13-006), 240-68-48
+  email: dekanat.econ@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://www.econ.sfedu.ru/contact/
+  note: 'На econ.sfedu.ru/contact/ телефон: +7 (863) 250 59 51.'
+- id: law
+  name: Факультет юридический
+  kind: факультет
+  building_id: s16
+  floor: null
+  room: null
+  dean: Зиновьев Игорь Петрович
+  hours: null
+  phone: +7(863) 240-36-10
+  email: urfak@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/45000000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/45000000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  - https://urfak.sfedu.ru/node/1833
+  note: 'На urfak.sfedu.ru/node/1833 у декана: тел. /факс (863)240-36-10, тел. (863) 250-59-60.'
+- id: vuc
+  name: Военный учебный центр
+  kind: военный учебный центр
+  building_id: s9
+  floor: null
+  room: null
+  dean: null
+  hours: null
+  phone: 8(8634)37-16-90 - дежурный по ВУЦ
+  email: apaleev@sfedu.ru
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10768
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/10768
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: 'Два адреса на странице: 347922, г. Таганрог, пер. Некрасовский д.44 и 344090, г. Ростов-на-Дону, ул. Зорге, 40 (building_id
+    указывает на ростовский). Руководитель не указан.'
+- id: ita
+  name: Инженерно-технологическая академия ЮФУ
+  kind: академия
+  building_id: t1
+  floor: null
+  room: null
+  dean: null
+  hours: null
+  phone: null
+  email: null
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9500000000000
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/9500000000000
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: Таганрог. На странице только адрес.
+  city: Таганрог
+- id: ictib
+  name: Институт компьютерных технологий и информационной безопасности
+  kind: институт
+  building_id: t2
+  floor: null
+  room: null
+  dean: Веселов Геннадий Евгеньевич
+  hours: null
+  phone: +7 (8634) 360-450, IP 30-006
+  email: null
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000876
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000876
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: Таганрог (в составе ИТА). dean = директор (руководитель) подразделения по странице подразделения на sfedu.ru.
+  city: Таганрог
+- id: inep
+  name: Институт нанотехнологий, электроники и приборостроения
+  kind: институт
+  building_id: t3
+  floor: null
+  room: null
+  dean: null
+  hours: null
+  phone: (8634) 37-17-67
+  email: null
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000872
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000872
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: Таганрог.
+  city: Таганрог
+- id: irtsu
+  name: Институт радиотехнических систем и управления
+  kind: институт
+  building_id: t4
+  floor: null
+  room: null
+  dean: null
+  hours: null
+  phone: 'Тел: +7(8634) 37-16-34, IP 30-019, 30-037'
+  email: null
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000870
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000870
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: Таганрог.
+  city: Таганрог
+- id: iues
+  name: Институт управления в экономических, экологических и социальных системах
+  kind: институт
+  building_id: t5
+  floor: null
+  room: null
+  dean: null
+  hours: null
+  phone: +7(8634) 37-14-44
+  email: null
+  page: https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000873
+  sources:
+  - https://sfedu.ru/www/stat_pages22.show?p=ELS/inf/D&x=ELS/-3000000000873
+  - https://sfedu.ru/www/stat_pages22.show?p=UNI/N11900/D
+  note: Таганрог.
+  city: Таганрог

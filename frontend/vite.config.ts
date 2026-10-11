@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Дев-сервер проксирует /api на локальный FastAPI, чтобы браузер работал с одним
-// origin и никуда наружу не ходил.
+// Дев-сервер прокидывает /api на локальный FastAPI — так браузер сидит на одном
+// origin и никуда наружу не лезет.
 export default defineConfig({
   plugins: [react()],
   server: {

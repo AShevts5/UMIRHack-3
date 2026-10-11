@@ -1,0 +1,30 @@
+# Запуск одной командой: docker compose up -d --build  ->  http://localhost:8000
+#
+# Проще всего через скрипты рядом: start.cmd (Windows, двойной клик), ./start.sh (Linux/macOS).
+# Пользователи, история и секрет JWT лежат в томе umir-data, так что пересборка и
+# перезапуск их не сносят. Настройки (ключи Яндекса, демо-аккаунт и т.п.) берём из .env,
+# образец — .env.example. Без .env всё тоже заводится с настройками по умолчанию.
+
+# имя проекта фиксируем, чтобы том с данными назывался одинаково, как бы ни звалась папка
+name: umir-dean
+
+services:
+  dean:
+    build: .
+    image: umir-dean:latest
+    container_name: umir-dean
+    ports:
+      - "${PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      UMIR_DATA_DIR: /app/var
+    volumes:
+      - umir-data:/app/var
+    restart: unless-stopped
+    # на слабой машине OCR любит память, поэтому ставим потолок (можно поднять в .env)
+    mem_limit: ${MEMORY:-1g}
+
+volumes:
+  umir-data:

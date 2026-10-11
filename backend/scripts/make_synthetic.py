@@ -1,20 +1,20 @@
-"""Генератор синтетического стресс-набора в формате пакета организаторов.
+"""Генерим синтетический стресс-набор в формате пакета организаторов.
 
-Открытый набор мал (30 страниц), а закрытый содержит новые значения и пропуски
-при тех же трёх типах и правилах. Скрипт строит N новых документов той же
+Открытый набор маленький (30 страниц), а в закрытом будут новые значения и пропуски
+при тех же трёх типах и правилах. Поэтому скрипт клепает N новых документов той же
 вёрстки (Liberation Sans, метрически совместимый с Arial), но с другими ФИО,
-вузами, организациями, номерами, датами в обоих форматах, случайными пропусками
-полей, подписи и печати, и с эталоном, вычисленным напрямую по rules.md.
+вузами, организациями, номерами, датами в обоих форматах, рандомными пропусками
+полей, подписи и печати, а эталон считаем прямо по rules.md.
 
-Результат: каталог с documents.json, questions.json, reference_results.json и
-documents/*.png|pdf — его можно прогнать через run_batch и evaluate.py ровно так
+На выходе папка с documents.json, questions.json, reference_results.json и
+documents/*.png|pdf — её можно прогнать через run_batch и evaluate.py ровно так
 же, как открытый набор.
 
     python -m backend.scripts.make_synthetic --out reports/synthetic --count 150
     python -m backend.scripts.make_synthetic --out reports/synthetic --count 150 --jitter
 
-``--jitter`` слегка сдвигает поля, интервалы, размер шрифта и отметки, чтобы
-проверить, что парсер не завязан на точные координаты.
+``--jitter`` чуть-чуть двигает поля, интервалы, размер шрифта и отметки — так
+видно, что парсер не прибит гвоздями к точным координатам.
 """
 
 from __future__ import annotations
@@ -209,7 +209,7 @@ def rand_date(rng: random.Random, start: date, span_days: int) -> date:
 
 
 def make_values(doc_type: str, rng: random.Random, index: int) -> tuple[dict, dict]:
-    """(нормализованные значения для эталона, напечатанные значения)."""
+    """(нормализованные значения для эталона, то, что реально печатаем на листе)."""
     expected: dict[str, str] = {}
     printed: dict[str, str] = {}
 
@@ -409,7 +409,7 @@ def main(argv: list[str] | None = None) -> int:
         manifest.append({"document_id": doc_id, "document_type": doc_type,
                          "image": f"documents/{doc_id}.png", "pdf": f"documents/{doc_id}.pdf"})
         field_keys = [key for key, _ in TYPES[doc_type]["fields"]]
-        # Половина вопросов про поля — про пропущенное поле, как в открытом наборе.
+        # половина вопросов про поля — про пропущенное поле, подсмотрели пропорцию в открытом наборе
         missing_text = [k for k in field_keys if k in missing]
         key = rng.choice(missing_text) if missing_text and rng.random() < 0.5 else rng.choice(field_keys)
         label = dict(TYPES[doc_type]["fields"])[key]

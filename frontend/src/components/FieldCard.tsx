@@ -1,93 +1,83 @@
-import type { MarkView, FieldView } from '../api/types'
-
-export interface Highlight {
-  box: { x: number; y: number; width: number; height: number } | null
-  label: string
-  kind: 'field' | 'mark'
-}
+import type { RequirementGroup } from '../lib/format'
+import { displayValue } from '../lib/format'
+import { RuleChip } from './RulePopover'
 
 interface Props {
-  fieldViews: FieldView[]
-  markViews: MarkView[]
+  groups: RequirementGroup[]
   activeKey: string | null
-  onSelect: (box: Highlight['box'], label: string) => void
-  onSelectMark: (box: Highlight['box'], label: string) => void
+  expert: boolean
+  onSelect: (key: string) => void
 }
 
-const NOT_FOUND = 'не найдено'
-
-export default function FieldCard({ fieldViews, markViews, activeKey, onSelect, onSelectMark }: Props) {
+/** Вкладка «Требования»: строки раскиданы по группам — по пунктам Положения. */
+export default function FieldCard({ groups, activeKey, expert, onSelect }: Props) {
   return (
-    <div className="stack" style={{ gap: 16 }}>
-      <div>
-        <div className="section-title" style={{ marginBottom: 8 }}>
-          <span>Обязательные текстовые поля</span>
-          <span className="badge">
-            найдено {fieldViews.filter((field) => field.found).length} из {fieldViews.length}
-          </span>
-        </div>
-        <div className="fields">
-          {fieldViews.map((field) => {
-            const missing = !field.found || field.value === NOT_FOUND
-            return (
-              <button
-                key={field.key}
-                type="button"
-                className={[
-                  'field-item',
-                  missing ? 'field-item--missing' : '',
-                  activeKey === field.label ? 'field-item--active' : '',
-                ]
-                  .filter(Boolean)
-                  .join(' ')}
-                onClick={() => onSelect(field.box, field.label)}
-                title={field.box ? 'Показать место на изображении' : 'Координаты не найдены'}
-              >
-                <p className="field-item__label">{field.label}</p>
-                <p className={missing ? 'field-item__value field-item__value--missing' : 'field-item__value'}>
-                  {missing ? 'не найдено' : String(field.value)}
-                </p>
-                <p className="field-item__meta">
-                  {field.key} · {field.rule} · уверенность {Math.round(field.confidence * 100)}%
-                </p>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      <div>
-        <div className="section-title" style={{ marginBottom: 8 }}>
-          <span>Графические отметки</span>
-          <span className="badge">анализ пикселей, не надписей</span>
-        </div>
-        <div className="marks">
-          {markViews.map((mark) => (
-            <button
-              key={mark.key}
-              type="button"
-              className={mark.present ? 'mark mark--present' : 'mark mark--absent'}
-              onClick={() => onSelectMark(mark.box, mark.label)}
-              title={mark.box ? 'Показать найденную зону' : undefined}
-            >
-              <span className="status__icon" aria-hidden>
-                {mark.present ? '✓' : '—'}
+    <div>
+      {groups.map((group) => {
+        const found = group.items.filter((item) => item.found).length
+        const total = group.items.length
+        const isMark = group.items[0]?.kind === 'mark'
+        return (
+          <div className="group" key={`${group.rule}-${group.title}`}>
+            <div className="group__head">
+              <RuleChip rule={group.rule} />
+              <h3>{group.title}</h3>
+              <span className="meter" aria-label={`${found} из ${total}`}>
+                <i>
+                  <b style={{ width: `${(found / Math.max(total, 1)) * 100}%`, ...(found < total ? { background: 'var(--miss)' } : {}) }} />
+                </i>
+                {found} из {total}
               </span>
-              <span style={{ textAlign: 'left' }}>
-                <span className="mark__title">{mark.label}</span>
-                <span className="mark__meta" style={{ display: 'block' }}>
-                  {mark.present ? 'обнаружена графика' : 'графика не обнаружена'} · метод{' '}
-                  {mark.method || 'n/a'} · {Math.round(mark.confidence * 100)}%
-                </span>
-              </span>
-            </button>
-          ))}
-        </div>
-        <p className="disclaimer">
-          Надпись «Подпись» или «М.П.» сама по себе не считается отметкой: проверяется наличие графического элемента
-          (пункт 2.3 Положения). Подлинность не проверяется.
-        </p>
-      </div>
+            </div>
+            <ul className="rows">
+              {group.items.map((item) => (
+                <li key={item.key}>
+                  <button
+                    type="button"
+                    data-row={item.key}
+                    className={['row', item.found ? '' : 'is-miss', activeKey === item.key ? 'is-active' : '']
+                      .filter(Boolean)
+                      .join(' ')}
+                    aria-pressed={activeKey === item.key}
+                    title={item.box ? 'Показать на листе' : 'Место на листе не найдено'}
+                    onClick={() => onSelect(item.key)}
+                  >
+                    <span className="n">{item.n}</span>
+                    <span>
+                      <span className="lab">
+                        {item.kind === 'mark'
+                          ? item.key.startsWith('seal')
+                            ? 'Графическая отметка · печать'
+                            : 'Графическая отметка · подпись'
+                          : item.label}
+                      </span>
+                      <br />
+                      <span className={item.found ? 'val' : 'val empty'}>
+                        {item.found ? displayValue(item.value ?? '', expert) : item.kind === 'mark' ? 'Не обнаружена' : 'не найдено'}
+                      </span>
+                    </span>
+                    <span className={item.found ? 'tag tag--ok' : 'tag tag--miss'}>{item.found ? 'есть' : 'нет'}</span>
+                    {expert ? (
+                      <span className="tech" style={{ display: 'block' }}>
+                        {item.key}
+                        {item.kind === 'field'
+                          ? ` · уверенность ${Math.round(item.confidence * 100)}%`
+                          : ` · метод ${item.method || 'n/a'} · ${Math.round(item.confidence * 100)}%`}
+                        {item.box ? ` · [${item.box.x}, ${item.box.y}, ${item.box.width}, ${item.box.height}] px` : ''}
+                      </span>
+                    ) : null}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {isMark ? (
+              <p className="hint">
+                Проверяется графический элемент, а не надпись «Подпись» или «М.П.» <RuleChip rule="2.3" />
+              </p>
+            ) : null}
+          </div>
+        )
+      })}
     </div>
   )
 }

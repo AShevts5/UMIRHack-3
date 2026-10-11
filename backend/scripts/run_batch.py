@@ -1,8 +1,8 @@
-"""Batch-прогон: ``documents.json`` + ``questions.json`` -> ``results.json``.
+"""Гоняем batch: ``documents.json`` + ``questions.json`` -> ``results.json``.
 
-Каждый документ идёт через тот же pipeline, что и веб-API (ТЗ, поток B). Экспортёр
-находит картинку/PDF по записи манифеста, один раз гоняет OCR, отвечает на все вопросы
-этого ``document_id`` и пишет ``results.json``, который проходит
+Каждый документ гоним через тот же pipeline, что и веб-API (ТЗ, поток B). Экспортёр
+находит картинку/PDF по записи манифеста, OCR крутит один раз, отвечает на все вопросы
+этого ``document_id`` и пишет ``results.json``, который спокойно проходит
 ``results.schema.json``.
 
 Example
@@ -42,10 +42,10 @@ def _read_json(path: Path):
 
 
 def resolve_document_path(entry: dict, root: Path, prefer: str = "image") -> Path:
-    """Ищем файл документа из манифеста.
+    """Находим файл документа по манифесту.
 
-    ``prefer`` задаёт основное представление (``image`` — это PNG/JPG), второе берём
-    как запасное, поэтому batch работает и с архивом, где лежат одни PDF.
+    ``prefer`` — какое представление основное (``image`` — это PNG/JPG), второе держим
+    про запас, так что batch не падает и на архиве, где лежат одни PDF.
     """
     order = [prefer] + [key for key in ("image", "pdf") if key != prefer]
     candidates: list[Path] = []
@@ -72,10 +72,10 @@ def group_questions(questions: list[dict]) -> dict[str, list[tuple[str, str]]]:
 
 
 def fallback_payload(document_id: str, document_type: str, questions: list[tuple[str, str]]) -> dict:
-    """Запись по схеме для страницы, которую вообще не удалось обработать.
+    """Запись по схеме для страницы, которую вообще не вышло обработать.
 
-    Из-за одной нечитаемой страницы нельзя терять весь results.json: все поля
-    «не найдено», а ответы считает тот же движок (вопросы про само Положение всё
+    Терять весь results.json из-за одной нечитаемой страницы — ну уж нет: все поля
+    ставим «не найдено», а ответы считает тот же движок (вопросы про само Положение всё
     равно отвечаются правильно).
     """
     spec = get_registry().require(document_type)
@@ -126,11 +126,11 @@ def run_batch(
             results.append(DocumentResult(**fallback_payload(document_id, document_type, grouped.get(document_id, []))))
             continue
         result = None
-        for attempt in (1, 2):  # Tesseract под нагрузкой может отвалиться по таймауту — одна повторная попытка не лишняя
+        for attempt in (1, 2):  # под нагрузкой Tesseract иногда отваливается по таймауту — разок повторить не помешает
             try:
                 result = pipeline.analyze_path(path, document_type, document_id=document_id)
                 break
-            except Exception as exc:  # noqa: BLE001 - одна плохая страница не должна останавливать весь batch
+            except Exception as exc:  # noqa: BLE001 - из-за одной кривой страницы весь batch вставать не должен
                 error = str(exc)
                 if isinstance(exc, (DocumentLoadError, ValueError)):
                     break
@@ -151,7 +151,7 @@ def run_batch(
         }
         try:
             results.append(DocumentResult(**payload))
-        except ValidationError as exc:  # pragma: no cover - страховка контракта
+        except ValidationError as exc:  # pragma: no cover - страхуем контракт на всякий случай
             failures.append({"document_id": document_id, "error": f"contract: {exc}"})
             if verbose:
                 print(f"[{index + 1}] {document_id}: нарушение контракта: {exc}", file=sys.stderr)

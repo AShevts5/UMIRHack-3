@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
-# Развёртывание и управление «Онлайн-деканатом» на сервере через Docker.
+# Деплой и рулёжка «Онлайн-деканатом» на сервере через Docker.
 #
 #   bash scripts/deploy_remote.sh                 # развернуть или обновить (код + образ + запуск)
 #   bash scripts/deploy_remote.sh deploy --no-build   # только перезапустить на текущем образе
 #   bash scripts/deploy_remote.sh status|logs|restart|stop|start
 #
-# Скрипт идемпотентный: повторный deploy забирает свежий код и перезапускает сервис.
-# Всё живёт в одном контейнере (Tesseract + FastAPI + собранный интерфейс), соседние
-# сервисы на машине не затрагиваются.
+# Скрипт идемпотентный: гоняй deploy сколько хочешь — он заберёт свежий код и перезапустит сервис.
+# Всё сидит в одном контейнере (Tesseract + FastAPI + собранный интерфейс), соседние
+# сервисы на машине мы не трогаем.
 #
-# На слабом сервере (1 ядро, ~960 МБ памяти, рядом другие сервисы) память и CPU
-# контейнера ограничены, чтобы OCR не выел машину. Порт задаётся переменной PORT.
+# Сервер у нас слабенький (1 ядро, ~960 МБ памяти, рядом ещё сервисы), поэтому память и CPU
+# контейнера урезаем, чтобы OCR не сожрал всю машину. Порт задаётся переменной PORT.
+#
+# Важно: разворачивается то, что лежит на GitHub в ветке BRANCH, а не локальная папка.
+# Сначала запушь изменения, потом деплой. Для запуска на своём компе есть start.cmd / start.sh.
+#
+# Пользователи, история проверок и ключ подписи входа живут в DATA_DIR на хосте (монтируется
+# в /app/var), так что передеплой их больше не стирает. Настройки (демо-аккаунт, ключи Яндекса,
+# UMIR_PUBLIC_URL) кладём в ENV_FILE по образцу .env.example. Оба пути специально лежат вне
+# APP_DIR: там git clean, и всё лишнее он сносит.
 
 set -euo pipefail
 
@@ -22,6 +30,8 @@ IMAGE="${IMAGE:-umir-dean:latest}"
 CONTAINER="${CONTAINER:-umir-dean}"
 MEMORY="${MEMORY:-700m}"
 CPUS="${CPUS:-0.9}"
+DATA_DIR="${DATA_DIR:-/opt/umir-online-dean-data}"
+ENV_FILE="${ENV_FILE:-/opt/umir-online-dean.env}"
 
 COMMAND="${1:-deploy}"
 shift || true
@@ -80,9 +90,9 @@ docker --version
 log "2/6 Забираю код (ветка $BRANCH)"
 if [ -d "$APP_DIR/.git" ]; then
   git -C "$APP_DIR" fetch --depth 1 origin "$BRANCH"
-  # Папка может быть «грязной»: сюда могли положить файлы руками (например,
-  # rules.md до того, как он появился в репозитории). Иначе git откажется
-  # переключаться. Репозиторий тут только для деплоя, поэтому чистим смело.
+  # Папка может быть «грязной»: сюда могли накидать файлов руками (например,
+  # rules.md ещё до того, как он появился в репозитории). Без чистки git откажется
+  # переключаться. Репозиторий тут чисто под деплой, так что чистим без сожалений.
   git -C "$APP_DIR" clean -fdq
   git -C "$APP_DIR" reset -q --hard
   git -C "$APP_DIR" checkout -q FETCH_HEAD
@@ -94,8 +104,8 @@ fi
 echo "коммит: $(git -C "$APP_DIR" rev-parse --short HEAD) — $(git -C "$APP_DIR" log -1 --format=%s)"
 
 # Положение (rules.md) — единственный источник правил в кейсе. В образ его не
-# зашиваем: файл читается разделом «Положение» и подключается монтированием, так
-# что обновление текста не требует пересборки.
+# вшиваем: файл читает раздел «Положение», а подключаем его монтированием, так
+# что поправили текст — и пересобирать ничего не надо.
 RULES_PATH="$APP_DIR/rules.md"
 if [ ! -s "$RULES_PATH" ]; then
   log "2.1 Забираю rules.md (Положение)"
@@ -122,10 +132,16 @@ log "4/6 Останавливаю прежний контейнер"
 docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
 
 log "5/6 Запускаю контейнер (память $MEMORY, CPU $CPUS, порт $PORT)"
-MOUNTS=()
+mkdir -p "$DATA_DIR"
+MOUNTS=(-v "$DATA_DIR:/app/var" -e UMIR_DATA_DIR=/app/var)
 if [ -s "$APP_DIR/rules.md" ]; then
-  MOUNTS=(-v "$APP_DIR/rules.md:/app/rules.md:ro")
+  MOUNTS+=(-v "$APP_DIR/rules.md:/app/rules.md:ro")
 fi
+if [ -f "$ENV_FILE" ]; then
+  MOUNTS+=(--env-file "$ENV_FILE")
+  echo "настройки: $ENV_FILE"
+fi
+echo "данные: $DATA_DIR"
 docker run -d \
   --name "$CONTAINER" \
   --restart unless-stopped \

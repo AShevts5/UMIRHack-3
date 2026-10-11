@@ -2,12 +2,27 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta
       name="description"
       content="Онлайн-деканат: локальная предварительная проверка студенческих документов по Положению университета «Меридиан». Решение принимает сотрудник деканата."
     />
-    <title>Онлайн-деканат — предварительная проверка документа</title>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#0E1420" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Онлайн-деканат" />
+    <title>Онлайн-деканат — путеводитель по вузу и проверка документов</title>
+    <script>
+      // Тема ставится до первой отрисовки, чтобы страница не мигала светлым.
+      try {
+        var t = localStorage.getItem('umir-theme')
+        if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t)
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

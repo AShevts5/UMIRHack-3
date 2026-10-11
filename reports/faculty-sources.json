@@ -1,0 +1,403 @@
+{
+  "confirmed": 103,
+  "total": 103,
+  "unreachable": 0,
+  "items": [
+    {
+      "id": "fmip",
+      "name": "Факультет Менеджмента и предпринимательства",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email dekanat.mip@yandex.ru": true,
+        "телефон …3967": true,
+        "телефон …4061": true,
+        "кабинет 200": true,
+        "руководитель Суржиков": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "ftd",
+      "name": "Факультет Торгового дела",
+      "pages": 5,
+      "of": 5,
+      "checks": {
+        "email d.d.kostoglodov@yandex.ru": true,
+        "телефон …2283": true,
+        "кабинет 319": true,
+        "руководитель Костоглодов": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "fktib",
+      "name": "Факультет Компьютерных технологий и информационной безопасности",
+      "pages": 5,
+      "of": 5,
+      "checks": {
+        "email dekanat_kt_ib@mail.ru": true,
+        "телефон …3864": true,
+        "кабинет 305а": true,
+        "руководитель Тищенко": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "uef",
+      "name": "Учетно-экономический факультет",
+      "pages": 5,
+      "of": 5,
+      "checks": {
+        "email uef2@rsue.ru": true,
+        "телефон …5729": true,
+        "кабинет 506": true,
+        "руководитель Андреева": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "feif",
+      "name": "Факультет Экономики и финансов",
+      "pages": 5,
+      "of": 5,
+      "checks": {
+        "email findekanat@rsue.ru": true,
+        "телефон …1185": true,
+        "кабинет 420": true,
+        "руководитель Джуха": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "yf",
+      "name": "Юридический факультет",
+      "pages": 5,
+      "of": 5,
+      "checks": {
+        "email dekanyuf@rsue.ru": true,
+        "телефон …3954": true,
+        "телефон …8414": true,
+        "кабинет 213": true,
+        "руководитель Позднышов": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "fliz",
+      "name": "Факультет Лингвистики и журналистики",
+      "pages": 4,
+      "of": 4,
+      "checks": {
+        "email flij-dekanat@yandex.ru": true,
+        "телефон …6508": true,
+        "кабинет 406": true,
+        "руководитель Усенко": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "magistratura",
+      "name": "Институт магистратуры",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email magistratura.rsue@yandex.ru": true,
+        "телефон …1304": true,
+        "кабинет 413": true,
+        "руководитель Иванова": true
+      },
+      "university": "rinh"
+    },
+    {
+      "id": "aai",
+      "name": "Академия архитектуры и искусств",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email aai@sfedu.ru": true,
+        "телефон …4000": true,
+        "руководитель Чемерисова": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "abm",
+      "name": "Академия биологии и медицины им. Дмитрия Иосифовича Ивановского",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email biolog@sfedu.ru": true,
+        "телефон …4000": true,
+        "руководитель Казеев": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "app",
+      "name": "Академия психологии и педагогики",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email app@sfedu.ru": true,
+        "телефон …4000": true,
+        "телефон …9202": true,
+        "кабинет 101": true,
+        "руководитель Кирик": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "afks",
+      "name": "Академия физической культуры и спорта",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email academsport@sfedu.ru": true,
+        "телефон …9740": true,
+        "руководитель Степанова": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "ivtipt",
+      "name": "Институт высоких технологий и пьезотехники",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email fvt@fvt.sfedu.ru": true,
+        "телефон …4811": true,
+        "руководитель Панич": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "iimo",
+      "name": "Институт истории и международных отношений",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email history@sfedu.ru": true,
+        "телефон …4005": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "mmcs",
+      "name": "Институт математики, механики и компьютерных наук им. И.И. Воровича",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "руководитель Карякин": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "inz",
+      "name": "Институт наук о Земле",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email dek_geo@sfedu.ru": true,
+        "телефон …5701": true,
+        "телефон …1904": true,
+        "руководитель Кузнецов": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "isir",
+      "name": "Институт социологии и регионоведения",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email director@isir.sfedu.ru": true,
+        "телефон …4000": true,
+        "телефон …1755": true,
+        "руководитель Бедрик": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "itski",
+      "name": "Институт туризма, сервиса и креативных индустрий",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email hsb@sfedu.ru": true,
+        "телефон …4040": true,
+        "телефон …4041": true,
+        "телефон …4043": true,
+        "телефон …4047": true,
+        "руководитель Горяйнов": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "ifzhmkk",
+      "name": "Институт филологии, журналистики и межкультурной коммуникации",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email philology@sfedu.ru": true,
+        "телефон …4094": true,
+        "руководитель Дмитрова": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "ifspn",
+      "name": "Институт философии и социально-политических наук",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email ipsps@sfedu.ru": true,
+        "телефон …4000": true,
+        "руководитель Сердюкова": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "mimoiai",
+      "name": "Международный институт междисциплинарного образования и иберо-американских исследований",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email inter-edu@sfedu.ru": true,
+        "email podfak@sfedu.ru": true,
+        "телефон …4000": true,
+        "телефон …4095": true,
+        "кабинет 310": true,
+        "руководитель Карповская": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "capitany",
+      "name": "Факультет бизнеса \"Капитаны\"",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email captains@sfedu.ru": true,
+        "телефон …4000": true,
+        "телефон …8834": true,
+        "руководитель Шустова": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "fu",
+      "name": "Факультет управления",
+      "pages": 4,
+      "of": 4,
+      "checks": {
+        "email management_dep@sfedu.ru": true,
+        "телефон …9814": true,
+        "телефон …4000": true,
+        "кабинет 205": true,
+        "руководитель Шевченко": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "phys",
+      "name": "Факультет физический",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email physdekan@sfedu.ru": true,
+        "телефон …5120": true,
+        "руководитель Мануилов": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "chem",
+      "name": "Факультет химический",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email chimfak@sfedu.ru": true,
+        "телефон …5151": true,
+        "руководитель Коршунова": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "econ",
+      "name": "Факультет экономический",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email dekanat.econ@sfedu.ru": true,
+        "телефон …5950": true,
+        "руководитель Косолапова": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "law",
+      "name": "Факультет юридический",
+      "pages": 3,
+      "of": 3,
+      "checks": {
+        "email urfak@sfedu.ru": true,
+        "телефон …3610": true,
+        "руководитель Зиновьев": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "vuc",
+      "name": "Военный учебный центр",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "email apaleev@sfedu.ru": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "ita",
+      "name": "Инженерно-технологическая академия ЮФУ",
+      "pages": 2,
+      "of": 2,
+      "checks": {},
+      "university": "sfedu"
+    },
+    {
+      "id": "ictib",
+      "name": "Институт компьютерных технологий и информационной безопасности",
+      "pages": 2,
+      "of": 2,
+      "checks": {
+        "руководитель Веселов": true
+      },
+      "university": "sfedu"
+    },
+    {
+      "id": "inep",
+      "name": "Институт нанотехнологий, электроники и приборостроения",
+      "pages": 2,
+      "of": 2,
+      "checks": {},
+      "university": "sfedu"
+    },
+    {
+      "id": "irtsu",
+      "name": "Институт радиотехнических систем и управления",
+      "pages": 2,
+      "of": 2,
+      "checks": {},
+      "university": "sfedu"
+    },
+    {
+      "id": "iues",
+      "name": "Институт управления в экономических, экологических и социальных системах",
+      "pages": 2,
+      "of": 2,
+      "checks": {},
+      "university": "sfedu"
+    }
+  ]
+}

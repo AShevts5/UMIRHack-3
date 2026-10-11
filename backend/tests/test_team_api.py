@@ -1,8 +1,8 @@
-"""Тесты контракта команды (/api/*): поля, статусы ответа, Положение, файлы.
+"""Тесты на контракт команды (/api/*): поля, статусы ответа, Положение, файлы.
 
-Эти адреса появились вместе с веткой main у команды. Раньше на них отдавались
-заготовленные значения, теперь — настоящий результат пайплайна, поэтому проверяем
-и форму ответа, и то, что значения действительно взяты из документа.
+Эти адреса приехали вместе с веткой main у команды. Раньше они отдавали
+заготовки, теперь — настоящий результат пайплайна, так что проверяем
+и форму ответа, и то, что значения правда взяты из документа.
 """
 
 from __future__ import annotations
@@ -74,13 +74,13 @@ class TestAgainstRealDocument:
         assert items["full_name"]["value"] == "Александров Артём Игоревич"
         assert items["issue_number"]["value"] == "ОБ-1001"
         assert items["study_period"]["value"] == "2023-09-01 — 2026-08-31"
-        # Отметки приходят строками: «есть» или «не найдено», как ждёт фронтенд
+        # отметки прилетают строками: «есть» или «не найдено» — фронтенд ждёт именно так
         assert items["seal"]["value"] == "есть"
         assert items["signature"]["value"] == "есть"
         assert items["seal"]["found"] is True
 
     def test_presence_value_is_not_found_when_absent(self, analysed) -> None:
-        """open-004: подпись есть, печати нет — значения должны различаться."""
+        """open-004: подпись есть, печати нет — значения обязаны отличаться."""
         from backend.app.services.pipeline import Pipeline
 
         result = Pipeline(use_cache=True).analyze_path(
@@ -170,7 +170,7 @@ class TestEndpoints:
             )
         assert response.status_code == 200
         body = response.json()
-        # форма ответа контракта команды
+        # смотрим форму ответа по контракту команды
         assert set(body) == {"request_id", "doc_type", "image", "fields", "answer", "ocr", "timings_ms"}
         assert body["doc_type"]["id"] == "internship_certificate"
         assert body["image"]["url"].endswith("/page-1")

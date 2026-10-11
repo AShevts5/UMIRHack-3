@@ -1,19 +1,19 @@
-"""Бонус «плохие снимки»: превращаем фото с телефона в ровный плоский лист.
+"""Бонус «плохие снимки»: делаем из фото с телефона ровный плоский лист.
 
-Шаги идут по порядку, и каждый делается только если он нужен (чистый скан проходит
-через модуль без изменений, поэтому результаты на открытом наборе не двигаются):
+Шаги идут по порядку, и каждый включается, только если реально нужен (чистый скан
+проходит через модуль как есть, так что результаты на открытом наборе не едут):
 
-1. **Обрезка листа** — бумага обычно светлее стола: самый большой светлый
-   четырёхугольник растягиваем в прямоугольник, и вместе с этим уходят поворот и
-   перспектива ручного снимка.
+1. **Обрезка листа** — бумага обычно светлее стола: берём самый большой светлый
+   четырёхугольник и растягиваем в прямоугольник, заодно уходят поворот и
+   перспектива снимка с рук.
 2. **Выравнивание наклона** — оставшийся угол текста (до ±35°) ищем по максимуму
-   дисперсии профиля строк и крутим страницу обратно.
-3. **Масштаб** — слишком мелкие и слишком большие фото подгоняем так, чтобы у
-   страницы было те же ~1600 px по длинной стороне, что у эталонных сканов: тогда
-   пороги ниже (высота строки, размер отметки) значат одно и то же на любом входе.
-4. **Ровный свет** — сильно размытая оценка фона делит тени, блики и цветной свет;
-   делаем это по каждому каналу RGB, чтобы синие чернила остались узнаваемыми для
-   детектора подписи и печати.
+   дисперсии профиля строк и докручиваем страницу обратно.
+3. **Масштаб** — слишком мелкие и слишком большие фото подгоняем, чтобы у страницы
+   были те же ~1600 px по длинной стороне, что у эталонных сканов: тогда пороги
+   ниже (высота строки, размер отметки) значат одно и то же на любом входе.
+4. **Ровный свет** — делим на сильно размытую оценку фона и так гасим тени, блики и
+   цветной свет; делаем это по каждому каналу RGB, чтобы детектор подписи и печати
+   всё ещё узнавал синие чернила.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ import numpy as np
 from .loader import DocumentImage
 
 TARGET_LONG_EDGE = 1600
-#: Страницы в этих границах оставляем в исходном размере.
+#: Если страница влезает в эти границы — размер не трогаем, оставляем родной.
 NATIVE_RANGE = (1200, 2600)
 
 
@@ -40,7 +40,7 @@ class EnhanceReport:
         self.steps.append(step)
 
     def messages(self) -> list[str]:
-        """Понятные человеку пометки для интерфейса: что сделали со снимком."""
+        """Пометки для интерфейса человеческим языком: что мы сделали со снимком."""
         texts = {
             "page_crop": "Лист найден на фото и выровнен по краям.",
             "rescale": "Масштаб снимка приведён к стандартному.",
@@ -63,7 +63,7 @@ def _order_corners(points: np.ndarray) -> np.ndarray:
 
 
 def find_page_quad(grey: np.ndarray) -> np.ndarray | None:
-    """Углы листа, если он выделяется на более тёмном фоне."""
+    """Ищем углы листа, если он выделяется на фоне потемнее."""
     h, w = grey.shape
     factor = 800.0 / max(h, w)
     small = cv2.resize(grey, None, fx=factor, fy=factor, interpolation=cv2.INTER_AREA)
@@ -78,18 +78,18 @@ def find_page_quad(grey: np.ndarray) -> np.ndarray | None:
     total = small.shape[0] * small.shape[1]
     if not (0.2 * total < area < 0.97 * total):
         return None
-    # Лист должен быть заметно светлее того, что вокруг него.
+    # Лист должен быть заметно светлее того, что вокруг, иначе это не наш случай.
     inside = mask > 0
     if small[inside].mean() - small[~inside].mean() < 25:
         return None
-    # Тень тоже делит кадр на светлую и тёмную части, но тёмная часть настоящего
-    # фото — это стол, а не бумага, и текста там быть не должно.
+    # Подвох: тень тоже делит кадр на светлую и тёмную части. Но у настоящего фото
+    # тёмная часть — это стол, а не бумага, и текста там быть не должно.
     text = cv2.adaptiveThreshold(small, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 25, 15) > 0
     outside = cv2.erode((~inside).astype(np.uint8), np.ones((15, 15), np.uint8)) > 0
     if outside.any() and inside.any():
         if text[outside].mean() > 0.35 * max(text[inside].mean(), 1e-6):
             return None
-    # Край листа — резкий перепад, а граница тени — мягкий градиент.
+    # Край листа — резкий перепад, а граница тени — мягкий градиент, по этому и отличаем.
     edges = cv2.dilate(cv2.Canny(small, 40, 120), np.ones((5, 5), np.uint8)) > 0
     points = contour.reshape(-1, 2)
     sh, sw = small.shape
@@ -116,8 +116,8 @@ def warp_page(rgb: np.ndarray, quad: np.ndarray) -> np.ndarray:
     target = np.array([[0, 0], [width - 1, 0], [width - 1, height - 1], [0, height - 1]], dtype=np.float32)
     matrix = cv2.getPerspectiveTransform(quad, target)
     page = cv2.warpPerspective(rgb, matrix, (width, height), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
-    # Срезаем узкую полоску: найденный контур идёт по краю листа и его тени, а OCR
-    # читает это как «|».
+    # Срезаем узенькую полоску: найденный контур идёт по краю листа и его тени, а OCR
+    # радостно читает это как «|».
     inset_x, inset_y = int(width * 0.012), int(height * 0.008)
     return page[inset_y : height - inset_y, inset_x : width - inset_x]
 
@@ -126,7 +126,7 @@ def _text_mask(grey: np.ndarray, long_edge: int = 900) -> np.ndarray:
     factor = long_edge / float(max(grey.shape))
     small = cv2.resize(grey, None, fx=factor, fy=factor, interpolation=cv2.INTER_AREA)
     mask = cv2.adaptiveThreshold(small, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 25, 15)
-    # Убираем рамки страницы и линии таблиц: длинные компоненты — это не текст.
+    # Выкидываем рамки страницы и линии таблиц: длинные компоненты — точно не текст.
     count, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
     limit = 0.25 * max(small.shape)
     for index in range(1, count):
@@ -144,7 +144,7 @@ def _profile_score(mask: np.ndarray, angle: float) -> float:
 
 
 def estimate_skew(grey: np.ndarray, limit: float = 35.0) -> float:
-    """Угол в градусах против часовой стрелки, при котором строки ложатся ровно."""
+    """Угол в градусах против часовой стрелки, при котором строки ложатся ровненько."""
     mask = _text_mask(grey)
     if mask.sum() == 0:
         return 0.0
@@ -168,11 +168,11 @@ def rotate_page(rgb: np.ndarray, angle: float) -> np.ndarray:
 
 
 def flatten_lighting(rgb: np.ndarray) -> np.ndarray:
-    """Делим на медленно меняющийся фон: тени, блики, цветной свет."""
+    """Делим на медленно плывущий фон — так уходят тени, блики, цветной свет."""
     h, w = rgb.shape[:2]
     factor = 300.0 / max(h, w)
     small = cv2.resize(rgb, None, fx=factor, fy=factor, interpolation=cv2.INTER_AREA)
-    # Максимальный фильтр убирает текст, медиана сглаживает остаток — остаётся фон.
+    # Максимальный фильтр стирает текст, медиана сглаживает остаток — и остаётся чистый фон.
     background = cv2.dilate(small, np.ones((7, 7), np.uint8))
     background = cv2.medianBlur(background, 21)
     background = cv2.resize(background, (w, h), interpolation=cv2.INTER_LINEAR).astype(np.float32)
@@ -181,7 +181,7 @@ def flatten_lighting(rgb: np.ndarray) -> np.ndarray:
 
 
 def needs_flattening(grey: np.ndarray) -> bool:
-    """Проверяем, гуляет ли яркость бумаги по странице (тень, блик)."""
+    """Смотрим, гуляет ли яркость бумаги по странице (тень, блик) — тогда надо выравнивать."""
     h, w = grey.shape
     factor = 200.0 / max(h, w)
     small = cv2.resize(grey, None, fx=factor, fy=factor, interpolation=cv2.INTER_AREA)
@@ -191,11 +191,11 @@ def needs_flattening(grey: np.ndarray) -> bool:
 
 
 def whiten_background(rgb: np.ndarray) -> np.ndarray:
-    """Закрашиваем стол и фон вокруг листа белым.
+    """Красим стол и фон вокруг листа в белый.
 
-    Если у фото не обрезали лист и потом выровняли наклон, в углах остаются тёмные
-    клинья стола, а для OCR это похоже на чернила. Текст никогда не доходит до края
-    картинки, поэтому большие тёмные области, касающиеся края, считаем фоном.
+    Если лист на фото не обрезали, а потом выровняли наклон, в углах остаются тёмные
+    клинья стола, и OCR принимает их за чернила. Текст никогда не доходит до края
+    картинки, поэтому большие тёмные куски, которые касаются края, считаем фоном.
     """
     grey = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     paper = float(np.percentile(grey, 90))

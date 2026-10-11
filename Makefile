@@ -1,5 +1,5 @@
-# Удобные обёртки над python -m backend.scripts.tasks.
-# На Windows те же задачи запускаются напрямую, без GNU make:
+# Обёртки над python -m backend.scripts.tasks, чтобы не печатать длинное.
+# На Windows те же задачи гоняем напрямую, без GNU make:
 #   python -m backend.scripts.tasks install | test | batch | evaluate | verify | api | demo
 
 PY ?= python
@@ -25,7 +25,7 @@ verify:
 api:
 	$(PY) -m backend.scripts.tasks api
 
-# Полный прогон: results.json -> метрики -> проверки целостности.
+# Полный прогон: results.json -> метрики -> проверки целостности, всё разом.
 demo:
 	$(PY) -m backend.scripts.tasks demo $(if $(UMIR_ARCHIVE),--root $(UMIR_ARCHIVE),)
 

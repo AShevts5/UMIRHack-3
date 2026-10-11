@@ -1,7 +1,7 @@
 """Приводим даты к одному виду: ``ДД.ММ.ГГГГ`` и «1 сентября 2026 года» -> ``ГГГГ-ММ-ДД``.
 
 В наборе кейса обе записи должны давать одно и то же значение. Поэтому ничего не
-угадываем: если разобрать не получилось, возвращаем ``None``, и поле уходит в
+угадываем: не смогли разобрать — возвращаем ``None``, и поле уходит в
 ``не найдено``.
 """
 
@@ -41,7 +41,7 @@ MONTHS_NOMINATIVE = {
     "декабрь": 12,
 }
 
-#: Название месяца -> номер, в обоих падежах и с учётом частого «ё».
+#: Название месяца -> номер, в обоих падежах и с поправкой на частое «ё».
 MONTHS = {**MONTHS_GENITIVE, **MONTHS_NOMINATIVE}
 
 _MONTH_ALT = "|".join(sorted(MONTHS, key=len, reverse=True))
@@ -68,7 +68,7 @@ def _safe_date(year: int, month: int, day: int) -> date | None:
 
 
 def parse_date(fragment: str | None) -> str | None:
-    """Возвращаем ``ГГГГ-ММ-ДД`` для первого похожего на дату куска, иначе ``None``."""
+    """Отдаём ``ГГГГ-ММ-ДД`` для первого куска, похожего на дату, а если такого нет — ``None``."""
     if not fragment:
         return None
     text = fragment.strip()
@@ -90,7 +90,7 @@ def parse_date(fragment: str | None) -> str | None:
 
 
 def parse_date_with_year(fragment: str | None, default_year: int | None) -> str | None:
-    """Как :func:`parse_date`, но подставляет пропавший год (``1 сентября``)."""
+    """То же, что :func:`parse_date`, только подставляет потерявшийся год (``1 сентября``)."""
     found = parse_date(fragment)
     if found or not fragment or default_year is None:
         return found
@@ -105,7 +105,7 @@ def parse_date_with_year(fragment: str | None, default_year: int | None) -> str 
 
 
 def parse_course(fragment: str | None) -> str | None:
-    """Достаём номер курса *строкой* из цифр — контракт требует именно str."""
+    """Вытаскиваем номер курса *строкой* из цифр — контракт хочет именно str."""
     if not fragment:
         return None
     match = re.search(r"(?<!\d)([1-6])(?!\d)", fragment)
@@ -120,7 +120,7 @@ def looks_like_date(fragment: str | None) -> bool:
 
 
 def month_name(month: int) -> str:
-    """Русское название месяца в родительном падеже — только для текста ответа."""
+    """Русское название месяца в родительном падеже — нужно только для текста ответа."""
     if not 1 <= month <= 12:
         raise ValueError(month)
     for name, number in MONTHS_GENITIVE.items():
@@ -130,7 +130,7 @@ def month_name(month: int) -> str:
 
 
 def human_date(iso: str | None) -> str:
-    """Превращаем ``2026-09-01`` в «1 сентября 2026 года» для текста ответа."""
+    """Делаем из ``2026-09-01`` «1 сентября 2026 года» — для текста ответа."""
     if not iso:
         return ""
     try:

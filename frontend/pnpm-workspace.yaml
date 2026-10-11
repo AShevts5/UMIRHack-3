@@ -1,4 +1,4 @@
-# pnpm needs an explicit allow-list before it runs dependency build scripts.
-# esbuild ships a native binary that must be linked, otherwise `vite build` fails.
+# pnpm не запускает build-скрипты зависимостей, пока их явно не разрешишь списком.
+# У esbuild нативный бинарник, его надо слинковать, иначе `vite build` падает. Не трогать.
 allowBuilds:
   esbuild: true

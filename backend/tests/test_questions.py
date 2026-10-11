@@ -1,4 +1,4 @@
-"""Тесты движка вопросов: четыре класса вопросов, синонимы, честные отказы."""
+"""Гоняем движок вопросов: четыре класса вопросов, синонимы, честные отказы."""
 
 from __future__ import annotations
 
@@ -202,7 +202,7 @@ class TestAnswers:
 
 @pytest.mark.skipif(ARCHIVE is None, reason="открытый архив кейса не найден")
 class TestOpenSetClassificationCoverage:
-    """Каждая формулировка, которая реально встречается в questions.json, должна разбираться правильно."""
+    """Любую формулировку, которая реально есть в questions.json, обязаны разобрать правильно."""
 
     def test_all_manifest_questions(self) -> None:
         assert ARCHIVE is not None
@@ -225,7 +225,7 @@ class TestOpenSetClassificationCoverage:
             elif ref["answerable"] and ref["sources"] and ref["sources"][0].startswith("field:"):
                 expected = Intent.FIELD_VALUE
             else:
-                # поле пропущено или вопроса про документ нет: ждём отказ, а не другой класс
+                # поля нет или вопроса про документ нет: тут ждём отказ, а не какой-то другой класс
                 if analysis.intent not in (Intent.FIELD_VALUE, Intent.UNKNOWN):
                     failures.append(f"{item['question_id']}: ожидался отказ, получено {analysis.intent}")
                 continue

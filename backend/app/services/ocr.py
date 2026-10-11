@@ -1,14 +1,14 @@
-"""Распознавание текста локальным Tesseract (rus+eng) вместе с координатами слов.
+"""Гоняем текст через локальный Tesseract (rus+eng) и заодно забираем координаты слов.
 
-Пара заметок, чтобы не запутаться:
+Пара заметок себе и команде, чтобы не запутаться:
 
-* OCR идёт через локальный бинарник tesseract — картинка никуда не отправляется,
-  внешних сервисов тут нет.
-* Из предобработки только масштаб и (по желанию) бинаризация. Сильные фильтры не
-  применяем: они убивают тонкие штрихи подписи, которые потом нужны детектору.
-* Исходную серую картинку оставляем как есть — по ней ищем отметки. Координаты слов
+* OCR крутится на локальном бинарнике tesseract — картинка никуда не улетает,
+  никаких внешних сервисов тут нет.
+* Из предобработки только масштаб и (если надо) бинаризация. Жёсткие фильтры не
+  ставим: они съедают тонкие штрихи подписи, а они потом нужны детектору.
+* Исходную серую картинку не трогаем — по ней ищем отметки. Координаты слов
   берём с обработанной копии, а геометрию считаем по исходной.
-* Tesseract запускается один раз на документ, результат кэшируется по хешу файла
+* Tesseract запускаем один раз на документ, результат кэшится по хешу файла
   в pipeline, а не на каждый запрос к API.
 """
 
@@ -28,7 +28,7 @@ from ..config import OcrSettings, find_tesseract_binary, settings, _default_tess
 from .loader import DocumentImage
 
 # ---------------------------------------------------------------------------
-# Модель данных
+# Модель данных — что гоняем туда-сюда
 # ---------------------------------------------------------------------------
 
 
@@ -67,7 +67,7 @@ class Word:
 
 @dataclass
 class TextLine:
-    """Логическая строка текста, собранная из рамок слов — без привязки к вёрстке."""
+    """Строка текста, которую мы сами слепили из рамок слов — на вёрстку не смотрим."""
 
     words: list[Word] = field(default_factory=list)
     block_id: int = -1
@@ -105,7 +105,7 @@ class TextLine:
         return (self.left, self.top, self.right - self.left, self.bottom - self.top)
 
     def text_after(self, x: int) -> str:
-        """Склеиваем слова, которые начинаются в пиксельной колонке ``x`` или правее."""
+        """Клеим в одну строку слова, которые начинаются в пиксельной колонке ``x`` или правее."""
         return " ".join(word.text for word in self.words if word.left >= x - 2)
 
 
@@ -141,11 +141,11 @@ class OcrResult:
 
 
 class OcrUnavailableError(RuntimeError):
-    """Локальный Tesseract или его языковые данные недоступны."""
+    """Кидаем, когда локального Tesseract или его языковых данных нет под рукой."""
 
 
 # ---------------------------------------------------------------------------
-# Предобработка картинки
+# Готовим картинку для OCR
 # ---------------------------------------------------------------------------
 
 
@@ -158,12 +158,12 @@ def _upscale_factor(shape: tuple[int, int], target_long_edge: int, low: float, h
 
 
 def preprocess_for_ocr(grey: np.ndarray, ocfg: OcrSettings, quality: str = "clean") -> tuple[np.ndarray, float]:
-    """Возвращаем (обработанную серую картинку, масштаб относительно исходной).
+    """Отдаём (обработанную серую картинку, масштаб относительно исходной).
 
-    Чистые сканы бинаризуем — на открытом наборе так точнее. Фото оставляем в
-    серых полутонах: после выравнивания света Otsu рвёт тонкие штрихи мелких и
-    смазанных букв, а LSTM серый сглаженный текст читает нормально. Маленькие
-    фото дополнительно увеличиваем и подшарпливаем.
+    Чистые сканы бинаризуем — проверили на открытом наборе, так точнее. Фото
+    оставляем в серых полутонах: после выравнивания света Otsu рвёт тонкие штрихи
+    мелких и смазанных букв, а LSTM серый сглаженный текст и так нормально читает.
+    Маленькие фото ещё и увеличиваем, плюс чуть подшарпливаем.
     """
     if quality == "lowres":
         scale = _upscale_factor(grey.shape, int(ocfg.target_long_edge * 1.6), ocfg.upscale_min, ocfg.upscale_max)
@@ -179,22 +179,22 @@ def preprocess_for_ocr(grey: np.ndarray, ocfg: OcrSettings, quality: str = "clea
     else:
         image = grey
     if ocfg.use_binarization and quality == "clean":
-        # Otsu сохраняет сглаженные края букв, а лёгкий медианный блюр убирает шум сканера.
+        # Otsu оставляет сглаженные края букв, а лёгкий медианный блюр счищает шум сканера.
         blurred = cv2.medianBlur(image, 3)
         _, image = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    # Белая рамка: буквы, прилипшие к краю страницы, Tesseract стабильно теряет.
+    # Белая рамка — без неё Tesseract стабильно теряет буквы, прилипшие к краю страницы.
     image = cv2.copyMakeBorder(image, 24, 24, 24, 24, cv2.BORDER_CONSTANT, value=255)
     return image, scale
 
 
 # ---------------------------------------------------------------------------
-# Запуск Tesseract
+# Запускаем Tesseract
 # ---------------------------------------------------------------------------
 
 
 @lru_cache(maxsize=1)
 def ocr_environment() -> dict[str, str]:
-    """Ищем бинарник и tessdata один раз на процесс."""
+    """Бинарник и tessdata ищем один раз на процесс, дальше берём из кэша."""
     import os
 
     binary = find_tesseract_binary()
@@ -202,8 +202,8 @@ def ocr_environment() -> dict[str, str]:
         raise OcrUnavailableError(
             "Не найден локальный Tesseract. Установите его (README, раздел «Установка OCR»)."
         )
-    # Один поток на вызов: OpenMP-потоки от параллельных вызовов (страница + кропы
-    # значений, API + пакетный режим) забивают CPU и вызов уходит в таймаут.
+    # Строго один поток на вызов: иначе OpenMP-потоки от параллельных вызовов (страница +
+    # кропы значений, API + пакетный режим) забивают CPU, и вызов улетает в таймаут.
     os.environ.setdefault("OMP_THREAD_LIMIT", "1")
     env = dict(os.environ)
     tessdata = settings.tessdata_prefix or _default_tessdata()
@@ -225,7 +225,7 @@ def available_languages() -> tuple[str, ...]:
 
 
 def resolve_languages(requested: str) -> str:
-    """Выкидываем языки без traineddata, вместо того чтобы падать с ошибкой."""
+    """Языки без traineddata просто выкидываем, а не падаем с ошибкой."""
     installed = set(available_languages())
     if not installed:
         return requested
@@ -252,7 +252,7 @@ def _build_words(data: dict, scale: float, min_conf: float) -> list[Word]:
             conf = -1.0
         if conf < min_conf:
             continue
-        # Края страницы и линии таблиц выходят одиночными палками — это не текст.
+        # Края страницы и линии таблиц OCR выдаёт одиночными палками — это не текст, выкидываем.
         if re.fullmatch(r"[|¦!\[\]{}()‘’'`,.]{1,2}", raw) and raw not in (".",):
             continue
         left = int(round(int(data["left"][index]) / scale)) - int(round(border / scale))
@@ -278,9 +278,9 @@ def _build_words(data: dict, scale: float, min_conf: float) -> list[Word]:
 def _group_into_lines(words: list[Word]) -> list[TextLine]:
     """Собираем слова в строки по геометрии, а не по блокам Tesseract.
 
-    Tesseract режет блоки по-разному в зависимости от вёрстки, а по геометрии
-    получается стабильно: подпись поля и значение остаются в одной строке, даже
-    если по странице плавает макет печати.
+    Tesseract режет блоки как ему вздумается, смотря по вёрстке, а по геометрии
+    выходит стабильно: подпись поля и значение остаются в одной строке, даже
+    если макет печати гуляет по странице.
     """
     if not words:
         return []
@@ -318,7 +318,7 @@ def run_ocr(
     ocfg: OcrSettings | None = None,
     min_conf: float = 25.0,
 ) -> OcrResult:
-    """Гоняем Tesseract по картинке документа: получаем текст и рамки слов."""
+    """Прогоняем картинку документа через Tesseract — на выходе текст и рамки слов."""
     ocfg = ocfg or settings.ocr
     ocr_environment()
     enhanced, scale = preprocess_for_ocr(image.grey, ocfg, getattr(image, "quality", "clean"))
@@ -332,7 +332,7 @@ def run_ocr(
             output_type=Output.DICT,
             timeout=ocfg.tesseract_timeout_s,
         )
-    except RuntimeError as exc:  # по таймауту pytesseract кидает RuntimeError
+    except RuntimeError as exc:  # да, по таймауту pytesseract кидает именно RuntimeError
         raise OcrUnavailableError(f"OCR не завершился: {exc}") from exc
     except pytesseract.TesseractNotFoundError as exc:  # pragma: no cover
         raise OcrUnavailableError("Tesseract не найден в PATH.") from exc
@@ -351,7 +351,7 @@ def run_ocr(
 
 
 def ocr_health() -> dict:
-    """Диагностика для ``GET /api/v1/health`` — падать не должна никогда."""
+    """Диагностика для ``GET /api/v1/health`` — падать не должна вообще никогда."""
     binary = find_tesseract_binary()
     info: dict = {
         "engine": "tesseract",
@@ -383,7 +383,7 @@ def ocr_health() -> dict:
 
 
 def warm_up() -> dict:
-    """Один раз дёргаем OCR, чтобы первый запрос к API не тормозил."""
+    """Разок дёргаем OCR заранее, чтобы первый запрос к API не тормозил."""
     return ocr_health()
 
 

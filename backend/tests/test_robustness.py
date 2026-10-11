@@ -1,4 +1,4 @@
-"""Дополнительные проверки на прочность: улучшение фото, перепроверка значений по пикселям, фолбэк в batch."""
+"""Ещё проверки на прочность: улучшение фото, перепроверка значений по пикселям, фолбэк в batch."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ registry = get_registry()
 
 
 def _page(seed: int = 3) -> np.ndarray:
-    """Белая страница как А4, а вместо текста — тёмные полоски (OCR здесь не нужен)."""
+    """Белая страница под А4, а вместо текста — тёмные полоски (OCR тут не нужен)."""
     rng = random.Random(seed)
     page = np.full((1600, 1132, 3), 255, np.uint8)
     for row in range(14):
@@ -65,7 +65,7 @@ class TestEnhance:
         out, report = enhance_document(_image(shaded))
         assert "page_crop" not in report.steps
         assert "flatten_lighting" in report.steps
-        # После выравнивания света бумага снова светлая по всей странице.
+        # выровняли свет — бумага опять светлая по всей странице
         assert np.percentile(out.grey, 20) > 200
 
 

@@ -1,4 +1,4 @@
-"""Тесты нормализации дат и текста (rules.md 2.5, README «Нормализация текстов»)."""
+"""Проверяем, как нормализуем даты и текст (rules.md 2.5, README «Нормализация текстов»)."""
 
 from __future__ import annotations
 
@@ -49,9 +49,9 @@ class TestParseDate:
             "не найдено",
             "дата не указана",
             "___.___.____",
-            "31.02.2026",  # несуществующая дата
+            "31.02.2026",  # такой даты не бывает
             "45.13.2026",
-            "1 сентября",  # без года
+            "1 сентября",  # год забыли
         ],
     )
     def test_rejects_non_dates(self, fragment: str | None) -> None:
@@ -92,7 +92,7 @@ class TestNormalization:
             assert is_blank_value(fragment), fragment
 
     def test_single_character_is_a_value(self) -> None:
-        # «Курс: 3» — однозначное значение, не пустая строка.
+        # «Курс: 3» — значение однозначное, пустой строки тут быть не должно
         assert not is_blank_value("3")
         assert not is_empty_fill_line("3")
 

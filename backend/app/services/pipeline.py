@@ -1,9 +1,9 @@
-"""Один общий путь обработки для веб-API и для пакетного CLI.
+"""Один общий путь обработки — и для веб-API, и для пакетного CLI.
 
-В задании сказано, что пакетный экспорт и интерактивный режим должны использовать
+В задании прямо сказано: пакетный экспорт и интерактивный режим должны гонять
 одни и те же функции OCR, парсера и проверки — вот этот модуль и есть тот самый
-общий путь. Здесь нигде не читается ``reference_results.json``, имя файла или
-document_id: на вход идут только пиксели картинки и тип документа.
+общий путь. Тут нигде не читаются ``reference_results.json``, имя файла или
+document_id: на вход идут только пиксели картинки и тип документа, никакого читерства.
 """
 
 from __future__ import annotations
@@ -55,15 +55,18 @@ class PipelineResult:
     document_type_source: str = "request"
     document_type_confidence: float = 0.0
     warnings: list[str] = field(default_factory=list)
-    # Размер страницы, в системе координат которой лежат боксы OCR и зоны отметок.
-    # Интерфейсу это нужно, чтобы правильно наложить подсветку на превью.
+    # Размер страницы, в координатах которой лежат боксы OCR и зоны отметок.
+    # Фронту это надо, чтобы подсветка легла на превью ровно куда нужно.
     image_size: tuple[int, int] = (0, 0)
-    # Сама страница после выравнивания — для превью в интерфейсе (нужна адаптеру
-    # контракта команды, /api/files). В results.json она, конечно, не попадает.
+    # Сама страница после выравнивания — для превью во фронте (её ждёт адаптер
+    # контракта команды, /api/files). В results.json она, понятное дело, не попадает.
     image_rgb: np.ndarray | None = None
     rotation_deg: float = 0.0
-    # Миллисекунды по этапам. Тоже только для интерфейса, в results.json не идёт.
+    # Миллисекунды по этапам. Тоже чисто для фронта, в results.json не идёт.
     timings: dict[str, float] = field(default_factory=dict)
+    # Что предобработка натворила со снимком (поворот, тени...). Только для фронта:
+    # по нему рисуем переключатель «исходник / после выравнивания».
+    enhance_steps: list[str] = field(default_factory=list)
 
     def answers(self, questions: list[tuple[str, str]]) -> list[Answer]:
         return answer_document(self.spec, self.fields, self.validation, questions, self.parse)
@@ -87,7 +90,7 @@ class PipelineResult:
 
 
 class Pipeline:
-    """OCR, парсер, детектор отметок и правила плюс небольшой кэш в памяти процесса."""
+    """Всё в одном месте: OCR, парсер, детектор отметок и правила, плюс маленький кэш в памяти процесса."""
 
     def __init__(self, cache_size: int = 24, use_cache: bool = True) -> None:
         self.registry = get_registry()
@@ -97,7 +100,7 @@ class Pipeline:
         self.use_cache = use_cache
         self.stats = {"documents": 0, "cache_hits": 0, "ocr_seconds": 0.0}
 
-    # -- работа с кэшем ---------------------------------------------------
+    # -- возня с кэшем ----------------------------------------------------
     def _cache_key(self, payload: bytes, document_type: str) -> str:
         digest = hashlib.sha256()
         digest.update(document_type.encode("utf-8"))
@@ -127,7 +130,7 @@ class Pipeline:
         self._cache.clear()
         self._cache_order.clear()
 
-    # -- основные точки входа ---------------------------------------------
+    # -- главные точки входа ----------------------------------------------
     def analyze_bytes(
         self,
         payload: bytes,
@@ -166,10 +169,11 @@ class Pipeline:
                 timings=timings,
             )
             result.warnings.extend(enhance_report.messages())
+            result.enhance_steps = list(enhance_report.steps)
             self._cache_put(key, result)
             return result
 
-        # автоопределение типа: сначала OCR, потом выбираем подходящий тип
+        # тип не указали — угадываем сами: сначала OCR, потом подбираем подходящий тип
         timings = {}
         started = time.perf_counter()
         image = load_document_bytes(payload, filename, limits=settings.limits)
@@ -196,6 +200,7 @@ class Pipeline:
             timings=timings,
         )
         result.warnings.extend(enhance_report.messages())
+        result.enhance_steps = list(enhance_report.steps)
         result.document_type_source = "auto"
         result.document_type_confidence = score
         return result
@@ -222,8 +227,8 @@ class Pipeline:
     ) -> PipelineResult:
         import time
 
-        # Порядок важен: сначала отметки, потом карточка полей, потому что карточка
-        # берёт флаги подписи и печати именно из результата detect_marks.
+        # Порядок важен, не переставлять: карточку (fields_payload) собираем только после
+        # detect_marks, потому что флаги подписи и печати она берёт именно оттуда.
         started = time.perf_counter()
         parse_result = parse_document(ocr_result, spec)
         refine_fields(image, ocr_result, spec, parse_result)
@@ -275,7 +280,7 @@ def build_api_response(
     include_boxes: bool = True,
     max_boxes: int = 1500,
 ) -> AnalysisResponse:
-    """Собираем ответ ``/api/v1/analyze`` из результата пайплайна."""
+    """Лепим ответ ``/api/v1/analyze`` из того, что выдал пайплайн."""
     spec = result.spec
     question_text = question or default_completeness_question()
     answer = result.single_answer(question_text, question_id)
@@ -360,8 +365,8 @@ def normalized(text: str) -> str:
     return norm_text(text)
 
 
-#: Общий экземпляр пайплайна для API и CLI: модели и движки не перезагружаются на
-#: каждый запрос, а OCR выполняется один раз на документ.
+#: Один пайплайн на всех — и для API, и для CLI: модели и движки не перегружаем на
+#: каждый запрос, а OCR гоняем один раз на документ.
 pipeline = Pipeline()
 
 

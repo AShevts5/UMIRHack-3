@@ -3,17 +3,28 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Интерфейс «Онлайн-деканата»: загрузка документа, OCR-текст, карточка полей, предварительная проверка и ответ со ссылками на Положение.",
+  "description": "Интерфейс «Онлайн-деканата»: путеводитель по вузу (вход, холл, факультеты, карта, AI-помощник) и проверка документа с OCR-текстом, карточкой полей и ответом со ссылками на Положение.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "preview": "vite preview --port 4173"
+    "preview": "vite preview --port 4173",
+    "build:mobile": "vite build && cap sync android"
   },
   "dependencies": {
+    "@capacitor/core": "7.4.3",
+    "@fontsource/golos-text": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/onest": "^5.3.1",
+    "framer-motion": "11.18.2",
+    "leaflet": "1.9.4",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-leaflet": "4.2.1"
   },
   "devDependencies": {
+    "@capacitor/android": "7.4.3",
+    "@capacitor/cli": "7.4.3",
+    "@types/leaflet": "1.9.20",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",

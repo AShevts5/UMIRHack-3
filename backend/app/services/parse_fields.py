@@ -1,12 +1,12 @@
-"""Достаём значения полей: ищем подпись поля, собираем значение, нормализуем.
+"""Вытаскиваем значения полей: ищем подпись поля, собираем значение, нормализуем.
 
-Парсер не привязан к координатам на странице: находим напечатанную подпись поля
-(её распознал OCR) и берём текст справа от неё, плюс продолжение на следующей
+Парсер на координаты страницы не завязан: находим напечатанную подпись поля
+(её распознал OCR) и берём текст справа от неё, плюс хвост на следующей
 строке, если значение перенеслось. Абсолютные координаты не используем и по
-document_id ничего не подставляем — один и тот же код работает и в вебе, и в
+document_id ничего не подсовываем — один и тот же код работает и в вебе, и в
 пакетном режиме, и на переименованных файлах.
 
-Если значение пустое или не читается, по rules.md 2.2 пишем ровно ``не найдено``.
+Если значение пустое или не читается, по rules.md 2.2 пишем ровно ``не найдено``, и точка.
 """
 
 from __future__ import annotations
@@ -27,16 +27,16 @@ from ..utils.textnorm import (
 from .document_config import DocumentTypeSpec, FieldSpec, MarkSpec
 from .ocr import OcrResult, TextLine, Word
 
-if TYPE_CHECKING:  # импорт только для типов: detect_marks сам импортирует этот модуль
+if TYPE_CHECKING:  # импорт чисто для типов: detect_marks сам импортирует этот модуль, иначе будет цикл
     from .detect_marks import MarkVerdict
 
 NOT_FOUND = "не найдено"
 
-#: Символы, которые Tesseract иногда выдаёт вместо двоеточия.
+#: Всякие символы, которые Tesseract иногда выдаёт вместо двоеточия.
 _COLON_CHARS = ":：﹕"
 _COLON_RE = re.compile(r"[" + re.escape(_COLON_CHARS) + r"]")
 
-#: Закрывающую » OCR часто рисует обычной или двойной кавычкой.
+#: Закрывающую » OCR любит рисовать обычной или двойной кавычкой.
 _QUOTE_FIX_RE = re.compile(r"«([^»\"]{1,80})[\"“”]+")
 _OPEN_QUOTE_RE = re.compile(r"[\"“”]([^«»\"“”]{1,80})[«»]")
 _SPACE_BEFORE_PUNCT_RE = re.compile(r"\s+([,.;:])")
@@ -44,21 +44,21 @@ _DOUBLE_SPACE_RE = re.compile(r"\s{2,}")
 
 
 def normalize_value_text(value: str) -> str:
-    """Чистим сырое значение от OCR, не меняя его смысл."""
+    """Отмываем сырое значение после OCR, но смысл не трогаем."""
     text = strip_ocr_noise(strip_fill_artifacts(value))
     text = text.replace("\u00a0", " ")
-    # Фигурных скобок в этих документах не бывает: OCR путает их с круглыми.
+    # Фигурных скобок в наших документах не бывает — это OCR путает их с круглыми.
     text = text.replace("{", "(").replace("}", ")")
     text = _SPACE_BEFORE_PUNCT_RE.sub(r"\1", text)
     text = _DOUBLE_SPACE_RE.sub(" ", text)
     text = _QUOTE_FIX_RE.sub(lambda m: "«" + m.group(1).rstrip() + "»", text)
     text = _OPEN_QUOTE_RE.sub(lambda m: "«" + m.group(1).rstrip() + "»", text)
     text = text.strip(" \t")
-    # Точки и запятые перед значением («. Учебный…», «; Кузнецова…») — мусор со страницы.
+    # Точки и запятые перед значением («. Учебный…», «; Кузнецова…») — просто мусор со страницы.
     text = re.sub(r"^[.,;:'`‘’|]+\s*", "", text)
-    # Одна точка в конце тут никогда не часть значения.
+    # Одиночная точка в конце у нас никогда не часть значения, срезаем.
     while len(text) > 1 and text.endswith(".") and not text.endswith(".."):
-        if re.search(r"\d\.$", text):  # не портим окончания вида «38.03.01»
+        if re.search(r"\d\.$", text):  # а окончания вида «38.03.01» не портим
             break
         text = text[:-1].rstrip()
     return text
@@ -97,22 +97,22 @@ class ParseResult:
 
 
 # ---------------------------------------------------------------------------
-# Ищем подписи полей
+# Ищем подписи полей на странице
 # ---------------------------------------------------------------------------
 
 
 def _label_regex(spec: FieldSpec) -> re.Pattern[str]:
     alternatives = "|".join(f"(?:{pattern})" for pattern in spec.patterns)
-    # Подпись должна начинать строку, а дальше идёт двоеточие или сразу значение.
+    # Подпись обязана стоять в начале строки, дальше либо двоеточие, либо сразу значение.
     return re.compile(rf"^\s*(?P<label>{alternatives})\s*(?P<sep>[{re.escape(_COLON_CHARS)}])?", re.IGNORECASE)
 
 
 def match_label(line_text: str, spec: FieldSpec) -> re.Match[str] | None:
-    """Возвращаем совпадение, если строка начинается с напечатанной подписи поля."""
+    """Отдаём совпадение, если строка начинается с напечатанной подписи поля."""
     match = _label_regex(spec).match(line_text)
     if not match:
-        # Вариант без двоеточия («ФИО студента Иванов И.И.») тоже принимаем, но
-        # только если после подписи есть пробел и значение.
+        # Вариант без двоеточия («ФИО студента Иванов И.И.») тоже берём, но
+        # только если после подписи есть пробел и какое-то значение.
         plain = re.compile(
             r"^\s*(?P<label>" + "|".join(f"(?:{p})" for p in spec.patterns) + r")\s+(?P<rest>.*)$",
             re.IGNORECASE,
@@ -128,7 +128,7 @@ def match_label(line_text: str, spec: FieldSpec) -> re.Match[str] | None:
 
 
 def _value_in_line(line_text: str, match: re.Match[str]) -> str:
-    """Текст после подписи и двоеточия — уже без разделителя и лишних пробелов."""
+    """То, что идёт после подписи и двоеточия, — уже без разделителя и лишних пробелов."""
     rest = line_text[match.end():]
     if match.groupdict().get("sep") is None and "rest" in match.groupdict():
         rest = match.group("rest")
@@ -138,7 +138,7 @@ def _value_in_line(line_text: str, match: re.Match[str]) -> str:
 def detect_field_blocks(
     lines: list[TextLine], spec: DocumentTypeSpec
 ) -> dict[str, tuple[int, str]]:
-    """Для каждого поля — номер строки с подписью и значение из этой же строки."""
+    """По каждому полю: номер строки с подписью и значение из этой же строки."""
     blocks: dict[str, tuple[int, str]] = {}
     compiled = [(field_spec, _label_regex(field_spec)) for field_spec in spec.fields]
     for index, line in enumerate(lines):
@@ -171,7 +171,7 @@ def _collect_continuation(
     spec: DocumentTypeSpec,
     max_gap_factor: float = 1.9,
 ) -> tuple[str, int]:
-    """Склеиваем перенесённые строки значения, которое началось в ``start_index``."""
+    """Подклеиваем перенесённые куски значения, которое началось в ``start_index``."""
     parts = [inline_value] if inline_value else []
     heights = [line.height for line in lines] or [20]
     typical_height = median(heights)
@@ -182,14 +182,14 @@ def _collect_continuation(
         text = line.text.strip()
         if not text:
             break
-        # Следующая подпись поля всегда начинает новое поле.
+        # Наткнулись на следующую подпись — значит, началось новое поле, стоп.
         if any(match_label(text, other) is not None for other in spec.fields):
             break
         gap = _line_gap(previous, line)
         if gap > typical_height * max_gap_factor:
             break
-        # Продолжение должно продолжать фразу: начинаться со строчной буквы или
-        # цифры и идти сразу за предыдущим куском.
+        # Продолжение должно реально продолжать фразу: начинаться со строчной буквы
+        # или цифры и идти сразу за предыдущим куском. Иначе это уже что-то другое.
         first = text[:1]
         if not (first.islower() or first.isdigit()):
             break
@@ -211,19 +211,19 @@ def _region_box(lines: list[TextLine], start: int, end: int) -> tuple[int, int, 
 
 
 # ---------------------------------------------------------------------------
-# Основной парсер
+# Основной парсер — вся магия тут
 # ---------------------------------------------------------------------------
 
 
 def parse_document(ocr: OcrResult, spec: DocumentTypeSpec) -> ParseResult:
-    """Достаём из результата OCR все поля, объявленные в ``spec``."""
+    """Вытаскиваем из результата OCR все поля, которые объявлены в ``spec``."""
     lines = [line for line in ocr.lines if line.text.strip()]
     blocks = detect_field_blocks(lines, spec)
     results: dict[str, FieldResult] = {}
     consumed: set[int] = set()
     issues: list[str] = []
 
-    # Порядок полей в YAML повторяет порядок в документе — по нему и режем области.
+    # Порядок полей в YAML = порядок в документе, по нему и нарезаем области.
     order = {field_spec.key: position for position, field_spec in enumerate(spec.fields)}
     ordered_keys = sorted(blocks, key=lambda key: blocks[key][0])
 
@@ -232,7 +232,7 @@ def parse_document(ocr: OcrResult, spec: DocumentTypeSpec) -> ParseResult:
         if field_spec is None:  # pragma: no cover - подстраховка
             continue
         start_index, inline_value = blocks[key]
-        # Область кончается там, где дальше по документу начинается следующая подпись.
+        # Область заканчивается там, где ниже по документу начинается следующая подпись.
         limit = len(lines)
         for other_key in ordered_keys[position + 1 :]:
             other_index = blocks[other_key][0]
@@ -256,7 +256,7 @@ def parse_document(ocr: OcrResult, spec: DocumentTypeSpec) -> ParseResult:
         if value is None:
             issues.append(f"поле '{key}' не заполнено в документе")
 
-    # Все объявленные ключи должны быть на месте: схема требует полный набор.
+    # Все объявленные ключи обязаны быть на месте: схема хочет полный набор, без дырок.
     for field_spec in spec.fields:
         if field_spec.key not in results:
             results[field_spec.key] = FieldResult(
@@ -279,14 +279,14 @@ _TEXT_TYPES = {"person", "organization", "text", "document_number", "code", "gra
 
 
 def _normalize_field(field_spec: FieldSpec, raw: str) -> tuple[str | None, float]:
-    """Возвращаем (нормализованное значение или None, уверенность 0..1)."""
+    """Отдаём (нормализованное значение или None, уверенность 0..1)."""
     if is_blank_value(raw):
         return None, 0.0
     text = normalize_value_text(raw)
     if field_spec.is_date:
         iso = parse_date_with_year(text, None)
         if iso is None:
-            # Если дата не читается, поле считаем незаполненным.
+            # Дата не читается — считаем, что поле не заполнено.
             return None, 0.0
         return iso, 0.95
     if field_spec.type == "course":
@@ -301,7 +301,7 @@ def _normalize_field(field_spec: FieldSpec, raw: str) -> tuple[str | None, float
 
 
 def fields_payload(parse_result: ParseResult, spec: DocumentTypeSpec) -> dict[str, str | bool]:
-    """Собираем объект ``fields`` для одного документа — как требует контракт."""
+    """Собираем объект ``fields`` для одного документа — строго по контракту."""
     payload: dict[str, str | bool] = {}
     for field_spec in spec.fields:
         result = parse_result.field_results.get(field_spec.key)
@@ -313,7 +313,7 @@ def fields_payload(parse_result: ParseResult, spec: DocumentTypeSpec) -> dict[st
 
 
 def labels_for_missing(spec: DocumentTypeSpec, keys: list[str]) -> list[str]:
-    """Человекочитаемые названия пропущенных полей — нужны правилам и вопросам."""
+    """Нормальные человеческие названия пропущенных полей — их ждут правила и вопросы."""
     names: list[str] = []
     for key in keys:
         field_spec = spec.field(key)
@@ -326,7 +326,7 @@ def labels_for_missing(spec: DocumentTypeSpec, keys: list[str]) -> list[str]:
 
 
 def anchor_words(ocr: OcrResult, mark_spec: MarkSpec) -> list[Word]:
-    """Слова на странице, совпавшие с напечатанными якорями отметки."""
+    """Слова на странице, которые совпали с напечатанными якорями отметки."""
     patterns = [re.compile(pattern, re.IGNORECASE) for pattern in mark_spec.anchors]
     hits: list[Word] = []
     for word in ocr.words:
@@ -342,7 +342,7 @@ def normalized_label_set(spec: DocumentTypeSpec) -> set[str]:
 
 
 def label_index(text: str, spec: DocumentTypeSpec) -> int | None:
-    """Где в строке стоит известная подпись поля, если она там есть (для отладки)."""
+    """Где в строке сидит известная подпись поля, если она там вообще есть (для отладки)."""
     normalized = norm_text(text)
     for field_spec in spec.fields:
         if norm_label(field_spec.label) in normalized:

@@ -1,0 +1,70 @@
+# Пример к бонусу «новый тип документа через конфиг»: справка с места работы.
+#
+# Это просто демка, а не часть кейса. Три типа кейса подтягиваем из основного
+# конфига через `extends`, тут описан только четвёртый тип. Код парсера,
+# движка правил и вопросов ради него мы не трогали.
+#
+# Запуск с этим типом (из корня репозитория):
+#   UMIR_DOCUMENT_TYPES=examples/new-document-type/document_types.yaml \
+#   UMIR_RULES=examples/new-document-type/rules.md \
+#   python -m backend.scripts.tasks api
+#
+# rules.md тут — копия Положения кейса, плюс демонстрационный раздел 7.
+# Образец документа: examples/new-document-type/work-certificate.png.
+
+version: 1
+extends: ../../backend/app/configs/document_types.yaml
+
+document_types:
+  work_certificate:
+    title: "Справка с места работы"
+    title_anchors:
+      - "справка с места работы"
+    title_pattern: 'СПРАВКА\s+С\s+МЕСТА\s+РАБОТЫ'
+    text_rule: "rule:7.1"
+    signature_rule: "rule:7.2"
+    seal_rule: "rule:7.3"
+    signature_anchor: "подпись"
+    has_seal: true
+    fields:
+      - key: employee_name
+        label: "ФИО работника"
+        type: person
+        patterns: ['ФИО\s+работника', 'ФИО\s+сотрудника']
+        synonyms: ["фио работника", "фио", "работник", "сотрудник"]
+      - key: organization
+        label: "Название организации"
+        type: organization
+        patterns: ['Название\s+организации', 'Наименование\s+организации']
+        synonyms: ["название организации", "организация", "место работы", "работодатель"]
+      - key: position
+        label: "Должность"
+        type: text
+        patterns: ['Должность']
+        synonyms: ["должность", "кем работает", "позиция"]
+      - key: employment_start
+        label: "Дата приёма на работу"
+        type: date
+        patterns: ['Дата\s+при[её]ма\s+на\s+работу', 'Дата\s+при[её]ма']
+        synonyms: ["дата приёма на работу", "дата приема", "с какого числа работает"]
+      - key: document_number
+        label: "Номер справки"
+        type: document_number
+        patterns: ['Номер\s+справки']
+        synonyms: ["номер справки", "номер документа", "номер"]
+      - key: issue_date
+        label: "Дата выдачи"
+        type: date
+        patterns: ['Дата\s+выдачи']
+        synonyms: ["дата выдачи", "выдана", "дата"]
+    marks:
+      - key: signature_present
+        label: "Подпись руководителя"
+        rule: "rule:7.2"
+        anchors: ['Подпись\s+руководителя', 'Подпись']
+        failure_hint: "Подпись руководителя"
+      - key: seal_present
+        label: "Печать организации"
+        rule: "rule:7.3"
+        anchors: ['М\.?\s?П\.?', 'Место\s+печати', 'Печать']
+        failure_hint: "Печать организации"

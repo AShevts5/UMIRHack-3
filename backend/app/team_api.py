@@ -1,24 +1,24 @@
-"""Совместимость с API-контрактом команды (ветка main).
+"""Прослойка под API-контракт команды (ветка main).
 
-Фронтенд команды написан под схемы `app/schemas/*` и адреса `/api/analyze`,
-`/api/doc-types`, `/api/files/...`, `/api/history`, `/api/regulation`. Этот модуль
-оставляет те же адреса и те же поля ответа, но наполняет их настоящим результатом:
+Фронт команды написан под схемы `app/schemas/*` и адреса `/api/analyze`,
+`/api/doc-types`, `/api/files/...`, `/api/history`, `/api/regulation`. Тут мы
+оставляем те же адреса и те же поля ответа, только внутри теперь настоящий результат:
 локальный OCR, парсер полей, графические отметки, движок правил и вопросы.
 
-Заготовленных строк вида «Иванов Иван Иванович» тут нет: все значения приходят из
-изображения, которое загрузил пользователь. Если значение не найдено, так и
-пишем — «не найдено».
+Заготовленных строк типа «Иванов Иван Иванович» тут нет: все значения берём из
+картинки, которую загрузил пользователь. Не нашли значение — честно так и
+пишем: «не найдено».
 
-Про отличия от прежних заглушек:
+Чем отличается от старых заглушек:
 
 * ключи полей в этом контракте другие (``full_name``, ``study_period``, ``seal``),
-  поэтому есть таблица перевода в ключи кейса (``student_name``, ``study_start``
+  поэтому держим таблицу перевода в ключи кейса (``student_name``, ``study_start``
   и ``study_end``, ``signature_present`` и ``seal_present``);
-* поля-периоды собираются из двух дат: по правилам кейса начало и окончание
-  хранятся отдельно и извлекаются отдельно;
-* ``ocr`` заполняется настоящими строками распознавания, а не ``None``;
-* ``timings_ms`` — измеренные миллисекунды этапов, а не константы;
-* печать заявления не показываем: по правилу 4.3 она в этот тип не входит.
+* поля-периоды склеиваем из двух дат: по правилам кейса начало и окончание
+  хранятся отдельно и вытаскиваются тоже отдельно;
+* в ``ocr`` лежат настоящие строки распознавания, а не ``None``;
+* ``timings_ms`` — реально замеренные миллисекунды этапов, а не константы;
+* печать у заявления не показываем: по правилу 4.3 она в этот тип не входит.
 """
 
 from __future__ import annotations
@@ -44,13 +44,13 @@ TYPE_TITLES = {
     "internship_certificate": "Справка о прохождении практики",
 }
 
-# Синонимы id, чтобы работал и старый фронтенд с academic_leave / practice_certificate
+# синонимы id — чтобы старый фронт с academic_leave / practice_certificate тоже не отвалился
 TYPE_ALIASES = {
     "academic_leave": "academic_leave_application",
     "practice_certificate": "internship_certificate",
 }
 
-# ключ контракта -> (ключ кейса, подпись, тип поля)
+# ключ контракта -> (ключ кейса, подпись, тип поля), порядок не перепутать
 FIELD_MAP: dict[str, tuple[tuple[str, str, str], ...]] = {
     "study_certificate": (
         ("full_name", "student_name", "ФИО студента", "person_name"),
@@ -84,14 +84,14 @@ FIELD_MAP: dict[str, tuple[tuple[str, str, str], ...]] = {
     ),
 }
 
-# поле-период -> из каких ключей кейса оно собирается
+# поле-период -> из каких ключей кейса его склеиваем
 PERIOD_FIELDS = {
     "study_period": ("study_start", "study_end"),
     "practice_period": ("internship_start", "internship_end"),
     "leave_period": ("leave_start", "leave_end"),
 }
 
-# пункт Положения -> цитата для всплывающей подсказки в интерфейсе
+# пункт Положения -> цитата для всплывашки в интерфейсе
 RULE_QUOTES = {
     "1.3": "Окончательное решение о принятии документа и удовлетворении заявления принимает сотрудник деканата.",
     "2.3": "Для подписи и печати проверяется наличие графического элемента. Напечатанная подпись «Подпись» или «М.П.» сама по себе не подтверждает наличие отметки.",
@@ -117,7 +117,7 @@ SECTION_TITLES = {
 
 
 # ---------------------------------------------------------------------------
-# Хранилище последних разборов (для /api/files и /api/history)
+# Тут храним последние разборы (для /api/files и /api/history)
 # ---------------------------------------------------------------------------
 
 
@@ -134,10 +134,10 @@ class StoredAnalysis:
 
 
 class AnalysisStore:
-    """Последние разборы в памяти процесса.
+    """Последние разборы, просто в памяти процесса.
 
-    На диск ничего не пишем: содержимое документов сохранять не нужно. Ключ —
-    случайный request_id, старые записи вытесняются.
+    На диск ничего не пишем: хранить содержимое документов нам незачем. Ключ —
+    случайный request_id, старые записи вылетают сами.
     """
 
     def __init__(self, size: int = 32) -> None:
@@ -167,7 +167,7 @@ store = AnalysisStore()
 
 
 def resolve_type(document_type: str | None) -> str | None:
-    """Id типа из контракта -> код кейса. Неизвестный id означает «определить авто»."""
+    """Id типа из контракта -> код кейса. Незнакомый id — значит «пусть определится авто»."""
     if not document_type:
         return None
     code = TYPE_ALIASES.get(document_type, document_type)
@@ -175,7 +175,7 @@ def resolve_type(document_type: str | None) -> str | None:
 
 
 def document_types_payload() -> list[dict]:
-    """Справочник типов для интерфейса: собирается из конфига, а не из заглушки."""
+    """Справочник типов для интерфейса: собираем из конфига, никаких заглушек."""
     registry = get_registry()
     payload = []
     for code in registry.codes():
@@ -221,7 +221,7 @@ def _box_of_field(result: PipelineResult, case_key: str) -> list[int] | None:
 
 
 def build_fields(result: PipelineResult) -> list[dict]:
-    """Поля в контракте команды; значения — из распознанного документа."""
+    """Поля в формате контракта команды; значения берём из распознанного документа."""
     items: list[dict] = []
     for team_key, case_key, label, kind in FIELD_MAP[result.document_type]:
         if kind == "period":
@@ -268,7 +268,7 @@ def build_fields(result: PipelineResult) -> list[dict]:
 
 
 # ---------------------------------------------------------------------------
-# Ответ и его источники
+# Ответ и откуда он взялся (источники)
 # ---------------------------------------------------------------------------
 
 
@@ -295,7 +295,7 @@ def _field_source(case_key: str) -> dict:
 
 
 def build_answer(result: PipelineResult, question: str, request_id: str) -> dict:
-    """Ответ в контракте команды, собранный нашим движком вопросов."""
+    """Ответ в формате контракта команды, а собирает его наш движок вопросов."""
     analysis = classify_question(question, result.spec)
     answer = result.single_answer(question, request_id)
     spec_code = result.document_type
@@ -334,12 +334,12 @@ def build_answer(result: PipelineResult, question: str, request_id: str) -> dict
 
 
 # ---------------------------------------------------------------------------
-# Полный ответ /api/analyze
+# Полный ответ для /api/analyze
 # ---------------------------------------------------------------------------
 
 
 def page_png(result: PipelineResult, max_side: int = 1600) -> bytes | None:
-    """Страница, по которой работал OCR, — для превью в интерфейсе."""
+    """Страница, которую жевал OCR, — для превью в интерфейсе."""
     if result.image_rgb is None:
         return None
     image = Image.fromarray(result.image_rgb)
@@ -358,7 +358,7 @@ def build_analyze_response(
     request_id: str,
     include_page: bool = True,
 ) -> tuple[dict, bytes | None]:
-    """Ответ контракта команды плюс PNG страницы (его отдаёт /api/files)."""
+    """Ответ по контракту команды плюс PNG страницы (его потом отдаёт /api/files)."""
     page = page_png(result) if include_page else None
     lines = [
         {
@@ -401,12 +401,12 @@ def new_request_id() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Положение для раздела /api/regulation
+# Положение — для раздела /api/regulation
 # ---------------------------------------------------------------------------
 
 
 def regulation_payload(rules_path: Path) -> list[dict]:
-    """Разбираем rules.md на разделы и пункты — то, что показывает интерфейс."""
+    """Режем rules.md на разделы и пункты — ровно то, что показывает интерфейс."""
     if not rules_path.is_file():
         return []
     sections: list[dict] = []
@@ -426,7 +426,7 @@ def regulation_payload(rules_path: Path) -> list[dict]:
             continue
         if current is None or not line:
             continue
-        # строка пункта вида «3.1. Обязательные текстовые поля: ...»
+        # строка пункта, типа «3.1. Обязательные текстовые поля: ...»
         parts = line.split(".", 2)
         looks_like_point = len(parts) >= 3 and parts[0].isdigit() and parts[1].strip().isdigit()
         if looks_like_point:

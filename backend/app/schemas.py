@@ -1,7 +1,7 @@
 """Модели данных и контракт results.json.
 
-Повторяют ``results.schema.json`` из пакета кейса, поэтому пакетный экспорт
-получается валидным сразу: лишние ключи запрещены, состав ключей и типы проверяет
+Повторяют ``results.schema.json`` из пакета кейса, так что пакетный экспорт
+сразу выходит валидным: лишние ключи запрещены, состав ключей и типы за нас проверяет
 Pydantic.
 """
 
@@ -16,7 +16,7 @@ ValidationStatus = Literal["document_ok", "missing_fields"]
 
 NOT_FOUND = "не найдено"
 
-#: Наборы ключей по типам документов (порядок важен для карточки в интерфейсе).
+#: Наборы ключей по типам документов (порядок важен для карточки в интерфейсе, не перемешивать).
 FIELD_KEYS: dict[str, tuple[str, ...]] = {
     "study_certificate": (
         "student_name",
@@ -56,11 +56,11 @@ FIELD_KEYS: dict[str, tuple[str, ...]] = {
 
 
 class StrictModel(BaseModel):
-    """Строгая модель: лишних ключей нет и типы не подменяются.
+    """Строгая модель: лишних ключей нет, типы не подменяются.
 
-    ``strict=True`` стоит специально: проверка сравнивает типы значений строго
-    (``type(a) is type(b)``), поэтому строка "true" нигде в пайплайне не должна
-    тихо превратиться в ``True`` или ``1``.
+    ``strict=True`` стоит специально, не трогать: проверка сравнивает типы значений строго
+    (``type(a) is type(b)``), так что строка "true" нигде в пайплайне не должна
+    втихую превратиться в ``True`` или ``1``.
     """
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True, strict=True)
@@ -175,7 +175,7 @@ class ResultsFile(StrictModel):
 
 
 # ---------------------------------------------------------------------------
-# Модели ответов API (веб-режим)
+# Модели ответов API (для веб-режима)
 # ---------------------------------------------------------------------------
 
 
@@ -231,6 +231,16 @@ class AnalysisResponse(StrictModel):
     answer: Answer
     boxes: list[WordBox] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    # для веб-морды: id разбора (по нему /api/v1/ask отвечает без повторного OCR)
+    # и страница, которую читал OCR (все рамки лежат в её координатах).
+    analysis_id: str | None = None
+    page_image_url: str | None = None
+    page_width: int = 0
+    page_height: int = 0
+    # True, если страницу подправляли (поворот, обрезка по листу, свет): тогда
+    # интерфейс предложит сравнить с исходником.
+    page_enhanced: bool = False
+    timings_ms: dict[str, float] = Field(default_factory=dict)
 
 
 class HealthResponse(StrictModel):

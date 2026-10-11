@@ -1,0 +1,238 @@
+# РГЭУ (РИНХ) — запись в реестре вузов (backend/app/services/universities.py).
+# Факультеты и корпуса брали только с официального сайта https://rsue.ru, у каждой записи есть sources.
+# Что не подтвердили — оставили пустым (null), от себя не додумываем. Новый вуз = новый такой файл, без кода.
+
+id: rinh
+name: Ростовский государственный экономический университет (РИНХ)
+short_name: РГЭУ (РИНХ)
+city: Ростов-на-Дону
+site: https://rsue.ru
+logo: /universities/rinh/logo.svg
+sections:
+  dean: available
+  faculties: available
+  map: available
+  history: available
+regulation: case-rules
+regulation_note: Проверка документов в учебной версии идёт по Положению кейса UMIR 3 (вымышленный университет «Меридиан»).
+  Настоящие правила РГЭУ (РИНХ) подключаются заменой файла положения в этом конфиге.
+hall:
+  title: Вы в холле главного корпуса
+  welcome: пост охраны позади, выберите, что нужно сделать.
+  building_image: /universities/rinh/building.svg
+  building_caption: Главный корпус на Большой Садовой, 69 (иллюстрация)
+  hall_image: /universities/rinh/hall.svg
+  hall_caption: 'Холл главного корпуса: пост охраны, турникеты, мраморная лестница (иллюстрация)'
+hall_doors:
+- 0.625
+- 0.85
+full_name: Федеральное государственное бюджетное образовательное учреждение высшего образования «Ростовский государственный
+  экономический университет (РИНХ)»
+coords:
+- 47.222705
+- 39.71824
+data_note: Данные собраны 11.10.2026 вручную с официального сайта rsue.ru. Если поле пустое, на сайте этих сведений нет —
+  уточните на посту охраны или в деканате. Координаты корпусов — OpenStreetMap (Nominatim) по адресу с сайта.
+buildings:
+- id: b1
+  name: Учебный корпус №1
+  address: г. Ростов-на-Дону, ул. Большая Садовая, 69/47
+  city: Ростов-на-Дону
+  coords:
+  - 47.222705
+  - 39.71824
+  sources:
+  - https://rsue.ru/sveden/common/
+  - https://rsue.ru/sveden/objects/
+- id: b2
+  name: Учебный корпус №2
+  address: 344082, г. Ростов-на-Дону, пер. Островского, 62
+  city: Ростов-на-Дону
+  coords:
+  - 47.221737
+  - 39.705672
+  sources:
+  - https://rsue.ru/sveden/common/
+- id: b3
+  name: Учебный корпус №3
+  address: г. Ростов-на-Дону, ул. Максима Горького, 166
+  city: Ростов-на-Дону
+  coords:
+  - 47.228367
+  - 39.72483
+  sources:
+  - https://rsue.ru/sveden/common/
+- id: b4
+  name: Учебный корпус №4
+  address: 344002, г. Ростов-на-Дону, ул. Тургеневская, 49
+  city: Ростов-на-Дону
+  coords:
+  - 47.217043
+  - 39.713182
+  sources:
+  - https://rsue.ru/sveden/common/
+- id: b5
+  name: Финансово-экономический колледж РГЭУ (РИНХ)
+  address: 344011, г. Ростов-на-Дону, пер. Доломановский, 53
+  city: Ростов-на-Дону
+  coords:
+  - 47.2257
+  - 39.695056
+  sources:
+  - https://rsue.ru/sveden/common/
+faculties:
+- id: fmip
+  name: Факультет Менеджмента и предпринимательства
+  kind: факультет
+  building_id: b2
+  floor: null
+  room: '200'
+  dean: Суржиков Михаил Андреевич
+  hours: null
+  phone: +7 (863) 267-39-67 (очный деканат); +7 (863) 267-40-61 (заочный деканат)
+  email: dekanat.mip@yandex.ru
+  page: https://rsue.ru/fakultety/FMIP/
+  sources:
+  - https://rsue.ru/fakultety/
+  - https://rsue.ru/fakultety/FMIP/
+  - https://rsue.ru/sveden/struct/
+  note: 'Каб. 200 — очный и заочный деканат; кабинет декана — каб. 201, тел. +7(863) 267-41-83. Адрес: г. Ростов-на-Дону,
+    пер. Островского, 62. Email заочного деканата: mipzfo@mail.ru. Часы работы на официальных страницах не найдены.'
+- id: ftd
+  name: Факультет Торгового дела
+  kind: факультет
+  building_id: b1
+  floor: null
+  room: '319'
+  dean: Костоглодов Дмитрий Дмитриевич
+  hours: 'Очный деканат: Понедельник-пятница с 08:30 до 17:00; Суббота с 08:30 до 13:20; Воскресенье - выходной'
+  phone: (863) 263-22-83 (внутренний 8-90)
+  email: d.d.kostoglodov@yandex.ru
+  page: https://rsue.ru/fakultety/FTD/
+  sources:
+  - https://rsue.ru/fakultety/
+  - https://rsue.ru/fakultety/FTD/
+  - https://rsue.ru/fakultety/FTD/ochnyy-dekanat/
+  - https://rsue.ru/fakultety/FTD/zaochnyy-dekanat/
+  - https://rsue.ru/sveden/struct/
+  note: 'Каб. 319 — кабинет декана (ул. Б.Садовая, 69, к. 319). Зам. декана по очной форме — к. 317, тел. (863) 263-42-58
+    (внутренний 8-15), epilivanova@yandex.ru. Заочный деканат — кабинет 320, тел. (863) 240-53-43, внутренний 5-31, zftd.320@mail.ru;
+    график: Понедельник-пятница с 9-00 до 17-00, Суббота с 9-00 до 14-00, Воскресенье - выходной.'
+- id: fktib
+  name: Факультет Компьютерных технологий и информационной безопасности
+  kind: факультет
+  building_id: b1
+  floor: null
+  room: 305а
+  dean: Тищенко Евгений Николаевич
+  hours: 'Очный деканат: Понедельник – пятница - с 08:30 до 16:00; Суббота - с 08:30 до 13:30; Воскресенье – выходной'
+  phone: (863) 261-38-64 (8-64-внутренний)
+  email: dekanat_kt_ib@mail.ru
+  page: https://rsue.ru/fakultety/FKTIB/
+  sources:
+  - https://rsue.ru/fakultety/
+  - https://rsue.ru/fakultety/FKTIB/
+  - https://rsue.ru/fakultety/FKTIB/ochnoe-otdelenie/
+  - https://rsue.ru/fakultety/FKTIB/zaochnoe-otdelenie/
+  - https://rsue.ru/sveden/struct/
+  note: 'Каб. 305а (на странице факультета «к. 305 а») — декан. Очный деканат (зам. декана) — к. 305, тел. (863) 240-24-92
+    (внутренний 8-18). Заочный деканат — к. 309, тел. (863) 261-38-79 (внутренний 8-79), dekanat.zaoch@yandex.ru; график:
+    Понедельник – пятница с 09:00 до 17:00, Суббота - с 09:00 до 14:00. В /sveden/struct/ email факультета указан как misssnadia@rambler.ru.'
+- id: uef
+  name: Учетно-экономический факультет
+  kind: факультет
+  building_id: b1
+  floor: null
+  room: '506'
+  dean: Андреева Ольга Валентиновна
+  hours: 'Режим работы деканата (очное отделение): пн.- пт. с 8.30 до 17.00; сб. с 8.30 до 13.00. Часы приема декана: вт.
+    с 12.00 до 14.00'
+  phone: (863) 240-57-29 (внутренний 8-52)
+  email: uef2@rsue.ru
+  page: https://rsue.ru/fakultety/UEF/
+  sources:
+  - https://rsue.ru/fakultety/
+  - https://rsue.ru/fakultety/UEF/
+  - https://rsue.ru/fakultety/UEF/ochnoe-otdelenie/
+  - https://rsue.ru/fakultety/UEF/zaochnoe-otdelenie/
+  - https://rsue.ru/sveden/struct/
+  note: 'Каб. 506 — декан и очный деканат. Заочный деканат — к. 517, тел. (863) 240-13-55 (внутренний 8-56), uefz@rsue.ru;
+    часы приема зам. декана по заочной форме: сб. с 11.00 до 13.00. В /sveden/struct/ название «Факультет Учетно-экономический».'
+- id: feif
+  name: Факультет Экономики и финансов
+  kind: факультет
+  building_id: b1
+  floor: null
+  room: '420'
+  dean: Джуха Владимир Михайлович
+  hours: 'Деканат ОФО: пн–пт 8:00 – 17:00; Каждую субботу 8:00 – 14:00; воскресенье — Выходной; Технический перерыв с 12.00
+    - до 13.30'
+  phone: 8 (863) 263-11-85 (внутренний 5-42)
+  email: findekanat@rsue.ru
+  page: https://rsue.ru/fakultety/FEIF/
+  sources:
+  - https://rsue.ru/fakultety/
+  - https://rsue.ru/fakultety/FEIF/
+  - https://rsue.ru/fakultety/FEIF/ochnoe-otdelenie/
+  - https://rsue.ru/fakultety/FEIF/zaochnoe-otdelenie/
+  - https://rsue.ru/sveden/struct/
+  note: 'Каб. 420 — декан. Очный деканат (зам. декана) — к. 419, тел. (863) 263-11-85, (внутренний 8-13). Заочный деканат
+    — кабинет 426, тел. (863) 255-96-94 (внутренний 8-12), terentyeva@rsue.ru; график деканата ЗФО: пн–пт 9:00 – 17:00, сб
+    9:00 – 14:00, технический перерыв с 12.00-до 12.30. Часы в поле hours — из таблицы на странице очного отделения (дни недели
+    — столбцы таблицы). В /sveden/struct/ email указан как findekanat@yandex.ru.'
+- id: yf
+  name: Юридический факультет
+  kind: факультет
+  building_id: b3
+  floor: null
+  room: '213'
+  dean: Позднышов Алексей Николаевич
+  hours: 'Очный деканат: Понедельник-пятница: 08:30 ч. – 16:00 ч.; Суббота: 08:30 ч. – 13:00ч.'
+  phone: (863) 264-39-54, факс (863) 263-84-14
+  email: dekanyuf@rsue.ru
+  page: https://rsue.ru/fakultety/YF/
+  sources:
+  - https://rsue.ru/fakultety/
+  - https://rsue.ru/fakultety/YF/
+  - https://rsue.ru/fakultety/YF/ochnoe-otdelenie/
+  - https://rsue.ru/fakultety/YF/zaochnoe-otdelenie/
+  - https://rsue.ru/sveden/struct/
+  note: 'Каб. 213 — декан (страница факультета и /fakultety/); в /sveden/struct/ указан каб. 214 — расхождение на сайте. Очный
+    и заочный деканаты — к. 204 (ул. М. Горького, 166); очный: (863) 263-84-16, rsue2017@yandex.ru; заочный: (863) 263-84-17,
+    AOH888@yandex.ru.'
+- id: fliz
+  name: Факультет Лингвистики и журналистики
+  kind: факультет
+  building_id: b4
+  floor: null
+  room: '406'
+  dean: Усенко Наталия Михайловна
+  hours: 'Деканат ФЛиЖ (по странице заочного отделения): пн–пт 9:00 – 17:00, сб 8:30–13:30, вс Выходной; Технический перерыв
+    с 12.30 - до 13.00'
+  phone: 8 (863) 240-65-08
+  email: flij-dekanat@yandex.ru
+  page: https://rsue.ru/fakultety/FLIZ/
+  sources:
+  - https://rsue.ru/fakultety/
+  - https://rsue.ru/fakultety/FLIZ/
+  - https://rsue.ru/fakultety/FLIZ/zaochnoe-otdelenie/
+  - https://rsue.ru/sveden/struct/
+  note: Каб. 406 — на странице факультета и в /sveden/struct/; на общей странице /fakultety/ указан кабинет 407 и тел. +7
+    (863) 240-34-71 (телефон зам. деканов) — расхождение. Часы взяты из таблицы на странице заочного отделения (дни недели
+    — столбцы); *) во время сессий деканат работает до 19.00.
+- id: magistratura
+  name: Институт магистратуры
+  kind: институт
+  building_id: b1
+  floor: null
+  room: '413'
+  dean: Иванова Елена Александровна
+  hours: 'понедельник-пятница: 09.00-18.00 (перерыв 12:00-13:00)'
+  phone: (863) 240-13-04 (внутренний 5-71)
+  email: magistratura.rsue@yandex.ru
+  page: https://magistratura.rsue.ru/contacts.php
+  sources:
+  - https://magistratura.rsue.ru/contacts.php
+  - https://rsue.ru/sveden/struct/
+  note: dean = директор института. К. 413 — деканат Института магистратуры; кабинет директора — к. 404 (в /sveden/struct/
+    каб. 404, тел. 8(863) 240-62-27).

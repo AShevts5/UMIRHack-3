@@ -1,4 +1,4 @@
-"""Тесты движка правил и JSON-контракта (rules.md 3.1-3.3, 4.1-4.2, 5.1-5.3)."""
+"""Тесты на движок правил и JSON-контракт (rules.md 3.1-3.3, 4.1-4.2, 5.1-5.3)."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from backend.app.services.rules_engine import FINAL_DECISION_RULE, STATUS_MISSIN
 
 
 def complete_fields(document_type: str) -> dict[str, str | bool]:
-    """Синтетическая полностью заполненная карточка полей (без настоящих персональных данных)."""
+    """Синтетическая карточка, где заполнено всё (настоящих персональных данных тут нет)."""
     fields: dict[str, str | bool] = {}
     for key in FIELD_KEYS[document_type]:
         if key.endswith("_present"):
@@ -49,7 +49,7 @@ class TestRuleMapping:
             assert result.status == STATUS_OK
             assert result.missing_fields == []
             assert set(result.sources) == set(spec.required_rules)
-            # Пункты про порядок оформления (3.4/4.5/5.4) в источники попадать не должны.
+            # пункты про порядок оформления (3.4/4.5/5.4) в источники пролезать не должны
             assert not any(source.endswith(".4") or source.endswith(".5") for source in result.sources)
 
     def test_procedural_clauses_are_not_sources(self, registry) -> None:
@@ -187,7 +187,7 @@ class TestConfigRegistry:
             assert set(spec.field_keys) | set(spec.mark_keys) == set(keys), document_type
 
     def test_field_order_is_document_order(self, registry) -> None:
-        # Порядок в YAML задаёт, как рисуется карточка и как режутся зоны.
+        # порядок в YAML = как рисуется карточка и как режутся зоны, не перепутать
         spec = registry.require("study_certificate")
         assert spec.field_keys[:2] == ("student_name", "university")
 

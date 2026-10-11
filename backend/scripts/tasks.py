@@ -1,17 +1,20 @@
-"""Запуск задач проекта: ``python -m backend.scripts.tasks <задача>``.
+"""Запускалка задач проекта: ``python -m backend.scripts.tasks <задача>``.
 
-Делает то же, что цели в Makefile, но работает и на Windows без GNU make:
+Всё то же, что цели в Makefile, только заводится и на Windows, где GNU make нет:
 
-``install``            создать venv и поставить зависимости бэкенда
+``install``            завести venv и накатить зависимости бэкенда
 ``test``               прогнать тесты (pytest; OCR нужен не для всех)
-``batch``              пакетный прогон по открытому набору -> results.json
-``evaluate``           вызвать evaluate.py организаторов на этих predictions
-``verify``             целостность, PNG/PDF, автотип, лимиты
-``ocr-quality``        качество OCR: точность по символам и по страницам
-``degraded``           собрать пакет «плохих снимков» (rotate/shadow/glare/lowres/mix)
-``degraded-evaluate``  прогнать этот пакет и посчитать метрики через evaluate.py
-``api``                поднять FastAPI локально
-``demo``               batch + evaluate + verify подряд
+``batch``              гоняем batch по открытому набору -> results.json
+``evaluate``           дёрнуть evaluate.py организаторов на этих predictions
+``verify``             проверки: целостность, PNG/PDF, автотип, лимиты
+``ocr-quality``        насколько хорош OCR: точность по символам и по страницам
+``degraded``           собрать пачку «плохих снимков» (rotate/shadow/glare/lowres/mix)
+``degraded-evaluate``  прогнать эту пачку и посчитать метрики через evaluate.py
+``api``                поднять FastAPI у себя локально
+``demo``               batch + evaluate + verify одним махом
+``models``             проверить веса Tesseract и докачать, чего не хватает (для демо без сети)
+``bot``                Telegram-бот на том же пайплайне (UMIR_TELEGRAM_TOKEN)
+``demo-samples``       заново собрать образцы демо-режима и пример четвёртого типа
 """
 
 from __future__ import annotations
@@ -124,7 +127,7 @@ def task_verify(args: argparse.Namespace) -> int:
 
 
 def task_degraded(args: argparse.Namespace) -> int:
-    """Собираем пакет «плохих снимков» из открытого архива."""
+    """Лепим пачку «плохих снимков» из открытого архива."""
     archive = Path(args.root) if args.root else _archive()
     out = PROJECT_ROOT / "reports" / "degraded"
     effect = getattr(args, "effect", "mix")
@@ -144,7 +147,7 @@ def task_degraded(args: argparse.Namespace) -> int:
 
 
 def task_degraded_evaluate(args: argparse.Namespace) -> int:
-    """Прогоняем пакет «плохих снимков» batch-ом и считаем метрики оценщиком организаторов."""
+    """Гоняем пачку «плохих снимков» через batch и считаем метрики оценщиком организаторов."""
     archive = Path(args.root) if args.root else _archive()
     out = PROJECT_ROOT / "reports" / "degraded"
     predictions = PROJECT_ROOT / "reports" / "degraded_results.json"
@@ -203,7 +206,7 @@ def task_api(_: argparse.Namespace) -> int:
 
 
 def task_ocr_quality(args: argparse.Namespace) -> int:
-    """Пересобираем OCR-эталон и меряем точность распознавания на открытом наборе."""
+    """Пересобираем OCR-эталон и смотрим, насколько точно распознаём открытый набор."""
     archive = Path(args.root) if args.root else _archive()
     ground_truth = PROJECT_ROOT / "benchmarks" / "ground_truth.json"
     report = PROJECT_ROOT / "reports" / "ocr-benchmark.json"
@@ -236,6 +239,21 @@ def task_ocr_quality(args: argparse.Namespace) -> int:
     )
 
 
+def task_models(args: argparse.Namespace) -> int:
+    """Смотрим веса Tesseract (rus, eng) и докачиваем, чего нет, в models/tessdata."""
+    return _run([_python(), "-m", "backend.scripts.download_models"])
+
+
+def task_bot(args: argparse.Namespace) -> int:
+    """Telegram-бот на том же пайплайне (без UMIR_TELEGRAM_TOKEN не взлетит)."""
+    return _run([_python(), "-m", "backend.scripts.telegram_bot"])
+
+
+def task_demo_samples(args: argparse.Namespace) -> int:
+    """Заново собираем образцы демо-режима и пример четвёртого типа документа."""
+    return _run([_python(), "-m", "backend.scripts.make_demo_samples"])
+
+
 def task_demo(args: argparse.Namespace) -> int:
     for task in (task_batch, task_evaluate, task_verify):
         code = task(args)
@@ -261,6 +279,9 @@ def build_parser() -> argparse.ArgumentParser:
         ("degraded-evaluate", task_degraded_evaluate),
         ("api", task_api),
         ("demo", task_demo),
+        ("models", task_models),
+        ("bot", task_bot),
+        ("demo-samples", task_demo_samples),
     ):
         sub = subparsers.add_parser(name)
         sub.set_defaults(handler=handler)

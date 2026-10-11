@@ -1,7 +1,7 @@
-"""Описания типов документов, которые читаются из ``configs/document_types.yaml``.
+"""Описания типов документов — читаем их из ``configs/document_types.yaml``.
 
-Держим типы в YAML (подписи полей, якоря, номера пунктов) — именно поэтому бонус
-«новый тип документа через конфиг» настоящий: чтобы добавить тип, достаточно
+Типы живут в YAML (подписи полей, якоря, номера пунктов) — поэтому бонус
+«новый тип документа через конфиг» у нас честный: чтобы добавить тип, хватит
 дописать блок в YAML, а парсер, движок правил и движок вопросов трогать не надо.
 """
 
@@ -74,7 +74,7 @@ class DocumentTypeSpec:
 
     @property
     def required_rules(self) -> tuple[str, ...]:
-        """Все обязательные пункты этого типа (rules.md 3.1–3.3 ...)."""
+        """Все обязательные пункты для этого типа (rules.md 3.1–3.3 ...), без повторов."""
         rules = [self.text_rule]
         for mark in self.marks:
             if mark.rule not in rules:
@@ -94,11 +94,11 @@ class DocumentTypeSpec:
         return None
 
     def rule_for_field(self, key: str) -> str:
-        """Какой пункт Положения делает это поле обязательным."""
+        """Смотрим, какой пункт Положения делает это поле обязательным."""
         return self.text_rule
 
     def rule_for_key(self, key: str) -> str | None:
-        """Пункт для ключа поля или отметки (``signature_present``, ``seal_present``)."""
+        """Отдаём пункт по ключу поля или отметки (``signature_present``, ``seal_present``)."""
         if self.field(key) is not None:
             return self.text_rule
         mark = self.mark(key)
@@ -126,10 +126,10 @@ class DocumentTypeRegistry:
         return {code: spec.title for code, spec in self.specs.items()}
 
     def detect_type(self, text: str) -> tuple[str | None, float]:
-        """Бонус: угадываем тип документа по распознанному тексту.
+        """Бонус: пробуем угадать тип документа по распознанному тексту.
 
-        Возвращаем ``(code, score)``; ``code`` будет ``None``, если ничего не
-        совпало уверенно. Выбор типа руками всегда важнее этой эвристики.
+        Отдаём ``(code, score)``; ``code`` будет ``None``, если уверенно ничего не
+        совпало. Если тип выбрали руками — он всегда главнее этой эвристики.
         """
         normalized = norm_text(text)
         best_code, best_score = None, 0.0
@@ -201,10 +201,29 @@ def _parse_spec(code: str, raw: dict) -> DocumentTypeSpec:
     )
 
 
+def _base_types(config_path: Path, payload: dict, depth: int = 0) -> dict:
+    """Подтягиваем типы из файла, указанного в ``extends`` (путь относительно этого конфига).
+
+    Так пример нового типа хранит только свой блок, а три типа кейса берёт из
+    основного конфига — копипастить их не нужно.
+    """
+    base = payload.get("extends")
+    if not base:
+        return {}
+    if depth > 3:
+        raise ValueError(f"{config_path}: слишком длинная цепочка extends")
+    base_path = (config_path.parent / str(base)).resolve()
+    base_payload = _load_yaml(base_path)
+    types = dict(_base_types(base_path, base_payload, depth + 1))
+    types.update(base_payload.get("document_types") or {})
+    return types
+
+
 def load_registry(path: str | Path | None = None) -> DocumentTypeRegistry:
     config_path = Path(path) if path else settings.document_types_config
     payload = _load_yaml(config_path)
-    types = payload.get("document_types") or {}
+    types = dict(_base_types(config_path, payload))
+    types.update(payload.get("document_types") or {})
     if not types:
         raise ValueError(f"{config_path}: секция document_types пуста")
     specs = {code: _parse_spec(code, raw) for code, raw in types.items()}
@@ -224,6 +243,6 @@ def _cached_registry(path_str: str) -> DocumentTypeRegistry:
 
 
 def get_registry(path: str | Path | None = None) -> DocumentTypeRegistry:
-    """Реестр с кэшем: конфиг читается один раз на процесс."""
+    """Реестр с кэшем: конфиг читаем один раз на процесс, а не на каждый вызов."""
     config_path = Path(path) if path else settings.document_types_config
     return _cached_registry(str(config_path))

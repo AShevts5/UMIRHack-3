@@ -1,4 +1,4 @@
-/** Shared API types — a 1:1 mirror of backend/app/schemas.py. */
+/** Общие типы API — один в один зеркало backend/app/schemas.py, правим синхронно. */
 
 export interface BoundingBox {
   x: number
@@ -66,6 +66,14 @@ export interface AnalysisResponse {
   answer: Answer
   boxes: WordBox[]
   warnings: string[]
+  /** Приходит от бэкенда, где уже есть /api/v1/ask; у старого этого нет. */
+  analysis_id?: string | null
+  page_image_url?: string | null
+  page_width?: number
+  page_height?: number
+  /** Страницу подравнивали (поворот, обрезка, свет) — стоит глянуть на исходник для сравнения. */
+  page_enhanced?: boolean
+  timings_ms?: Record<string, number>
 }
 
 export interface DocumentTypeInfo {
@@ -99,4 +107,12 @@ export interface HealthResponse {
   }
   document_types: Record<string, string>
   version: string
+}
+
+/** Кусок Положения из GET /api/regulation. */
+export interface RegulationItem {
+  point: string
+  title: string | null
+  text: string
+  children: RegulationItem[]
 }

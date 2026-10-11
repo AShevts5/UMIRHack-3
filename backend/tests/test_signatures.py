@@ -1,13 +1,13 @@
-"""Тесты определения подписи и печати.
+"""Тесты на то, как ищем подпись и печать.
 
-Сначала — главные отрицательные случаи из ТЗ:
+Сначала — главные отрицательные случаи из ТЗ, на них легко проколоться:
 
-* **пустая линия подписи** (подпись-подсказка и линия есть, чернил нет) — не подпись;
-* одинокое печатное «М.П.» без круглого макета — не печать;
-* печатную подпись-подсказку нельзя засчитать за рукопись.
+* **пустая линия подписи** (подпись-подсказка и линия есть, чернил нет) — это не подпись;
+* одинокое печатное «М.П.» без круглого макета — это не печать;
+* печатную подпись-подсказку за рукопись не засчитываем.
 
-Положительные случаи берём из открытого набора (настоящие пиксели и графика), а то,
-чего там нет, дорисовываем синтетикой.
+Положительные случаи тащим из открытого набора (настоящие пиксели и графика), а то,
+чего там нет, дорисовываем сами синтетикой.
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ def blank_page(width: int = 900, height: int = 1200) -> np.ndarray:
 
 
 def draw_signature(rgb: np.ndarray, x: int, y: int, scale: float = 1.0, colour=(28, 42, 120)) -> None:
-    """Рисуем синюю рваную линию, похожую на рукописную подпись."""
+    """Рисуем синюю рваную загогулину, похожую на рукописную подпись."""
     image = Image.fromarray(rgb)
     draw = ImageDraw.Draw(image)
     points = []
@@ -78,9 +78,9 @@ def draw_seal(rgb: np.ndarray, cx: int, cy: int, radius: int = 70) -> None:
 class TestMasks:
     def test_blue_mask_ignores_grey_print(self) -> None:
         rgb = blank_page(200, 100)
-        rgb[40:60, 40:160] = 30  # тёмно-серый печатный текст
+        rgb[40:60, 40:160] = 30  # тёмно-серое — это печатный текст
         assert blue_ink_mask(rgb).sum() == 0
-        rgb[70:80, 40:160] = (30, 60, 170)  # синие чернила: 10 строк на 120 столбцов
+        rgb[70:80, 40:160] = (30, 60, 170)  # а это синие чернила: 10 строк на 120 столбцов
         assert blue_ink_mask(rgb).sum() == 1200
         assert BLUE_CHROMA_DIFF > 0
 
@@ -97,7 +97,7 @@ class TestSignatureZones:
         from backend.app.services.document_config import get_registry
 
         spec = get_registry().require("study_certificate")
-        # Подделываем результат OCR: нужна только подпись-подсказка.
+        # подсовываем подставной результат OCR: нам нужна только подпись-подсказка
         from backend.app.services.ocr import OcrResult, TextLine, Word
 
         word = Word(text="Подпись", left=100, top=900, width=90, height=24, conf=90)
@@ -106,12 +106,12 @@ class TestSignatureZones:
         ocr = OcrResult(text="Подпись сотрудника:", lines=[line], words=[word, word2], scale=1.0, mean_conf=90)
         zone = signature_zone(image, ocr, spec)
         assert zone is not None
-        assert zone.x > word2.right  # буквы подписи-подсказки в зону не попадают
+        assert zone.x > word2.right  # буквы подписи-подсказки в зону не залезают
         assert zone.y <= line.bottom
 
 
 class TestSyntheticNegativeCases:
-    """Случаи, которых нет в открытом наборе: рисуем их сами, по пикселям."""
+    """Случаи, которых в открытом наборе нет: рисуем их сами, по пикселям."""
 
     def _analyse(self, rgb: np.ndarray, document_type: str = "study_certificate"):
         from backend.app.services.document_config import get_registry
@@ -137,7 +137,7 @@ class TestSyntheticNegativeCases:
 
     def test_empty_signature_rule_is_not_a_signature(self) -> None:
         rgb = blank_page()
-        ImageDraw.Draw(Image.fromarray(rgb))  # заглушка: ничего не рисуем, просто держим привычный порядок вызовов
+        ImageDraw.Draw(Image.fromarray(rgb))  # заглушка: ничего не рисуем, просто чтобы порядок вызовов был привычный
         image_draw = ImageDraw.Draw(Image.fromarray(rgb))
         del image_draw
         from PIL import ImageDraw as _Draw
@@ -157,7 +157,7 @@ class TestSyntheticNegativeCases:
 
     def test_printed_seal_caption_without_graphic_is_not_a_seal(self) -> None:
         rgb = blank_page()
-        # Только печатные слова, круглого макета нигде нет.
+        # одни печатные слова, круглого макета нигде нет
         pil = Image.fromarray(rgb)
         ImageDraw.Draw(pil).text((560, 1000), "М.П.", fill=(40, 40, 40))
         ImageDraw.Draw(pil).text((520, 940), "УЧЕБНАЯ ПЕЧАТЬ МАКЕТ", fill=(40, 40, 40))
@@ -180,7 +180,7 @@ class TestSyntheticNegativeCases:
         assert verdicts["seal_present"] is True
 
     def test_monochrome_scan_still_finds_signature(self) -> None:
-        """Цвет не должен быть единственным способом увидеть подпись."""
+        """Подпись должны находить не только по цвету."""
         rgb = blank_page()
         draw_signature(rgb, x=310, y=920, colour=(20, 20, 20))
         image, ocr, spec = self._analyse(rgb)
@@ -190,13 +190,13 @@ class TestSyntheticNegativeCases:
 
 
 class TestMarkersAreNotLostByOcrHostSettings:
-    """Страховка от того, что настройки OCR тихо ломают поиск отметок.
+    """Страховка на случай, если настройки OCR втихую сломают поиск отметок.
 
-    Детектор ищет зоны по печатным подписям («Подпись …», «М.П.»). На переборе
-    настроек конфигурации с лучшей точностью текста (``psm 3``, ``psm 4``, ``psm 11``)
-    переставали распознавать эти подписи: на 14 документах подпись не находилась,
-    точность по полям падала с 1.0 до 0.953, а OCR-бенчмарк при этом показывал 1.0 —
-    он проверяет значения, а не якоря. Тесты ниже падают ровно в такой ситуации.
+    Детектор ищет зоны по печатным подписям («Подпись …», «М.П.»). Когда мы перебирали
+    настройки, конфигурации с лучшей точностью текста (``psm 3``, ``psm 4``, ``psm 11``)
+    переставали видеть эти подписи: на 14 документах подпись не находилась,
+    точность по полям проседала с 1.0 до 0.953, а OCR-бенчмарк при этом спокойно показывал 1.0 —
+    он смотрит значения, а не якоря. Тесты ниже валятся ровно в такой ситуации.
     """
 
     def _analyze(self, payload: bytes):
@@ -223,7 +223,7 @@ class TestMarkersAreNotLostByOcrHostSettings:
         assert set(result.validation.missing_fields) == {"signature_present", "seal_present"}
 
     def test_settings_are_the_measured_ones(self) -> None:
-        """Дефолты должны совпадать с настройками, на которых снимали benchmarks/README.md."""
+        """Дефолты обязаны совпадать с настройками, на которых снимали benchmarks/README.md."""
         from backend.app.config import settings
 
         assert settings.ocr.psm == 6, "psm 3/4/11 теряют подписи-якоря (см. benchmarks/README.md)"
@@ -231,7 +231,7 @@ class TestMarkersAreNotLostByOcrHostSettings:
 
 
 def _render(include_signature: bool = True, include_seal: bool = True) -> bytes:
-    """Синтетическая страница справки, которую рисует сам тест."""
+    """Синтетическая страница справки, тест рисует её сам."""
     from .test_pipeline import SYNTHETIC_VALUES, render_study_certificate
 
     return render_study_certificate(
@@ -265,19 +265,19 @@ class TestOpenSetReference:
         assert not failures, "\n".join(failures)
 
     def test_empty_line_document_has_no_signature(self, analyser) -> None:
-        # open-003: подпись-подсказка напечатана, линия нарисована, а чернил за ней нет.
+        # open-003: подпись-подсказка напечатана, линия нарисована, а чернил за ней ноль
         result = analyser.analyze_path(ARCHIVE / "documents/open-003.png", "study_certificate", "open-003")
         assert result.fields["signature_present"] is False
         assert result.fields["seal_present"] is True
 
     def test_lone_seal_caption_document(self, analyser) -> None:
-        # open-010: подписи нет вообще, только печатное «М.П.» без макета.
+        # open-010: подписи нет совсем, только печатное «М.П.» без макета
         result = analyser.analyze_path(ARCHIVE / "documents/open-010.png", "study_certificate", "open-010")
         assert result.fields["signature_present"] is False
         assert result.fields["seal_present"] is False
 
     def test_seal_without_signature(self, analyser) -> None:
-        # open-023: печать есть, линия подписи пустая.
+        # open-023: печать на месте, а линия подписи пустая
         result = analyser.analyze_path(
             ARCHIVE / "documents/open-023.png", "internship_certificate", "open-023"
         )
@@ -285,7 +285,7 @@ class TestOpenSetReference:
         assert result.fields["seal_present"] is True
 
     def test_signature_without_seal(self, analyser) -> None:
-        # open-004: подпись есть, макет печати убрали.
+        # open-004: подпись на месте, макет печати убрали
         result = analyser.analyze_path(ARCHIVE / "documents/open-004.png", "study_certificate", "open-004")
         assert result.fields["signature_present"] is True
         assert result.fields["seal_present"] is False

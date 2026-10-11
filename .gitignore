@@ -17,6 +17,7 @@ results_*.json
 __pycache__/
 *.py[cod]
 *.egg-info/
+umir_autumn_26/
 .venv/
 venv/
 env/

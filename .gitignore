@@ -1,0 +1,35 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_tmp/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- Frontend ---
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# --- Артефакты прогонов ---
+# results.json — сдаваемый артефакт, он коммитится осознанно.
+reports/*.local.json
+scratch/
+*.log
+
+# --- Локальные данные ---
+# Реальные персональные данные в репозиторий не попадают: только синтетические
+# документы, выданные организатором, или сгенерированные тестами.
+data/private/
+*.env
+.env.local
+
+# --- ОС/редакторы ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

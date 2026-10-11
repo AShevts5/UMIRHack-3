@@ -1,0 +1,75 @@
+{
+  "root": "..\\online-dean-participants-v1 (2)",
+  "generated_at": "2026-10-11T21:10:04",
+  "integrity": {
+    "checked_documents": 30,
+    "checked_fields": 280,
+    "checked_answers": 120,
+    "failures": [],
+    "passed": true,
+    "batch": {
+      "documents": 30,
+      "expected_documents": 30,
+      "questions": 120,
+      "expected_questions": 120,
+      "failures": [],
+      "seconds": 49.15,
+      "ocr": {
+        "documents": 30,
+        "cache_hits": 0,
+        "ocr_seconds": 30.332472800044343
+      },
+      "output": "C:\\Users\\FOX\\AppData\\Local\\Temp\\umir-verify-o8v8h9mi\\anon_results.json"
+    },
+    "note": "Файлы переименованы случайно, document_id заменены на anon-NNNN."
+  },
+  "representations": {
+    "checked_documents": 30,
+    "mismatches": [],
+    "passed": true
+  },
+  "auto_type": {
+    "checked_documents": 30,
+    "failures": [],
+    "accuracy": 1.0,
+    "passed": true
+  },
+  "markers": {
+    "checked_marks": 50,
+    "positive_marks": 41,
+    "errors": [],
+    "accuracy": 1.0,
+    "passed": true
+  },
+  "limits": {
+    "cases": [
+      {
+        "case": "пустой файл",
+        "ok": true,
+        "message": "Файл пустой."
+      },
+      {
+        "case": "битый PNG",
+        "ok": true,
+        "message": "Изображение не удалось прочитать: файл повреждён."
+      },
+      {
+        "case": "неподдерживаемое расширение",
+        "ok": true,
+        "message": "Формат .txt не поддерживается. Допустимо: .png, .jpg, .jpeg, .pdf."
+      },
+      {
+        "case": "слишком большой файл",
+        "ok": true,
+        "message": "Файл больше допустимого размера (12 МБ)."
+      },
+      {
+        "case": "многостраничный PDF",
+        "ok": true,
+        "message": "Поддерживается одностраничный PDF, в файле 2 страниц. Загрузите страницу с документом отдельно."
+      }
+    ],
+    "passed": true
+  },
+  "passed": true
+}

@@ -1,0 +1,343 @@
+{
+  "format_valid": true,
+  "documents": 30,
+  "questions": 120,
+  "field_accuracy_macro": 0.881667,
+  "validation_exact_match": 0.533333,
+  "question_exact_match": 0.85,
+  "errors": [
+    {
+      "document_id": "open-001",
+      "field": "university",
+      "expected": "Учебный университет «Меридиан»",
+      "actual": "Учебный униварситет «Меридиан»"
+    },
+    {
+      "document_id": "open-001",
+      "field": "program",
+      "expected": "38.03.01 Экономика",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-001",
+      "field": "study_form",
+      "expected": "очная",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-001",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-001-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-005",
+      "field": "university",
+      "expected": "Учебная академия «Горизонт»",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-005",
+      "field": "program",
+      "expected": "09.03.01 Информатика и вычислительная техника",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-005",
+      "field": "study_form",
+      "expected": "очная",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-005",
+      "field": "study_start",
+      "expected": "2022-09-01",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-005",
+      "field": "study_end",
+      "expected": "2026-08-31",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-005",
+      "field": "issue_date",
+      "expected": "2026-09-12",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-005",
+      "field": "signature_present",
+      "expected": true,
+      "actual": false
+    },
+    {
+      "document_id": "open-005",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-005-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-007",
+      "field": "program",
+      "expected": "не найдено",
+      "actual": "ЕСС орон от Е"
+    },
+    {
+      "document_id": "open-007",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-007-Q2",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-008",
+      "field": "issue_date",
+      "expected": "2026-09-14",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-008",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-008-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "question_id": "open-008-Q2",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-009",
+      "field": "seal_present",
+      "expected": true,
+      "actual": false
+    },
+    {
+      "document_id": "open-009",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-009-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-011",
+      "field": "student_name",
+      "expected": "Соколов Олег Николаевич",
+      "actual": "Oner Никопаевич"
+    },
+    {
+      "document_id": "open-011",
+      "field": "group",
+      "expected": "ЖР-25-1",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-011",
+      "field": "leave_reason",
+      "expected": "по состоянию здоровья",
+      "actual": "по состоянию"
+    },
+    {
+      "document_id": "open-011",
+      "field": "signature_present",
+      "expected": true,
+      "actual": false
+    },
+    {
+      "document_id": "open-011",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-011-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "question_id": "open-011-Q2",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-014",
+      "field": "leave_reason",
+      "expected": "не найдено",
+      "actual": "ee"
+    },
+    {
+      "document_id": "open-014",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-014-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "question_id": "open-014-Q2",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-016",
+      "field": "student_name",
+      "expected": "Иванов Борис Николаевич",
+      "actual": "Иванов Борис Никопаевич"
+    },
+    {
+      "document_id": "open-021",
+      "field": "signature_present",
+      "expected": true,
+      "actual": false
+    },
+    {
+      "document_id": "open-021",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-021-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-022",
+      "field": "student_name",
+      "expected": "Мельников Фёдор Михайлович",
+      "actual": "Мельников Фёдор Михайпович"
+    },
+    {
+      "document_id": "open-022",
+      "field": "internship_start",
+      "expected": "2026-06-01",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-022",
+      "field": "seal_present",
+      "expected": true,
+      "actual": false
+    },
+    {
+      "document_id": "open-022",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-022-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-023",
+      "field": "supervisor_name",
+      "expected": "Соколова Анна Викторовна",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-023",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-023-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "question_id": "open-023-Q2",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-024",
+      "field": "signature_present",
+      "expected": true,
+      "actual": false
+    },
+    {
+      "document_id": "open-024",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-024-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-026",
+      "field": "internship_end",
+      "expected": "2026-07-15",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-026",
+      "field": "supervisor_name",
+      "expected": "Соколова Анна Викторовна",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-026",
+      "field": "grade",
+      "expected": "удовлетворительно",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-026",
+      "field": "document_number",
+      "expected": "ПР-2026",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-026",
+      "validation": "mismatch"
+    },
+    {
+      "document_id": "open-027",
+      "field": "document_number",
+      "expected": "ПР-2027",
+      "actual": "МР-2027"
+    },
+    {
+      "document_id": "open-027",
+      "field": "seal_present",
+      "expected": true,
+      "actual": false
+    },
+    {
+      "document_id": "open-027",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-027-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "document_id": "open-030",
+      "field": "student_name",
+      "expected": "Петров Артём Николаевич",
+      "actual": "Петров Артём Никопаевич"
+    },
+    {
+      "document_id": "open-030",
+      "field": "internship_end",
+      "expected": "2026-07-15",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-030",
+      "field": "grade",
+      "expected": "отлично",
+      "actual": "не найдено"
+    },
+    {
+      "document_id": "open-030",
+      "validation": "mismatch"
+    },
+    {
+      "question_id": "open-030-Q1",
+      "answer": "structured mismatch"
+    },
+    {
+      "question_id": "open-030-Q2",
+      "answer": "structured mismatch"
+    }
+  ],
+  "note": "Текст answer проверяется на демо; автоматически сравниваются value, answerable и sources. Итоговый балл жюри не рассчитывается."
+}

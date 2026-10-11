@@ -1,0 +1,4 @@
+# pnpm needs an explicit allow-list before it runs dependency build scripts.
+# esbuild ships a native binary that must be linked, otherwise `vite build` fails.
+allowBuilds:
+  esbuild: true

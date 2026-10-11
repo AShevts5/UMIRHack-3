@@ -1,0 +1,588 @@
+[
+  {
+    "document_id": "open-001",
+    "document_type": "study_certificate",
+    "purpose": "Полная справка об обучении: все обязательные сведения и обе отметки",
+    "file": "documents/open-001.png",
+    "question": "Содержит ли документ все обязательные сведения по Положению?",
+    "fields": {
+      "student_name": "Александров Артём Игоревич",
+      "university": "Учебный университет «Меридиан»",
+      "program": "38.03.01 Экономика",
+      "study_form": "очная",
+      "study_start": "2023-09-01",
+      "study_end": "2026-08-31",
+      "document_number": "ОБ-1001",
+      "issue_date": "2026-09-01",
+      "signature_present": true,
+      "seal_present": true
+    },
+    "validation": {
+      "status": "document_ok",
+      "missing_fields": [],
+      "sources": [
+        "rule:3.1",
+        "rule:3.2",
+        "rule:3.3"
+      ]
+    },
+    "validation_message": "Документ содержит все обязательные сведения по пунктам 3.1, 3.2, 3.3 Положения. Окончательное решение примет сотрудник деканата.",
+    "answer": {
+      "question_id": "open-001-demo",
+      "answerable": true,
+      "value": "document_ok",
+      "answer": "Документ содержит все обязательные сведения по пунктам 3.1, 3.2, 3.3 Положения. Окончательное решение примет сотрудник деканата.",
+      "sources": [
+        "rule:3.1",
+        "rule:3.2",
+        "rule:3.3"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          437,
+          1207,
+          166,
+          39
+        ]
+      },
+      "seal_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          820,
+          1159,
+          159,
+          159
+        ]
+      }
+    },
+    "ocr_mean_confidence": 89.21,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Александров Артём Игоревич\nНазвание вуза: Учебный университет «Меридиан»\nНаправление подготовки: 38.03.01 Экономика"
+  },
+  {
+    "document_id": "open-002",
+    "document_type": "study_certificate",
+    "purpose": "Поле отсутствует: честный отказ вместо значения",
+    "file": "documents/open-002.png",
+    "question": "Укажи значение поля «Дата выдачи».",
+    "fields": {
+      "student_name": "Мельников Денис Игоревич",
+      "university": "Учебная академия «Горизонт»",
+      "program": "09.03.01 Информатика и вычислительная техника",
+      "study_form": "очно-заочная",
+      "study_start": "2022-09-01",
+      "study_end": "2026-08-31",
+      "document_number": "ОБ-1002",
+      "issue_date": "не найдено",
+      "signature_present": true,
+      "seal_present": true
+    },
+    "validation": {
+      "status": "missing_fields",
+      "missing_fields": [
+        "issue_date"
+      ],
+      "sources": [
+        "rule:3.1"
+      ]
+    },
+    "validation_message": "Предварительная проверка: не хватает Дата выдачи. Требования: пункты 3.1 Положения. Решение принимает сотрудник деканата.",
+    "answer": {
+      "question_id": "open-002-demo",
+      "answerable": false,
+      "value": null,
+      "answer": "Поле «Дата выдачи» не найдено в документе. Обратитесь в деканат.",
+      "sources": []
+    },
+    "marks": {
+      "signature_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          452,
+          1211,
+          166,
+          34
+        ]
+      },
+      "seal_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          820,
+          1159,
+          159,
+          159
+        ]
+      }
+    },
+    "ocr_mean_confidence": 88.28,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИХ ДОКУМЕНТ ДЛЯ ХАКАТОНА `НЕ /MEE™ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Мельников Денис Игоревич\nНазвание вуза: Учебная академия «Горизонт»\nНаправление подготовки: 09.03.01 Информатика и вычислительная техника"
+  },
+  {
+    "document_id": "open-003",
+    "document_type": "study_certificate",
+    "purpose": "Пустая линия подписи: подпись не обнаружена, печать есть",
+    "file": "documents/open-003.png",
+    "question": "Содержит ли документ все обязательные сведения по Положению?",
+    "fields": {
+      "student_name": "Жуков Андрей Дмитриевич",
+      "university": "Учебная академия «Горизонт»",
+      "program": "38.03.01 Экономика",
+      "study_form": "очно-заочная",
+      "study_start": "2022-09-01",
+      "study_end": "2026-08-31",
+      "document_number": "ОБ-1003",
+      "issue_date": "2026-09-21",
+      "signature_present": false,
+      "seal_present": true
+    },
+    "validation": {
+      "status": "missing_fields",
+      "missing_fields": [
+        "signature_present"
+      ],
+      "sources": [
+        "rule:3.2"
+      ]
+    },
+    "validation_message": "Предварительная проверка: не хватает Подпись сотрудника. Требования: пункты 3.2 Положения. Решение принимает сотрудник деканата.",
+    "answer": {
+      "question_id": "open-003-demo",
+      "answerable": true,
+      "value": "missing_fields",
+      "answer": "Не хватает сведения: Подпись сотрудника. Основание: пункт 3.2 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+      "sources": [
+        "rule:3.2"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": false,
+        "method": "",
+        "confidence": 0.0,
+        "box": null
+      },
+      "seal_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          820,
+          1159,
+          159,
+          159
+        ]
+      }
+    },
+    "ocr_mean_confidence": 91.05,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА \"HE ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Жуков Андрей Дмитриевич\nНазвание вуза: Учебная академия «Горизонт»\nНаправление подготовки: 38.03.01 Экономика"
+  },
+  {
+    "document_id": "open-004",
+    "document_type": "study_certificate",
+    "purpose": "Есть подпись, нет печати (одинокое «М.П.» не считается печатью)",
+    "file": "documents/open-004.png",
+    "question": "Содержит ли документ все обязательные сведения по Положению?",
+    "fields": {
+      "student_name": "Климов Борис Дмитриевич",
+      "university": "Учебный университет «Меридиан»",
+      "program": "09.03.01 Информатика и вычислительная техника",
+      "study_form": "очно-заочная",
+      "study_start": "2023-09-01",
+      "study_end": "2026-08-31",
+      "document_number": "ОБ-1004",
+      "issue_date": "2026-09-20",
+      "signature_present": true,
+      "seal_present": false
+    },
+    "validation": {
+      "status": "missing_fields",
+      "missing_fields": [
+        "seal_present"
+      ],
+      "sources": [
+        "rule:3.3"
+      ]
+    },
+    "validation_message": "Предварительная проверка: не хватает Печать вуза. Требования: пункты 3.3 Положения. Решение принимает сотрудник деканата.",
+    "answer": {
+      "question_id": "open-004-demo",
+      "answerable": true,
+      "value": "missing_fields",
+      "answer": "Не хватает сведения: Печать вуза. Основание: пункт 3.3 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+      "sources": [
+        "rule:3.3"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          437,
+          1214,
+          166,
+          33
+        ]
+      },
+      "seal_present": {
+        "present": false,
+        "method": "",
+        "confidence": 0.0,
+        "box": null
+      }
+    },
+    "ocr_mean_confidence": 91.21,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ (MEET ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Климов Борис Дмитриевич\nНазвание вуза: Учебный университет «Меридиан»\nНаправление подготовки: 09.03.01 Информатика и вычислительная техника"
+  },
+  {
+    "document_id": "open-010",
+    "document_type": "study_certificate",
+    "purpose": "Нет ни подписи, ни печати: оба источника rule:3.2 и rule:3.3",
+    "file": "documents/open-010.png",
+    "question": "Содержит ли документ все обязательные сведения по Положению?",
+    "fields": {
+      "student_name": "Петров Андрей Николаевич",
+      "university": "Учебный институт «Вектор»",
+      "program": "42.03.02 Журналистика",
+      "study_form": "очно-заочная",
+      "study_start": "2023-09-01",
+      "study_end": "2026-08-31",
+      "document_number": "ОБ-1010",
+      "issue_date": "2026-09-20",
+      "signature_present": false,
+      "seal_present": false
+    },
+    "validation": {
+      "status": "missing_fields",
+      "missing_fields": [
+        "signature_present",
+        "seal_present"
+      ],
+      "sources": [
+        "rule:3.2",
+        "rule:3.3"
+      ]
+    },
+    "validation_message": "Предварительная проверка: не хватает Подпись сотрудника, Печать вуза. Требования: пункты 3.2, 3.3 Положения. Решение принимает сотрудник деканата.",
+    "answer": {
+      "question_id": "open-010-demo",
+      "answerable": true,
+      "value": "missing_fields",
+      "answer": "Не хватает сведений: Подпись сотрудника, Печать вуза. Основание: пункта 3.2, 3.3 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+      "sources": [
+        "rule:3.2",
+        "rule:3.3"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": false,
+        "method": "",
+        "confidence": 0.0,
+        "box": null
+      },
+      "seal_present": {
+        "present": false,
+        "method": "",
+        "confidence": 0.0,
+        "box": null
+      }
+    },
+    "ocr_mean_confidence": 91.5,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Петров Андрей Николаевич\nНазвание вуза: Учебный институт «Вектор»\nНаправление подготовки: 42.03.02 Журналистика"
+  },
+  {
+    "document_id": "open-014",
+    "document_type": "academic_leave_application",
+    "purpose": "Заявление с пропуском: не хватает причины отпуска (rule:4.1)",
+    "file": "documents/open-014.png",
+    "question": "Содержит ли документ все обязательные сведения по Положению?",
+    "fields": {
+      "student_name": "Орлов Фёдор Викторович",
+      "group": "ЖР-22-3",
+      "course": "2",
+      "leave_reason": "не найдено",
+      "leave_start": "2026-11-01",
+      "leave_end": "2027-08-31",
+      "application_date": "2026-10-09",
+      "signature_present": true
+    },
+    "validation": {
+      "status": "missing_fields",
+      "missing_fields": [
+        "leave_reason"
+      ],
+      "sources": [
+        "rule:4.1"
+      ]
+    },
+    "validation_message": "Предварительная проверка: не хватает Причина отпуска. Требования: пункты 4.1 Положения. Решение принимает сотрудник деканата.",
+    "answer": {
+      "question_id": "open-014-demo",
+      "answerable": true,
+      "value": "missing_fields",
+      "answer": "Не хватает сведения: Причина отпуска. Основание: пункт 4.1 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+      "sources": [
+        "rule:4.1"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          452,
+          1210,
+          166,
+          38
+        ]
+      }
+    },
+    "ocr_mean_confidence": 87.04,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИХ ДОКУМЕНТ ДЛЯ ХАКАТОНА “AE СИЛЫ\nВ деканат учебного университета «Меридиан»\nЗАЯВЛЕНИЕ НА АКАДЕМИЧЕСКИЙ ОТПУСК\nПрошу предоставить академический отпуск на указанный период.\nФИО студента: Орлов Фёдор Викторович\nУчебная группа: ЖР-22-3"
+  },
+  {
+    "document_id": "open-018",
+    "document_type": "academic_leave_application",
+    "purpose": "Ответ по Положению: сотрудник деканата, rule:1.3",
+    "file": "documents/open-018.png",
+    "question": "Кто принимает окончательное решение о принятии документа?",
+    "fields": {
+      "student_name": "Захаров Роман Дмитриевич",
+      "group": "ИВТ-22-3",
+      "course": "3",
+      "leave_reason": "по семейным обстоятельствам",
+      "leave_start": "2026-11-01",
+      "leave_end": "2027-08-31",
+      "application_date": "2026-10-03",
+      "signature_present": true
+    },
+    "validation": {
+      "status": "document_ok",
+      "missing_fields": [],
+      "sources": [
+        "rule:4.1",
+        "rule:4.2"
+      ]
+    },
+    "validation_message": "Документ содержит все обязательные сведения по пунктам 4.1, 4.2 Положения. Окончательное решение примет сотрудник деканата.",
+    "answer": {
+      "question_id": "open-018-demo",
+      "answerable": true,
+      "value": "сотрудник деканата",
+      "answer": "Окончательное решение принимает сотрудник деканата, пункт 1.3 Положения. Сервис даёт только предварительную проверку.",
+      "sources": [
+        "rule:1.3"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          452,
+          1210,
+          166,
+          38
+        ]
+      }
+    },
+    "ocr_mean_confidence": 83.9,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИХ ДОКУМЕНТ ДЛЯ ХАКАТОНА “AE СИЛЫ\nВ деканат учебного университета «Меридиан»\nЗАЯВЛЕНИЕ НА АКАДЕМИЧЕСКИЙ ОТПУСК\nПрошу предоставить академический отпуск на указанный период.\nФИО студента: Захаров Роман Дмитриевич\nУчебная группа: ИВТ-22-3"
+  },
+  {
+    "document_id": "open-021",
+    "document_type": "internship_certificate",
+    "purpose": "Справка о практике: графическая подпись и печать обнаружены",
+    "file": "documents/open-021.png",
+    "question": "Содержит ли документ все обязательные сведения по Положению?",
+    "fields": {
+      "student_name": "Данилов Олег Алексеевич",
+      "organization": "Учебная организация «Спектр»",
+      "internship_start": "2026-06-01",
+      "internship_end": "2026-07-15",
+      "supervisor_name": "Ильина Елена Андреевна",
+      "grade": "удовлетворительно",
+      "document_number": "ПР-2021",
+      "issue_date": "2026-07-18",
+      "signature_present": true,
+      "seal_present": true
+    },
+    "validation": {
+      "status": "document_ok",
+      "missing_fields": [],
+      "sources": [
+        "rule:5.1",
+        "rule:5.2",
+        "rule:5.3"
+      ]
+    },
+    "validation_message": "Документ содержит все обязательные сведения по пунктам 5.1, 5.2, 5.3 Положения. Окончательное решение примет сотрудник деканата.",
+    "answer": {
+      "question_id": "open-021-demo",
+      "answerable": true,
+      "value": "document_ok",
+      "answer": "Документ содержит все обязательные сведения по пунктам 5.1, 5.2, 5.3 Положения. Окончательное решение примет сотрудник деканата.",
+      "sources": [
+        "rule:5.1",
+        "rule:5.2",
+        "rule:5.3"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          452,
+          1211,
+          166,
+          35
+        ]
+      },
+      "seal_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          820,
+          1159,
+          159,
+          159
+        ]
+      }
+    },
+    "ocr_mean_confidence": 90.98,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА \"HE ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения о прохождении практики приведены ниже.\nФИО студента: Данилов Олег Алексеевич\nНазвание организации: Учебная организация «Спектр»\nДата начала практики: 01.06.2026"
+  },
+  {
+    "document_id": "open-023",
+    "document_type": "internship_certificate",
+    "purpose": "Печать есть, подписи нет (rule:5.2)",
+    "file": "documents/open-023.png",
+    "question": "Содержит ли документ все обязательные сведения по Положению?",
+    "fields": {
+      "student_name": "Шестаков Глеб Дмитриевич",
+      "organization": "Учебная организация «Спектр»",
+      "internship_start": "2026-06-01",
+      "internship_end": "2026-07-15",
+      "supervisor_name": "Соколова Анна Викторовна",
+      "grade": "хорошо",
+      "document_number": "ПР-2023",
+      "issue_date": "2026-07-18",
+      "signature_present": false,
+      "seal_present": true
+    },
+    "validation": {
+      "status": "missing_fields",
+      "missing_fields": [
+        "signature_present"
+      ],
+      "sources": [
+        "rule:5.2"
+      ]
+    },
+    "validation_message": "Предварительная проверка: не хватает Подпись руководителя. Требования: пункты 5.2 Положения. Решение принимает сотрудник деканата.",
+    "answer": {
+      "question_id": "open-023-demo",
+      "answerable": true,
+      "value": "missing_fields",
+      "answer": "Не хватает сведения: Подпись руководителя. Основание: пункт 5.2 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+      "sources": [
+        "rule:5.2"
+      ]
+    },
+    "marks": {
+      "signature_present": {
+        "present": false,
+        "method": "",
+        "confidence": 0.0,
+        "box": null
+      },
+      "seal_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          820,
+          1159,
+          159,
+          159
+        ]
+      }
+    },
+    "ocr_mean_confidence": 89.91,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА HE /МЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения о прохождении практики приведены ниже.\nФИО студента: Шестаков Глеб Дмитриевич\nНазвание организации: Учебная организация «Спектр»\nДата начала практики: 01.06.2026"
+  },
+  {
+    "document_id": "open-004",
+    "document_type": "study_certificate",
+    "purpose": "Нет данных в документе и Положении",
+    "file": "documents/open-004.png",
+    "question": "Какова стоимость обучения за следующий семестр?",
+    "fields": {
+      "student_name": "Климов Борис Дмитриевич",
+      "university": "Учебный университет «Меридиан»",
+      "program": "09.03.01 Информатика и вычислительная техника",
+      "study_form": "очно-заочная",
+      "study_start": "2023-09-01",
+      "study_end": "2026-08-31",
+      "document_number": "ОБ-1004",
+      "issue_date": "2026-09-20",
+      "signature_present": true,
+      "seal_present": false
+    },
+    "validation": {
+      "status": "missing_fields",
+      "missing_fields": [
+        "seal_present"
+      ],
+      "sources": [
+        "rule:3.3"
+      ]
+    },
+    "validation_message": "Предварительная проверка: не хватает Печать вуза. Требования: пункты 3.3 Положения. Решение принимает сотрудник деканата.",
+    "answer": {
+      "question_id": "open-004-demo",
+      "answerable": false,
+      "value": null,
+      "answer": "В документе и в Положении нет сведений по теме «стоимость обучения». Положение такие условия не устанавливает. Обратитесь в деканат.",
+      "sources": []
+    },
+    "marks": {
+      "signature_present": {
+        "present": true,
+        "method": "colour",
+        "confidence": 1.0,
+        "box": [
+          437,
+          1214,
+          166,
+          33
+        ]
+      },
+      "seal_present": {
+        "present": false,
+        "method": "",
+        "confidence": 0.0,
+        "box": null
+      }
+    },
+    "ocr_mean_confidence": 91.21,
+    "ocr_excerpt": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ (MEET ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Климов Борис Дмитриевич\nНазвание вуза: Учебный университет «Меридиан»\nНаправление подготовки: 09.03.01 Информатика и вычислительная техника"
+  }
+]

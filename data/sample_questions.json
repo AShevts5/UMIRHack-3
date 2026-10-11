@@ -1,0 +1,22 @@
+[
+  {
+    "question_id": "sample-study-01-Q1",
+    "document_id": "sample-study-01",
+    "question": "Содержит ли документ все обязательные сведения по Положению?"
+  },
+  {
+    "question_id": "sample-study-01-Q2",
+    "document_id": "sample-study-01",
+    "question": "Укажи значение поля «Номер справки»."
+  },
+  {
+    "question_id": "sample-study-01-Q3",
+    "document_id": "sample-study-01",
+    "question": "Кто принимает окончательное решение о принятии документа?"
+  },
+  {
+    "question_id": "sample-study-01-Q4",
+    "document_id": "sample-study-01",
+    "question": "Какова стоимость обучения за следующий семестр?"
+  }
+]

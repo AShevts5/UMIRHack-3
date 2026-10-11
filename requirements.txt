@@ -1,0 +1,25 @@
+# Python-зависимости «Онлайн-деканата» (UMIR 3).
+#
+# Установка: python -m pip install -r requirements.txt
+# Дополнительно нужен локальный OCR-движок Tesseract с русским языком —
+# см. README, раздел «Установка OCR». Никакие внешние OCR/LLM API не используются.
+
+# --- OCR и обработка изображений ---
+pytesseract==0.3.13          # тонкая обёртка над локальным бинарником tesseract
+Pillow==12.3.0               # чтение PNG/JPG, EXIF-ориентация, конвертация
+opencv-python-headless==5.0.0.93   # предобработка, маски чернил, поиск линий и кругов
+numpy==2.5.4
+
+# --- PDF ---
+PyMuPDF==1.28.2              # локальный рендер одностраничного PDF, без внешних сервисов
+
+# --- API и DTO ---
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+pydantic==2.14.0
+python-multipart==0.0.32     # multipart/form-data для загрузки файла
+PyYAML==6.0.3                # конфиг типов документов
+
+# --- Тестирование ---
+pytest==9.1.1
+httpx==0.28.1                # TestClient для FastAPI и smoke-тесты API

@@ -1,0 +1,2254 @@
+[
+  {
+    "purpose": "Полная справка об обучении: все обязательные сведения и обе отметки",
+    "request": {
+      "document_type": "study_certificate",
+      "question": "Содержит ли документ все обязательные сведения по Положению?",
+      "file": "documents/open-001.png"
+    },
+    "response": {
+      "document_id": "open-001",
+      "document_type": "study_certificate",
+      "document_type_title": "Справка об обучении",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Александров Артём Игоревич\nНазвание вуза: Учебный университет «Меридиан»\nНаправление подготовки: 38.03.01 Экономика\nФорма обучения: очная\nНачало периода обучения: 01.09.2023\nОкончание периода обучения: 31.08.2026\nНомер справки: ОБ-1001\nДата выдачи: 01.09.2026\nУЧЕБНАЯ\nПодпись сотрудника: Y и ПЕЧАТЬ\nМАКЕТ\nм.п.\nBee сведения вымь Подгизь и печать учебными\nобразца open 901",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 89.21,
+      "fields": {
+        "student_name": "Александров Артём Игоревич",
+        "university": "Учебный университет «Меридиан»",
+        "program": "38.03.01 Экономика",
+        "study_form": "очная",
+        "study_start": "2023-09-01",
+        "study_end": "2026-08-31",
+        "document_number": "ОБ-1001",
+        "issue_date": "2026-09-01",
+        "signature_present": true,
+        "seal_present": true
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Александров Артём Игоревич",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 92,
+            "y": 366,
+            "width": 461,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "university",
+          "label": "Название вуза",
+          "value": "Учебный университет «Меридиан»",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:university"
+          ],
+          "box": {
+            "x": 93,
+            "y": 419,
+            "width": 515,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "program",
+          "label": "Направление подготовки",
+          "value": "38.03.01 Экономика",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:program"
+          ],
+          "box": {
+            "x": 93,
+            "y": 472,
+            "width": 466,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_form",
+          "label": "Форма обучения",
+          "value": "очная",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_form"
+          ],
+          "box": {
+            "x": 92,
+            "y": 523,
+            "width": 239,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_start",
+          "label": "Начало периода обучения",
+          "value": "2023-09-01",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_start"
+          ],
+          "box": {
+            "x": 93,
+            "y": 576,
+            "width": 389,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "study_end",
+          "label": "Окончание периода обучения",
+          "value": "2026-08-31",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_end"
+          ],
+          "box": {
+            "x": 92,
+            "y": 628,
+            "width": 423,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ОБ-1001",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 93,
+            "y": 680,
+            "width": 248,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "2026-09-01",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": {
+            "x": 91,
+            "y": 734,
+            "width": 252,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись сотрудника",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 437,
+            "y": 1207,
+            "width": 166,
+            "height": 39
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "pixels": 1524,
+            "box": [
+              437,
+              1207,
+              166,
+              39
+            ],
+            "strength": 1.0,
+            "component_count": 1,
+            "kept_components": 1,
+            "plausible": true
+          }
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать вуза",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 820,
+            "y": 1159,
+            "width": 159,
+            "height": 159
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "box": [
+              820,
+              1159,
+              159,
+              159
+            ],
+            "area": 1580,
+            "fill": 0.0625,
+            "strength": 1.0,
+            "plausible": true,
+            "circles": 5
+          }
+        }
+      ],
+      "validation": {
+        "status": "document_ok",
+        "missing_fields": [],
+        "sources": [
+          "rule:3.1",
+          "rule:3.2",
+          "rule:3.3"
+        ]
+      },
+      "validation_message": "Документ содержит все обязательные сведения по пунктам 3.1, 3.2, 3.3 Положения. Окончательное решение примет сотрудник деканата.",
+      "answer": {
+        "question_id": "open-001-demo",
+        "answerable": true,
+        "value": "document_ok",
+        "answer": "Документ содержит все обязательные сведения по пунктам 3.1, 3.2, 3.3 Положения. Окончательное решение примет сотрудник деканата.",
+        "sources": [
+          "rule:3.1",
+          "rule:3.2",
+          "rule:3.3"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Поле отсутствует: честный отказ вместо значения",
+    "request": {
+      "document_type": "study_certificate",
+      "question": "Укажи значение поля «Дата выдачи».",
+      "file": "documents/open-002.png"
+    },
+    "response": {
+      "document_id": "open-002",
+      "document_type": "study_certificate",
+      "document_type_title": "Справка об обучении",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИХ ДОКУМЕНТ ДЛЯ ХАКАТОНА `НЕ /MEE™ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Мельников Денис Игоревич\nНазвание вуза: Учебная академия «Горизонт»\nНаправление подготовки: 09.03.01 Информатика и вычислительная техника\nФорма обучения: очно-заочная\nНачало периода обучения: 1 сентября 2022 года\nОкончание периода обучения: 31 августа 2026 года\nНомер справки: ОБ-1002\nДата выдачи:\nПодпись сотрудника: AA УЧЕБНАЯ ПЕЧАТЬ\nМАКЕТ\nм.п.\nBee сведения Подпить и учебными MaKe\" aM\nИден\" ификатор образца cpen 032",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 88.28,
+      "fields": {
+        "student_name": "Мельников Денис Игоревич",
+        "university": "Учебная академия «Горизонт»",
+        "program": "09.03.01 Информатика и вычислительная техника",
+        "study_form": "очно-заочная",
+        "study_start": "2022-09-01",
+        "study_end": "2026-08-31",
+        "document_number": "ОБ-1002",
+        "issue_date": "не найдено",
+        "signature_present": true,
+        "seal_present": true
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Мельников Денис Игоревич",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 366,
+            "width": 439,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "university",
+          "label": "Название вуза",
+          "value": "Учебная академия «Горизонт»",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:university"
+          ],
+          "box": {
+            "x": 108,
+            "y": 419,
+            "width": 471,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "program",
+          "label": "Направление подготовки",
+          "value": "09.03.01 Информатика и вычислительная техника",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:program"
+          ],
+          "box": {
+            "x": 108,
+            "y": 472,
+            "width": 776,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_form",
+          "label": "Форма обучения",
+          "value": "очно-заочная",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_form"
+          ],
+          "box": {
+            "x": 107,
+            "y": 523,
+            "width": 317,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_start",
+          "label": "Начало периода обучения",
+          "value": "2022-09-01",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_start"
+          ],
+          "box": {
+            "x": 108,
+            "y": 576,
+            "width": 497,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "study_end",
+          "label": "Окончание периода обучения",
+          "value": "2026-08-31",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_end"
+          ],
+          "box": {
+            "x": 107,
+            "y": 628,
+            "width": 526,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ОБ-1002",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 108,
+            "y": 680,
+            "width": 251,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "не найдено",
+          "found": false,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": null,
+          "confidence": 0.0
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись сотрудника",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 452,
+            "y": 1211,
+            "width": 166,
+            "height": 34
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "pixels": 1461,
+            "box": [
+              452,
+              1211,
+              166,
+              34
+            ],
+            "strength": 1.0,
+            "component_count": 1,
+            "kept_components": 1,
+            "plausible": true
+          }
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать вуза",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 820,
+            "y": 1159,
+            "width": 159,
+            "height": 159
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "box": [
+              820,
+              1159,
+              159,
+              159
+            ],
+            "area": 1580,
+            "fill": 0.0625,
+            "strength": 1.0,
+            "plausible": true,
+            "circles": 5
+          }
+        }
+      ],
+      "validation": {
+        "status": "missing_fields",
+        "missing_fields": [
+          "issue_date"
+        ],
+        "sources": [
+          "rule:3.1"
+        ]
+      },
+      "validation_message": "Предварительная проверка: не хватает Дата выдачи. Требования: пункты 3.1 Положения. Решение принимает сотрудник деканата.",
+      "answer": {
+        "question_id": "open-002-demo",
+        "answerable": false,
+        "value": null,
+        "answer": "Поле «Дата выдачи» не найдено в документе. Обратитесь в деканат.",
+        "sources": []
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Пустая линия подписи: подпись не обнаружена, печать есть",
+    "request": {
+      "document_type": "study_certificate",
+      "question": "Содержит ли документ все обязательные сведения по Положению?",
+      "file": "documents/open-003.png"
+    },
+    "response": {
+      "document_id": "open-003",
+      "document_type": "study_certificate",
+      "document_type_title": "Справка об обучении",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА \"HE ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Жуков Андрей Дмитриевич\nНазвание вуза: Учебная академия «Горизонт»\nНаправление подготовки: 38.03.01 Экономика\nФорма обучения: очно-заочная\nНачало периода обучения: 01.09.2022\nОкончание периода обучения: 31.08.2026\nНомер справки: ОБ-1003\nДата выдачи: 21.09.2026\nУЧЕБНАЯ\nПодпись сотрудника: ПЕЧАТЬ\nМАКЕТ\nм.п.\nBee сведения Подпить и учебными\nобразца cpen 033",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 91.05,
+      "fields": {
+        "student_name": "Жуков Андрей Дмитриевич",
+        "university": "Учебная академия «Горизонт»",
+        "program": "38.03.01 Экономика",
+        "study_form": "очно-заочная",
+        "study_start": "2022-09-01",
+        "study_end": "2026-08-31",
+        "document_number": "ОБ-1003",
+        "issue_date": "2026-09-21",
+        "signature_present": false,
+        "seal_present": true
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Жуков Андрей Дмитриевич",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 366,
+            "width": 433,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "university",
+          "label": "Название вуза",
+          "value": "Учебная академия «Горизонт»",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:university"
+          ],
+          "box": {
+            "x": 108,
+            "y": 419,
+            "width": 471,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "program",
+          "label": "Направление подготовки",
+          "value": "38.03.01 Экономика",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:program"
+          ],
+          "box": {
+            "x": 108,
+            "y": 472,
+            "width": 467,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_form",
+          "label": "Форма обучения",
+          "value": "очно-заочная",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_form"
+          ],
+          "box": {
+            "x": 107,
+            "y": 523,
+            "width": 317,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_start",
+          "label": "Начало периода обучения",
+          "value": "2022-09-01",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_start"
+          ],
+          "box": {
+            "x": 108,
+            "y": 576,
+            "width": 389,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "study_end",
+          "label": "Окончание периода обучения",
+          "value": "2026-08-31",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_end"
+          ],
+          "box": {
+            "x": 107,
+            "y": 628,
+            "width": 424,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ОБ-1003",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 108,
+            "y": 680,
+            "width": 251,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "2026-09-21",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": {
+            "x": 107,
+            "y": 734,
+            "width": 252,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись сотрудника",
+          "present": false,
+          "confidence": 0.0,
+          "box": null,
+          "method": "",
+          "evidence": {}
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать вуза",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 820,
+            "y": 1159,
+            "width": 159,
+            "height": 159
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "box": [
+              820,
+              1159,
+              159,
+              159
+            ],
+            "area": 1580,
+            "fill": 0.0625,
+            "strength": 1.0,
+            "plausible": true,
+            "circles": 5
+          }
+        }
+      ],
+      "validation": {
+        "status": "missing_fields",
+        "missing_fields": [
+          "signature_present"
+        ],
+        "sources": [
+          "rule:3.2"
+        ]
+      },
+      "validation_message": "Предварительная проверка: не хватает Подпись сотрудника. Требования: пункты 3.2 Положения. Решение принимает сотрудник деканата.",
+      "answer": {
+        "question_id": "open-003-demo",
+        "answerable": true,
+        "value": "missing_fields",
+        "answer": "Не хватает сведения: Подпись сотрудника. Основание: пункт 3.2 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+        "sources": [
+          "rule:3.2"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Есть подпись, нет печати (одинокое «М.П.» не считается печатью)",
+    "request": {
+      "document_type": "study_certificate",
+      "question": "Содержит ли документ все обязательные сведения по Положению?",
+      "file": "documents/open-004.png"
+    },
+    "response": {
+      "document_id": "open-004",
+      "document_type": "study_certificate",
+      "document_type_title": "Справка об обучении",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ (MEET ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Климов Борис Дмитриевич\nНазвание вуза: Учебный университет «Меридиан»\nНаправление подготовки: 09.03.01 Информатика и вычислительная техника\nФорма обучения: очно-заочная\nНачало периода обучения: 1 сентября 2023 года\nОкончание периода обучения: 31 августа 2026 года\nНомер справки: ОБ-1004\nДата выдачи: 20 сентября 2026 года\nПодпись сотрудника:\nм.п.\nBee сведелия вымь Подгизь и печать учебными\nобразца open 964",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 91.21,
+      "fields": {
+        "student_name": "Климов Борис Дмитриевич",
+        "university": "Учебный университет «Меридиан»",
+        "program": "09.03.01 Информатика и вычислительная техника",
+        "study_form": "очно-заочная",
+        "study_start": "2023-09-01",
+        "study_end": "2026-08-31",
+        "document_number": "ОБ-1004",
+        "issue_date": "2026-09-20",
+        "signature_present": true,
+        "seal_present": false
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Климов Борис Дмитриевич",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 92,
+            "y": 366,
+            "width": 431,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "university",
+          "label": "Название вуза",
+          "value": "Учебный университет «Меридиан»",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:university"
+          ],
+          "box": {
+            "x": 93,
+            "y": 419,
+            "width": 515,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "program",
+          "label": "Направление подготовки",
+          "value": "09.03.01 Информатика и вычислительная техника",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:program"
+          ],
+          "box": {
+            "x": 93,
+            "y": 472,
+            "width": 775,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_form",
+          "label": "Форма обучения",
+          "value": "очно-заочная",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_form"
+          ],
+          "box": {
+            "x": 92,
+            "y": 523,
+            "width": 317,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_start",
+          "label": "Начало периода обучения",
+          "value": "2023-09-01",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_start"
+          ],
+          "box": {
+            "x": 93,
+            "y": 576,
+            "width": 497,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "study_end",
+          "label": "Окончание периода обучения",
+          "value": "2026-08-31",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_end"
+          ],
+          "box": {
+            "x": 92,
+            "y": 628,
+            "width": 526,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ОБ-1004",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 93,
+            "y": 680,
+            "width": 251,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "2026-09-20",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": {
+            "x": 91,
+            "y": 734,
+            "width": 373,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись сотрудника",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 437,
+            "y": 1214,
+            "width": 166,
+            "height": 33
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "pixels": 1421,
+            "box": [
+              437,
+              1214,
+              166,
+              33
+            ],
+            "strength": 1.0,
+            "component_count": 1,
+            "kept_components": 1,
+            "plausible": true
+          }
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать вуза",
+          "present": false,
+          "confidence": 0.0,
+          "box": null,
+          "method": "",
+          "evidence": {}
+        }
+      ],
+      "validation": {
+        "status": "missing_fields",
+        "missing_fields": [
+          "seal_present"
+        ],
+        "sources": [
+          "rule:3.3"
+        ]
+      },
+      "validation_message": "Предварительная проверка: не хватает Печать вуза. Требования: пункты 3.3 Положения. Решение принимает сотрудник деканата.",
+      "answer": {
+        "question_id": "open-004-demo",
+        "answerable": true,
+        "value": "missing_fields",
+        "answer": "Не хватает сведения: Печать вуза. Основание: пункт 3.3 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+        "sources": [
+          "rule:3.3"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Нет ни подписи, ни печати: оба источника rule:3.2 и rule:3.3",
+    "request": {
+      "document_type": "study_certificate",
+      "question": "Содержит ли документ все обязательные сведения по Положению?",
+      "file": "documents/open-010.png"
+    },
+    "response": {
+      "document_id": "open-010",
+      "document_type": "study_certificate",
+      "document_type_title": "Справка об обучении",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Петров Андрей Николаевич\nНазвание вуза: Учебный институт «Вектор»\nНаправление подготовки: 42.03.02 Журналистика\nФорма обучения: очно-заочная\nНачало периода обучения: 1 сентября 2023 года\nОкончание периода обучения: 31 августа 2026 года\nНомер справки: ОБ-1010\nДата выдачи: 20 сентября 2026 года\nПодпись сотрудника:\nм.п.\nBee сведения вымь Подгизь и печать учебными\nобразца open 919",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 91.5,
+      "fields": {
+        "student_name": "Петров Андрей Николаевич",
+        "university": "Учебный институт «Вектор»",
+        "program": "42.03.02 Журналистика",
+        "study_form": "очно-заочная",
+        "study_start": "2023-09-01",
+        "study_end": "2026-08-31",
+        "document_number": "ОБ-1010",
+        "issue_date": "2026-09-20",
+        "signature_present": false,
+        "seal_present": false
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Петров Андрей Николаевич",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 92,
+            "y": 366,
+            "width": 441,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "university",
+          "label": "Название вуза",
+          "value": "Учебный институт «Вектор»",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:university"
+          ],
+          "box": {
+            "x": 93,
+            "y": 419,
+            "width": 444,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "program",
+          "label": "Направление подготовки",
+          "value": "42.03.02 Журналистика",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:program"
+          ],
+          "box": {
+            "x": 93,
+            "y": 472,
+            "width": 503,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_form",
+          "label": "Форма обучения",
+          "value": "очно-заочная",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_form"
+          ],
+          "box": {
+            "x": 92,
+            "y": 523,
+            "width": 317,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_start",
+          "label": "Начало периода обучения",
+          "value": "2023-09-01",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_start"
+          ],
+          "box": {
+            "x": 93,
+            "y": 576,
+            "width": 497,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "study_end",
+          "label": "Окончание периода обучения",
+          "value": "2026-08-31",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_end"
+          ],
+          "box": {
+            "x": 92,
+            "y": 628,
+            "width": 526,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ОБ-1010",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 93,
+            "y": 680,
+            "width": 251,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "2026-09-20",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": {
+            "x": 91,
+            "y": 734,
+            "width": 373,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись сотрудника",
+          "present": false,
+          "confidence": 0.0,
+          "box": null,
+          "method": "",
+          "evidence": {}
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать вуза",
+          "present": false,
+          "confidence": 0.0,
+          "box": null,
+          "method": "",
+          "evidence": {}
+        }
+      ],
+      "validation": {
+        "status": "missing_fields",
+        "missing_fields": [
+          "signature_present",
+          "seal_present"
+        ],
+        "sources": [
+          "rule:3.2",
+          "rule:3.3"
+        ]
+      },
+      "validation_message": "Предварительная проверка: не хватает Подпись сотрудника, Печать вуза. Требования: пункты 3.2, 3.3 Положения. Решение принимает сотрудник деканата.",
+      "answer": {
+        "question_id": "open-010-demo",
+        "answerable": true,
+        "value": "missing_fields",
+        "answer": "Не хватает сведений: Подпись сотрудника, Печать вуза. Основание: пункта 3.2, 3.3 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+        "sources": [
+          "rule:3.2",
+          "rule:3.3"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Заявление с пропуском: не хватает причины отпуска (rule:4.1)",
+    "request": {
+      "document_type": "academic_leave_application",
+      "question": "Содержит ли документ все обязательные сведения по Положению?",
+      "file": "documents/open-014.png"
+    },
+    "response": {
+      "document_id": "open-014",
+      "document_type": "academic_leave_application",
+      "document_type_title": "Заявление на академический отпуск",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИХ ДОКУМЕНТ ДЛЯ ХАКАТОНА “AE СИЛЫ\nВ деканат учебного университета «Меридиан»\nЗАЯВЛЕНИЕ НА АКАДЕМИЧЕСКИЙ ОТПУСК\nПрошу предоставить академический отпуск на указанный период.\nФИО студента: Орлов Фёдор Викторович\nУчебная группа: ЖР-22-3\nКурс: 2\nПричина отпуска:\nДата начала отпуска: 01.11.2026\nДата окончания отпуска: 31.08.2027\nДата заявления: 09.10.2026\nПодпись студента: Меир\nВсе сведения Подгить\nобразца среп 0*4",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 87.04,
+      "fields": {
+        "student_name": "Орлов Фёдор Викторович",
+        "group": "ЖР-22-3",
+        "course": "2",
+        "leave_reason": "не найдено",
+        "leave_start": "2026-11-01",
+        "leave_end": "2027-08-31",
+        "application_date": "2026-10-09",
+        "signature_present": true
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Орлов Фёдор Викторович",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 369,
+            "width": 419,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "group",
+          "label": "Учебная группа",
+          "value": "ЖР-22-3",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:group"
+          ],
+          "box": {
+            "x": 107,
+            "y": 422,
+            "width": 255,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "course",
+          "label": "Курс",
+          "value": "2",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:course"
+          ],
+          "box": {
+            "x": 108,
+            "y": 472,
+            "width": 71,
+            "height": 26
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "leave_reason",
+          "label": "Причина отпуска",
+          "value": "не найдено",
+          "found": false,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:leave_reason"
+          ],
+          "box": null,
+          "confidence": 0.0
+        },
+        {
+          "key": "leave_start",
+          "label": "Дата начала отпуска",
+          "value": "2026-11-01",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:leave_start"
+          ],
+          "box": {
+            "x": 107,
+            "y": 579,
+            "width": 332,
+            "height": 20
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "leave_end",
+          "label": "Дата окончания отпуска",
+          "value": "2027-08-31",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:leave_end"
+          ],
+          "box": {
+            "x": 107,
+            "y": 630,
+            "width": 365,
+            "height": 22
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "application_date",
+          "label": "Дата заявления",
+          "value": "2026-10-09",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:application_date"
+          ],
+          "box": {
+            "x": 107,
+            "y": 683,
+            "width": 282,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись студента",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 452,
+            "y": 1210,
+            "width": 166,
+            "height": 38
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "pixels": 1475,
+            "box": [
+              452,
+              1210,
+              166,
+              38
+            ],
+            "strength": 1.0,
+            "component_count": 1,
+            "kept_components": 1,
+            "plausible": true
+          }
+        }
+      ],
+      "validation": {
+        "status": "missing_fields",
+        "missing_fields": [
+          "leave_reason"
+        ],
+        "sources": [
+          "rule:4.1"
+        ]
+      },
+      "validation_message": "Предварительная проверка: не хватает Причина отпуска. Требования: пункты 4.1 Положения. Решение принимает сотрудник деканата.",
+      "answer": {
+        "question_id": "open-014-demo",
+        "answerable": true,
+        "value": "missing_fields",
+        "answer": "Не хватает сведения: Причина отпуска. Основание: пункт 4.1 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+        "sources": [
+          "rule:4.1"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Ответ по Положению: сотрудник деканата, rule:1.3",
+    "request": {
+      "document_type": "academic_leave_application",
+      "question": "Кто принимает окончательное решение о принятии документа?",
+      "file": "documents/open-018.png"
+    },
+    "response": {
+      "document_id": "open-018",
+      "document_type": "academic_leave_application",
+      "document_type_title": "Заявление на академический отпуск",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИХ ДОКУМЕНТ ДЛЯ ХАКАТОНА “AE СИЛЫ\nВ деканат учебного университета «Меридиан»\nЗАЯВЛЕНИЕ НА АКАДЕМИЧЕСКИЙ ОТПУСК\nПрошу предоставить академический отпуск на указанный период.\nФИО студента: Захаров Роман Дмитриевич\nУчебная группа: ИВТ-22-3\nКурс: 3\nПричина отпуска: по семейным обстоятельствам\nДата начала отпуска: 01.11.2026\nДата окончания отпуска: 31.08.2027\nДата заявления: 03.10.2026\nПодпись студента: РИ Алый\nВсе Подгить и ta yO IME MaKe\nобразца среп o's",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 83.9,
+      "fields": {
+        "student_name": "Захаров Роман Дмитриевич",
+        "group": "ИВТ-22-3",
+        "course": "3",
+        "leave_reason": "по семейным обстоятельствам",
+        "leave_start": "2026-11-01",
+        "leave_end": "2027-08-31",
+        "application_date": "2026-10-03",
+        "signature_present": true
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Захаров Роман Дмитриевич",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 369,
+            "width": 443,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "group",
+          "label": "Учебная группа",
+          "value": "ИВТ-22-3",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:group"
+          ],
+          "box": {
+            "x": 107,
+            "y": 422,
+            "width": 265,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "course",
+          "label": "Курс",
+          "value": "3",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:course"
+          ],
+          "box": {
+            "x": 108,
+            "y": 472,
+            "width": 71,
+            "height": 26
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "leave_reason",
+          "label": "Причина отпуска",
+          "value": "по семейным обстоятельствам",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:leave_reason"
+          ],
+          "box": {
+            "x": 108,
+            "y": 526,
+            "width": 498,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "leave_start",
+          "label": "Дата начала отпуска",
+          "value": "2026-11-01",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:leave_start"
+          ],
+          "box": {
+            "x": 107,
+            "y": 579,
+            "width": 332,
+            "height": 20
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "leave_end",
+          "label": "Дата окончания отпуска",
+          "value": "2027-08-31",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:leave_end"
+          ],
+          "box": {
+            "x": 107,
+            "y": 630,
+            "width": 365,
+            "height": 22
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "application_date",
+          "label": "Дата заявления",
+          "value": "2026-10-03",
+          "found": true,
+          "rule": "rule:4.1",
+          "sources": [
+            "field:application_date"
+          ],
+          "box": {
+            "x": 107,
+            "y": 683,
+            "width": 282,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись студента",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 452,
+            "y": 1210,
+            "width": 166,
+            "height": 38
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "pixels": 1429,
+            "box": [
+              452,
+              1210,
+              166,
+              38
+            ],
+            "strength": 1.0,
+            "component_count": 1,
+            "kept_components": 1,
+            "plausible": true
+          }
+        }
+      ],
+      "validation": {
+        "status": "document_ok",
+        "missing_fields": [],
+        "sources": [
+          "rule:4.1",
+          "rule:4.2"
+        ]
+      },
+      "validation_message": "Документ содержит все обязательные сведения по пунктам 4.1, 4.2 Положения. Окончательное решение примет сотрудник деканата.",
+      "answer": {
+        "question_id": "open-018-demo",
+        "answerable": true,
+        "value": "сотрудник деканата",
+        "answer": "Окончательное решение принимает сотрудник деканата, пункт 1.3 Положения. Сервис даёт только предварительную проверку.",
+        "sources": [
+          "rule:1.3"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Справка о практике: графическая подпись и печать обнаружены",
+    "request": {
+      "document_type": "internship_certificate",
+      "question": "Содержит ли документ все обязательные сведения по Положению?",
+      "file": "documents/open-021.png"
+    },
+    "response": {
+      "document_id": "open-021",
+      "document_type": "internship_certificate",
+      "document_type_title": "Справка о практике",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА \"HE ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения о прохождении практики приведены ниже.\nФИО студента: Данилов Олег Алексеевич\nНазвание организации: Учебная организация «Спектр»\nДата начала практики: 01.06.2026\nДата окончания практики: 15.07.2026\nФИО руководителя практики: Ильина Елена Андреевна\nОценка: удовлетворительно\nНомер справки: ПР-2021\nДата выдачи: 18.07.2026\nУЧЕБНАЯ\nПодпись руководителя: ПЕЧАТЬ\nМАКЕТ\nм.п.\nBee сведения Подпить и учебными\nобразца среп 021",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 90.98,
+      "fields": {
+        "student_name": "Данилов Олег Алексеевич",
+        "organization": "Учебная организация «Спектр»",
+        "internship_start": "2026-06-01",
+        "internship_end": "2026-07-15",
+        "supervisor_name": "Ильина Елена Андреевна",
+        "grade": "удовлетворительно",
+        "document_number": "ПР-2021",
+        "issue_date": "2026-07-18",
+        "signature_present": true,
+        "seal_present": true
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Данилов Олег Алексеевич",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 366,
+            "width": 427,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "organization",
+          "label": "Название организации",
+          "value": "Учебная организация «Спектр»",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:organization"
+          ],
+          "box": {
+            "x": 108,
+            "y": 419,
+            "width": 562,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "internship_start",
+          "label": "Дата начала практики",
+          "value": "2026-06-01",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:internship_start"
+          ],
+          "box": {
+            "x": 107,
+            "y": 472,
+            "width": 344,
+            "height": 20
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "internship_end",
+          "label": "Дата окончания практики",
+          "value": "2026-07-15",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:internship_end"
+          ],
+          "box": {
+            "x": 107,
+            "y": 523,
+            "width": 377,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "supervisor_name",
+          "label": "ФИО руководителя практики",
+          "value": "Ильина Елена Андреевна",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:supervisor_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 576,
+            "width": 567,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "grade",
+          "label": "Оценка",
+          "value": "удовлетворительно",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:grade"
+          ],
+          "box": {
+            "x": 107,
+            "y": 628,
+            "width": 287,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ПР-2021",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 108,
+            "y": 680,
+            "width": 248,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "2026-07-18",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": {
+            "x": 107,
+            "y": 734,
+            "width": 251,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись руководителя",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 452,
+            "y": 1211,
+            "width": 166,
+            "height": 35
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "pixels": 1446,
+            "box": [
+              452,
+              1211,
+              166,
+              35
+            ],
+            "strength": 1.0,
+            "component_count": 1,
+            "kept_components": 1,
+            "plausible": true
+          }
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать организации",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 820,
+            "y": 1159,
+            "width": 159,
+            "height": 159
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "box": [
+              820,
+              1159,
+              159,
+              159
+            ],
+            "area": 1580,
+            "fill": 0.0625,
+            "strength": 1.0,
+            "plausible": true,
+            "circles": 5
+          }
+        }
+      ],
+      "validation": {
+        "status": "document_ok",
+        "missing_fields": [],
+        "sources": [
+          "rule:5.1",
+          "rule:5.2",
+          "rule:5.3"
+        ]
+      },
+      "validation_message": "Документ содержит все обязательные сведения по пунктам 5.1, 5.2, 5.3 Положения. Окончательное решение примет сотрудник деканата.",
+      "answer": {
+        "question_id": "open-021-demo",
+        "answerable": true,
+        "value": "document_ok",
+        "answer": "Документ содержит все обязательные сведения по пунктам 5.1, 5.2, 5.3 Положения. Окончательное решение примет сотрудник деканата.",
+        "sources": [
+          "rule:5.1",
+          "rule:5.2",
+          "rule:5.3"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Печать есть, подписи нет (rule:5.2)",
+    "request": {
+      "document_type": "internship_certificate",
+      "question": "Содержит ли документ все обязательные сведения по Положению?",
+      "file": "documents/open-023.png"
+    },
+    "response": {
+      "document_id": "open-023",
+      "document_type": "internship_certificate",
+      "document_type_title": "Справка о практике",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА HE /МЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения о прохождении практики приведены ниже.\nФИО студента: Шестаков Глеб Дмитриевич\nНазвание организации: Учебная организация «Спектр»\nДата начала практики: 01.06.2026\nДата окончания практики: 15.07.2026\nФИО руководителя практики: Соколова Анна Викторовна\nОценка: хорошо\nНомер справки: ПР-2023\nДата выдачи: 18.07.2026\nУЧЕБНАЯ\nПодпись руководителя: ПЕЧАТЬ\nМАКЕТ\nм.п.\nВсе сведения вымьг.гень Подпизь являются учебными Mace\" AM\nификатор образца среп 023",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 89.91,
+      "fields": {
+        "student_name": "Шестаков Глеб Дмитриевич",
+        "organization": "Учебная организация «Спектр»",
+        "internship_start": "2026-06-01",
+        "internship_end": "2026-07-15",
+        "supervisor_name": "Соколова Анна Викторовна",
+        "grade": "хорошо",
+        "document_number": "ПР-2023",
+        "issue_date": "2026-07-18",
+        "signature_present": false,
+        "seal_present": true
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Шестаков Глеб Дмитриевич",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 366,
+            "width": 441,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "organization",
+          "label": "Название организации",
+          "value": "Учебная организация «Спектр»",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:organization"
+          ],
+          "box": {
+            "x": 108,
+            "y": 419,
+            "width": 562,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "internship_start",
+          "label": "Дата начала практики",
+          "value": "2026-06-01",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:internship_start"
+          ],
+          "box": {
+            "x": 107,
+            "y": 472,
+            "width": 344,
+            "height": 20
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "internship_end",
+          "label": "Дата окончания практики",
+          "value": "2026-07-15",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:internship_end"
+          ],
+          "box": {
+            "x": 107,
+            "y": 523,
+            "width": 377,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "supervisor_name",
+          "label": "ФИО руководителя практики",
+          "value": "Соколова Анна Викторовна",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:supervisor_name"
+          ],
+          "box": {
+            "x": 107,
+            "y": 576,
+            "width": 582,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "grade",
+          "label": "Оценка",
+          "value": "хорошо",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:grade"
+          ],
+          "box": {
+            "x": 107,
+            "y": 628,
+            "width": 163,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ПР-2023",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 108,
+            "y": 680,
+            "width": 251,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "2026-07-18",
+          "found": true,
+          "rule": "rule:5.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": {
+            "x": 107,
+            "y": 734,
+            "width": 251,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись руководителя",
+          "present": false,
+          "confidence": 0.0,
+          "box": null,
+          "method": "",
+          "evidence": {}
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать организации",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 820,
+            "y": 1159,
+            "width": 159,
+            "height": 159
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "box": [
+              820,
+              1159,
+              159,
+              159
+            ],
+            "area": 1580,
+            "fill": 0.0625,
+            "strength": 1.0,
+            "plausible": true,
+            "circles": 5
+          }
+        }
+      ],
+      "validation": {
+        "status": "missing_fields",
+        "missing_fields": [
+          "signature_present"
+        ],
+        "sources": [
+          "rule:5.2"
+        ]
+      },
+      "validation_message": "Предварительная проверка: не хватает Подпись руководителя. Требования: пункты 5.2 Положения. Решение принимает сотрудник деканата.",
+      "answer": {
+        "question_id": "open-023-demo",
+        "answerable": true,
+        "value": "missing_fields",
+        "answer": "Не хватает сведения: Подпись руководителя. Основание: пункт 5.2 Положения. Это предварительная проверка, решение принимает сотрудник деканата.",
+        "sources": [
+          "rule:5.2"
+        ]
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  },
+  {
+    "purpose": "Нет данных в документе и Положении",
+    "request": {
+      "document_type": "study_certificate",
+      "question": "Какова стоимость обучения за следующий семестр?",
+      "file": "documents/open-004.png"
+    },
+    "response": {
+      "document_id": "open-004",
+      "document_type": "study_certificate",
+      "document_type_title": "Справка об обучении",
+      "document_type_source": "request",
+      "document_type_confidence": 0.0,
+      "ocr_text": "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА : НЕ (MEET ЮРИДИЧЕСКОЙ СИЛЫ\nУчебный документооборот / отдел сопровождения студентов\nСведения об обучении студента приведены ниже.\nФИО студента: Климов Борис Дмитриевич\nНазвание вуза: Учебный университет «Меридиан»\nНаправление подготовки: 09.03.01 Информатика и вычислительная техника\nФорма обучения: очно-заочная\nНачало периода обучения: 1 сентября 2023 года\nОкончание периода обучения: 31 августа 2026 года\nНомер справки: ОБ-1004\nДата выдачи: 20 сентября 2026 года\nПодпись сотрудника:\nм.п.\nBee сведелия вымь Подгизь и печать учебными\nобразца open 964",
+      "ocr_engine": "tesseract",
+      "ocr_languages": "rus+eng",
+      "ocr_mean_confidence": 91.21,
+      "fields": {
+        "student_name": "Климов Борис Дмитриевич",
+        "university": "Учебный университет «Меридиан»",
+        "program": "09.03.01 Информатика и вычислительная техника",
+        "study_form": "очно-заочная",
+        "study_start": "2023-09-01",
+        "study_end": "2026-08-31",
+        "document_number": "ОБ-1004",
+        "issue_date": "2026-09-20",
+        "signature_present": true,
+        "seal_present": false
+      },
+      "field_views": [
+        {
+          "key": "student_name",
+          "label": "ФИО студента",
+          "value": "Климов Борис Дмитриевич",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:student_name"
+          ],
+          "box": {
+            "x": 92,
+            "y": 366,
+            "width": 431,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "university",
+          "label": "Название вуза",
+          "value": "Учебный университет «Меридиан»",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:university"
+          ],
+          "box": {
+            "x": 93,
+            "y": 419,
+            "width": 515,
+            "height": 22
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "program",
+          "label": "Направление подготовки",
+          "value": "09.03.01 Информатика и вычислительная техника",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:program"
+          ],
+          "box": {
+            "x": 93,
+            "y": 472,
+            "width": 775,
+            "height": 20
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_form",
+          "label": "Форма обучения",
+          "value": "очно-заочная",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_form"
+          ],
+          "box": {
+            "x": 92,
+            "y": 523,
+            "width": 317,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "study_start",
+          "label": "Начало периода обучения",
+          "value": "2023-09-01",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_start"
+          ],
+          "box": {
+            "x": 93,
+            "y": 576,
+            "width": 497,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "study_end",
+          "label": "Окончание периода обучения",
+          "value": "2026-08-31",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:study_end"
+          ],
+          "box": {
+            "x": 92,
+            "y": 628,
+            "width": 526,
+            "height": 21
+          },
+          "confidence": 0.95
+        },
+        {
+          "key": "document_number",
+          "label": "Номер справки",
+          "value": "ОБ-1004",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:document_number"
+          ],
+          "box": {
+            "x": 93,
+            "y": 680,
+            "width": 251,
+            "height": 21
+          },
+          "confidence": 0.9
+        },
+        {
+          "key": "issue_date",
+          "label": "Дата выдачи",
+          "value": "2026-09-20",
+          "found": true,
+          "rule": "rule:3.1",
+          "sources": [
+            "field:issue_date"
+          ],
+          "box": {
+            "x": 91,
+            "y": 734,
+            "width": 373,
+            "height": 20
+          },
+          "confidence": 0.95
+        }
+      ],
+      "mark_views": [
+        {
+          "key": "signature_present",
+          "label": "Подпись сотрудника",
+          "present": true,
+          "confidence": 1.0,
+          "box": {
+            "x": 437,
+            "y": 1214,
+            "width": 166,
+            "height": 33
+          },
+          "method": "colour",
+          "evidence": {
+            "method": "colour",
+            "pixels": 1421,
+            "box": [
+              437,
+              1214,
+              166,
+              33
+            ],
+            "strength": 1.0,
+            "component_count": 1,
+            "kept_components": 1,
+            "plausible": true
+          }
+        },
+        {
+          "key": "seal_present",
+          "label": "Печать вуза",
+          "present": false,
+          "confidence": 0.0,
+          "box": null,
+          "method": "",
+          "evidence": {}
+        }
+      ],
+      "validation": {
+        "status": "missing_fields",
+        "missing_fields": [
+          "seal_present"
+        ],
+        "sources": [
+          "rule:3.3"
+        ]
+      },
+      "validation_message": "Предварительная проверка: не хватает Печать вуза. Требования: пункты 3.3 Положения. Решение принимает сотрудник деканата.",
+      "answer": {
+        "question_id": "open-004-demo",
+        "answerable": false,
+        "value": null,
+        "answer": "В документе и в Положении нет сведений по теме «стоимость обучения». Положение такие условия не устанавливает. Обратитесь в деканат.",
+        "sources": []
+      },
+      "boxes": [],
+      "warnings": []
+    }
+  }
+]

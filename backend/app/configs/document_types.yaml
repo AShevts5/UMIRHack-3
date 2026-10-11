@@ -1,0 +1,194 @@
+# Описания типов документов для «Онлайн-деканата» (UMIR 3).
+#
+# Здесь НЕТ значений полей и НЕТ эталонных ответов: только описания того,
+# какие ключи обязательны для типа, как поля называются на изображении и
+# какие пункты вымышленного Положения (rules.md) их требуют.
+#
+# Файл читается backend/app/services/document_config.py. Новый тип документа
+# добавляется правкой этого файла — код менять не нужно (бонус «новый тип
+# через конфиг»).
+
+version: 1
+
+document_types:
+  study_certificate:
+    title: "Справка об обучении"
+    title_anchors:
+      - "справка об обучении"
+      - "справка о обучении"
+    title_pattern: 'СПРАВКА\s+ОБ\s+ОБУЧЕНИИ'
+    text_rule: "rule:3.1"
+    signature_rule: "rule:3.2"
+    seal_rule: "rule:3.3"
+    signature_anchor: "подпись"
+    has_seal: true
+    # Порядок ключей = порядок строк в документе.
+    fields:
+      - key: student_name
+        label: "ФИО студента"
+        type: person
+        patterns: ['ФИО\s+студента']
+        synonyms: ["фио студента", "фио", "студент", "фамилия имя отчество", "имя студента"]
+      - key: university
+        label: "Название вуза"
+        type: organization
+        patterns: ['Название\s+вуза', 'Наименование\s+вуза']
+        synonyms: ["название вуза", "вуз", "университет", "наименование вуза", "учебное заведение"]
+      - key: program
+        label: "Направление подготовки"
+        type: text
+        patterns: ['Направление\s+подготовки', 'Направление']
+        synonyms: ["направление подготовки", "направление", "специальность", "программа"]
+      - key: study_form
+        label: "Форма обучения"
+        type: text
+        patterns: ['Форма\s+обучения']
+        synonyms: ["форма обучения", "форма", "очная", "заочная"]
+      - key: study_start
+        label: "Начало периода обучения"
+        type: date
+        patterns: ['Начало\s+периода\s+обучения', 'Дата\s+начала\s+обучения']
+        synonyms: ["начало периода обучения", "начало обучения", "дата начала обучения"]
+      - key: study_end
+        label: "Окончание периода обучения"
+        type: date
+        patterns: ['Окончание\s+периода\s+обучения', 'Дата\s+окончания\s+обучения']
+        synonyms: ["окончание периода обучения", "окончание обучения", "дата окончания обучения"]
+      - key: document_number
+        label: "Номер справки"
+        type: document_number
+        patterns: ['Номер\s+справки']
+        synonyms: ["номер справки", "номер документа", "номер"]
+      - key: issue_date
+        label: "Дата выдачи"
+        type: date
+        patterns: ['Дата\s+выдачи']
+        synonyms: ["дата выдачи", "выдана", "дата"]
+    marks:
+      - key: signature_present
+        label: "Подпись сотрудника"
+        rule: "rule:3.2"
+        anchors: ['Подпись\s+сотрудника', 'Подпись']
+      - key: seal_present
+        label: "Печать вуза"
+        rule: "rule:3.3"
+        anchors: ['М\.?\s?П\.?', 'Место\s+печати', 'Печать']
+        failure_hint: "Печать вуза"
+
+  academic_leave_application:
+    title: "Заявление на академический отпуск"
+    title_anchors:
+      - "заявление на академический отпуск"
+      - "заявление об академическом отпуске"
+    title_pattern: 'ЗАЯВЛЕНИЕ\s+НА\s+АКАДЕМИЧЕСКИЙ\s+ОТПУСК'
+    text_rule: "rule:4.1"
+    signature_rule: "rule:4.2"
+    seal_rule: null
+    signature_anchor: "подпись"
+    has_seal: false
+    fields:
+      - key: student_name
+        label: "ФИО студента"
+        type: person
+        patterns: ['ФИО\s+студента', 'ФИО\s+обучающегося']
+        synonyms: ["фио студента", "фио", "студент", "фамилия имя отчество", "имя студента"]
+      - key: group
+        label: "Учебная группа"
+        type: code
+        patterns: ['Учебная\s+группа', 'Группа']
+        synonyms: ["учебная группа", "группа", "номер группы"]
+      - key: course
+        label: "Курс"
+        type: course
+        patterns: ['Курс']
+        synonyms: ["курс", "курс обучения", "на каком курсе"]
+      - key: leave_reason
+        label: "Причина отпуска"
+        type: text
+        patterns: ['Причина\s+отпуска', 'Причина']
+        synonyms: ["причина отпуска", "причина", "основание отпуска"]
+      - key: leave_start
+        label: "Дата начала отпуска"
+        type: date
+        patterns: ['Дата\s+начала\s+отпуска']
+        synonyms: ["дата начала отпуска", "начало отпуска"]
+      - key: leave_end
+        label: "Дата окончания отпуска"
+        type: date
+        patterns: ['Дата\s+окончания\s+отпуска']
+        synonyms: ["дата окончания отпуска", "окончание отпуска"]
+      - key: application_date
+        label: "Дата заявления"
+        type: date
+        patterns: ['Дата\s+заявления']
+        synonyms: ["дата заявления", "дата подачи заявления", "когда подано заявление"]
+    marks:
+      - key: signature_present
+        label: "Подпись студента"
+        rule: "rule:4.2"
+        anchors: ['Подпись\s+студента', 'Подпись']
+        failure_hint: "Подпись студента"
+
+  internship_certificate:
+    title: "Справка о практике"
+    title_anchors:
+      - "справка о практике"
+    title_pattern: 'СПРАВКА\s+О\s+ПРАКТИКЕ'
+    text_rule: "rule:5.1"
+    signature_rule: "rule:5.2"
+    seal_rule: "rule:5.3"
+    signature_anchor: "подпись"
+    has_seal: true
+    fields:
+      - key: student_name
+        label: "ФИО студента"
+        type: person
+        patterns: ['ФИО\s+студента']
+        synonyms: ["фио студента", "фио", "студент", "фамилия имя отчество", "имя студента"]
+      - key: organization
+        label: "Название организации"
+        type: organization
+        patterns: ['Название\s+организации', 'Наименование\s+организации', 'Организация']
+        synonyms: ["название организации", "организация", "место практики", "предприятие"]
+      - key: internship_start
+        label: "Дата начала практики"
+        type: date
+        patterns: ['Дата\s+начала\s+практики']
+        synonyms: ["дата начала практики", "начало практики"]
+      - key: internship_end
+        label: "Дата окончания практики"
+        type: date
+        patterns: ['Дата\s+окончания\s+практики']
+        synonyms: ["дата окончания практики", "окончание практики"]
+      - key: supervisor_name
+        label: "ФИО руководителя практики"
+        type: person
+        patterns: ['ФИО\s+руководителя\s+практики', 'Руководитель\s+практики']
+        synonyms:
+          ["фио руководителя практики", "руководитель практики", "руководитель", "фио руководителя"]
+      - key: grade
+        label: "Оценка"
+        type: grade
+        patterns: ['Оценка']
+        synonyms: ["оценка", "отметка", "результат практики"]
+      - key: document_number
+        label: "Номер справки"
+        type: document_number
+        patterns: ['Номер\s+справки']
+        synonyms: ["номер справки", "номер документа", "номер"]
+      - key: issue_date
+        label: "Дата выдачи"
+        type: date
+        patterns: ['Дата\s+выдачи']
+        synonyms: ["дата выдачи", "выдана", "дата"]
+    marks:
+      - key: signature_present
+        label: "Подпись руководителя"
+        rule: "rule:5.2"
+        anchors: ['Подпись\s+руководителя', 'Подпись']
+        failure_hint: "Подпись руководителя"
+      - key: seal_present
+        label: "Печать организации"
+        rule: "rule:5.3"
+        anchors: ['М\.?\s?П\.?', 'Место\s+печати', 'Печать']
+        failure_hint: "Печать организации"

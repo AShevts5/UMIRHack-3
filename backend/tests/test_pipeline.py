@@ -1,13 +1,13 @@
-"""End-to-end pipeline tests.
+"""Сквозные тесты pipeline.
 
-Two layers:
+Два уровня:
 
-* **synthetic end-to-end** — a document image is drawn from scratch with Pillow
-  (never taken from the case archive), fed through the real loader → OCR → parser →
-  markers → rules → questions path, and the resulting contract is asserted.  This
-  proves the pipeline is not tied to the provided samples.
-* **open-set** — the same path on the organizer archive, including the integrity
-  test with renamed files and re-numbered ids.
+* **синтетика** — страницу рисуем с нуля через Pillow (из архива кейса ничего не
+  берём) и прогоняем через настоящий путь loader → OCR → парсер → отметки → правила →
+  вопросы, а потом проверяем контракт. Так видно, что pipeline не привязан к выданным
+  образцам.
+* **открытый набор** — тот же путь на архиве организаторов, включая проверку
+  целостности с переименованными файлами и новыми id.
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ NOT_FOUND = "не найдено"
 
 
 # ---------------------------------------------------------------------------
-# Synthetic document renderer (used by the archive-independent tests)
+# Рисовалка синтетических документов (для тестов, которым архив не нужен)
 # ---------------------------------------------------------------------------
 
 
@@ -55,10 +55,10 @@ def _font(size: int):
 
 
 def render_study_certificate(values: dict[str, str], include_signature: bool = True, include_seal: bool = True) -> bytes:
-    """Draw a synthetic «Справка об обучении» page; returns PNG bytes.
+    """Рисуем синтетическую «Справку об обучении» и отдаём PNG-байты.
 
-    The layout mirrors the field captions used by the case so the same label
-    anchors apply, but every value here is invented by the test.
+    Вёрстка повторяет подписи полей из кейса, чтобы сработали те же якоря, но все
+    значения здесь придуманы тестом.
     """
     width, height = 1700, 2400
     image = Image.new("RGB", (width, height), (255, 255, 255))
@@ -173,7 +173,7 @@ class TestLoader:
 
 @requires_ocr
 class TestSyntheticDocumentEndToEnd:
-    """The whole chain on a document the project has never seen before."""
+    """Вся цепочка на документе, которого проект раньше не видел."""
 
     @pytest.fixture(scope="class")
     @classmethod
@@ -229,13 +229,13 @@ class TestSyntheticDocumentEndToEnd:
         response = build_api_response(analysed, include_boxes=False)
         dumped = response.model_dump()
         assert dumped["document_type"] == "study_certificate"
-        # 8 text fields + 2 graphic marks of this type.
+        # 8 текстовых полей + 2 графические отметки этого типа.
         assert len(dumped["field_views"]) == 8
         assert len(dumped["mark_views"]) == 2
         assert dumped["ocr_text"]
 
     def test_negative_mark_case(self) -> None:
-        """Same layout, no ink and no seal mock-up: both flags must be False."""
+        """Та же вёрстка, но без чернил и без макета печати: оба флага должны быть False."""
         pipeline = Pipeline(use_cache=False)
         payload = render_study_certificate(SYNTHETIC_VALUES, include_signature=False, include_seal=False)
         result = pipeline.analyze_bytes(payload, "synthetic-no-marks.png", "study_certificate")
@@ -253,7 +253,7 @@ class TestSyntheticDocumentEndToEnd:
         result = pipeline.analyze_bytes(payload, "synthetic-missing.png", "study_certificate")
         assert result.fields["document_number"] == NOT_FOUND
         assert result.fields["study_start"] == NOT_FOUND
-        # Absence of two fields must not erase the remaining values.
+        # Пропажа двух полей не должна стирать остальные значения.
         assert result.fields["student_name"] == SYNTHETIC_VALUES["student_name"]
         assert set(result.validation.missing_fields) == {"document_number", "study_start"}
         assert result.validation.sources == ["rule:3.1"]
@@ -303,7 +303,7 @@ class TestPipelineOnOpenSet:
     def test_renamed_files_and_renumbered_ids_are_irrelevant(
         self, tmp_path: Path, documents, questions
     ) -> None:
-        """Integrity test: predictions must not depend on names or ids."""
+        """Проверка целостности: предсказания не должны зависеть от имён и id."""
         random_gen = random.Random(7)
         anon_dir = tmp_path / "anon"
         anon_dir.mkdir()

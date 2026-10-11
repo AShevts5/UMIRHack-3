@@ -1,4 +1,4 @@
-"""Contract tests for the results JSON and the HTTP API."""
+"""Контрактные тесты JSON с результатами и HTTP API."""
 
 from __future__ import annotations
 
@@ -146,7 +146,7 @@ class TestAnalyzeEndpointOpenSet:
         assert marks["signature_present"]["box"] is not None
 
     def test_ocr_reuses_cache_between_requests(self) -> None:
-        """Two identical requests must not run OCR twice (no per-request model load)."""
+        """Два одинаковых запроса не должны гонять OCR дважды (модель не грузится заново на каждый запрос)."""
         from backend.app.services.pipeline import pipeline
 
         before = pipeline.stats["documents"]
@@ -155,7 +155,7 @@ class TestAnalyzeEndpointOpenSet:
         self._post("open-005", "study_certificate")
         after = pipeline.stats["documents"]
         assert middle == before + 1
-        assert after == middle  # served from the cache
+        assert after == middle  # отдано из кэша
 
 
 class TestJsonContractOfExport:

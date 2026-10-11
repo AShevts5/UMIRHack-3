@@ -1,8 +1,8 @@
-"""Document type descriptions loaded from ``configs/document_types.yaml``.
+"""Описания типов документов, которые читаются из ``configs/document_types.yaml``.
 
-Keeping the type definitions in YAML (labels, anchors, rule numbers) is what makes
-the "new document type via config" bonus real: adding a type means adding a block
-to the YAML, not touching the parser, rules engine or question engine.
+Держим типы в YAML (подписи полей, якоря, номера пунктов) — именно поэтому бонус
+«новый тип документа через конфиг» настоящий: чтобы добавить тип, достаточно
+дописать блок в YAML, а парсер, движок правил и движок вопросов трогать не надо.
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ class DocumentTypeSpec:
 
     @property
     def required_rules(self) -> tuple[str, ...]:
-        """All mandatory requirement numbers for this type (rules.md 3.1-3.3 ...)."""
+        """Все обязательные пункты этого типа (rules.md 3.1–3.3 ...)."""
         rules = [self.text_rule]
         for mark in self.marks:
             if mark.rule not in rules:
@@ -94,11 +94,11 @@ class DocumentTypeSpec:
         return None
 
     def rule_for_field(self, key: str) -> str:
-        """Which Положение clause makes this *field key* mandatory."""
+        """Какой пункт Положения делает это поле обязательным."""
         return self.text_rule
 
     def rule_for_key(self, key: str) -> str | None:
-        """Clause for a field key or a mark key (`signature_present`, `seal_present`)."""
+        """Пункт для ключа поля или отметки (``signature_present``, ``seal_present``)."""
         if self.field(key) is not None:
             return self.text_rule
         mark = self.mark(key)
@@ -126,10 +126,10 @@ class DocumentTypeRegistry:
         return {code: spec.title for code, spec in self.specs.items()}
 
     def detect_type(self, text: str) -> tuple[str | None, float]:
-        """Bonus: guess the document type from recognised text.
+        """Бонус: угадываем тип документа по распознанному тексту.
 
-        Returns ``(code, score)``; ``code`` is ``None`` when nothing matches
-        confidently.  The manual choice always wins over this heuristic.
+        Возвращаем ``(code, score)``; ``code`` будет ``None``, если ничего не
+        совпало уверенно. Выбор типа руками всегда важнее этой эвристики.
         """
         normalized = norm_text(text)
         best_code, best_score = None, 0.0
@@ -224,6 +224,6 @@ def _cached_registry(path_str: str) -> DocumentTypeRegistry:
 
 
 def get_registry(path: str | Path | None = None) -> DocumentTypeRegistry:
-    """Cached registry accessor (config is read once per process)."""
+    """Реестр с кэшем: конфиг читается один раз на процесс."""
     config_path = Path(path) if path else settings.document_types_config
     return _cached_registry(str(config_path))

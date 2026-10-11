@@ -1,9 +1,9 @@
-"""Batch flow: ``documents.json`` + ``questions.json`` -> ``results.json``.
+"""Batch-прогон: ``documents.json`` + ``questions.json`` -> ``results.json``.
 
-Exactly the same pipeline as the web API is used for every document (technical
-task, flow B).  The exporter resolves the image/PDF path of each manifest entry,
-runs OCR once per document, answers all questions of that ``document_id`` and
-writes a ``results.json`` that satisfies ``results.schema.json``.
+Каждый документ идёт через тот же pipeline, что и веб-API (ТЗ, поток B). Экспортёр
+находит картинку/PDF по записи манифеста, один раз гоняет OCR, отвечает на все вопросы
+этого ``document_id`` и пишет ``results.json``, который проходит
+``results.schema.json``.
 
 Example
 -------
@@ -42,11 +42,10 @@ def _read_json(path: Path):
 
 
 def resolve_document_path(entry: dict, root: Path, prefer: str = "image") -> Path:
-    """Find the file of a manifest entry.
+    """Ищем файл документа из манифеста.
 
-    ``prefer`` chooses the primary representation (``image`` for PNG/JPG), and the
-    other one is used as a fallback so that the batch flow also works with an
-    archive that only ships PDFs.
+    ``prefer`` задаёт основное представление (``image`` — это PNG/JPG), второе берём
+    как запасное, поэтому batch работает и с архивом, где лежат одни PDF.
     """
     order = [prefer] + [key for key in ("image", "pdf") if key != prefer]
     candidates: list[Path] = []
@@ -73,11 +72,11 @@ def group_questions(questions: list[dict]) -> dict[str, list[tuple[str, str]]]:
 
 
 def fallback_payload(document_id: str, document_type: str, questions: list[tuple[str, str]]) -> dict:
-    """Schema-valid record for a page that could not be processed at all.
+    """Запись по схеме для страницы, которую вообще не удалось обработать.
 
-    One unreadable page must not cost the whole results.json: every field is
-    «не найдено», the answers come from the same engine (so questions about the
-    Положение itself are still answered correctly).
+    Из-за одной нечитаемой страницы нельзя терять весь results.json: все поля
+    «не найдено», а ответы считает тот же движок (вопросы про само Положение всё
+    равно отвечаются правильно).
     """
     spec = get_registry().require(document_type)
     fields: dict[str, str | bool] = {field_spec.key: NOT_FOUND for field_spec in spec.fields}
@@ -127,11 +126,11 @@ def run_batch(
             results.append(DocumentResult(**fallback_payload(document_id, document_type, grouped.get(document_id, []))))
             continue
         result = None
-        for attempt in (1, 2):  # a Tesseract timeout under load is worth one retry
+        for attempt in (1, 2):  # Tesseract под нагрузкой может отвалиться по таймауту — одна повторная попытка не лишняя
             try:
                 result = pipeline.analyze_path(path, document_type, document_id=document_id)
                 break
-            except Exception as exc:  # noqa: BLE001 - one bad page must not stop the batch
+            except Exception as exc:  # noqa: BLE001 - одна плохая страница не должна останавливать весь batch
                 error = str(exc)
                 if isinstance(exc, (DocumentLoadError, ValueError)):
                     break
@@ -152,7 +151,7 @@ def run_batch(
         }
         try:
             results.append(DocumentResult(**payload))
-        except ValidationError as exc:  # pragma: no cover - contract guard
+        except ValidationError as exc:  # pragma: no cover - страховка контракта
             failures.append({"document_id": document_id, "error": f"contract: {exc}"})
             if verbose:
                 print(f"[{index + 1}] {document_id}: нарушение контракта: {exc}", file=sys.stderr)

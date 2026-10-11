@@ -1,8 +1,8 @@
-"""DTO / JSON contract models.
+"""Модели данных и контракт results.json.
 
-The models mirror ``results.schema.json`` from the case package exactly, so the
-batch export is valid by construction (``additionalProperties: false`` and the
-strict key sets are enforced by Pydantic).
+Повторяют ``results.schema.json`` из пакета кейса, поэтому пакетный экспорт
+получается валидным сразу: лишние ключи запрещены, состав ключей и типы проверяет
+Pydantic.
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ ValidationStatus = Literal["document_ok", "missing_fields"]
 
 NOT_FOUND = "не найдено"
 
-#: Field key contracts per document type (order matters for the UI card).
+#: Наборы ключей по типам документов (порядок важен для карточки в интерфейсе).
 FIELD_KEYS: dict[str, tuple[str, ...]] = {
     "study_certificate": (
         "student_name",
@@ -56,11 +56,11 @@ FIELD_KEYS: dict[str, tuple[str, ...]] = {
 
 
 class StrictModel(BaseModel):
-    """Strict DTO: no key coercion, no extra keys.
+    """Строгая модель: лишних ключей нет и типы не подменяются.
 
-    ``strict=True`` is deliberate: the grader compares value types exactly
-    (``type(a) is type(b)``), so a string "true" must never silently become the
-    boolean ``True`` (or ``1``) somewhere inside the pipeline.
+    ``strict=True`` стоит специально: проверка сравнивает типы значений строго
+    (``type(a) is type(b)``), поэтому строка "true" нигде в пайплайне не должна
+    тихо превратиться в ``True`` или ``1``.
     """
 
     model_config = ConfigDict(extra="forbid", populate_by_name=True, strict=True)
@@ -175,7 +175,7 @@ class ResultsFile(StrictModel):
 
 
 # ---------------------------------------------------------------------------
-# API payloads (web flow)
+# Модели ответов API (веб-режим)
 # ---------------------------------------------------------------------------
 
 

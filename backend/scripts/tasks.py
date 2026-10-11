@@ -1,18 +1,17 @@
-"""Cross-platform task runner: ``python -m backend.scripts.tasks <task>``.
+"""Запуск задач проекта: ``python -m backend.scripts.tasks <задача>``.
 
-Mirrors the usual Makefile targets so the project is reproducible on Windows without
-GNU make:
+Делает то же, что цели в Makefile, но работает и на Windows без GNU make:
 
-``install``      create the virtual environment and install backend requirements
-``test``         run the unit/integration test-suite (pytest, no OCR needed for most)
-``batch``        run the batch flow on the open archive -> results.json
-``evaluate``     call the organizer ``evaluate.py`` on those predictions
-``verify``       renamed-files integrity, PNG/PDF equivalence, auto-type, limits
-``ocr-quality``  OCR character accuracy / exact page rate benchmark (ground truth)
-``degraded``     build the «плохие снимки» package (rotate/shadow/glare/lowres/mix)
-``degraded-evaluate`` batch-run that package and score it with ``evaluate.py``
-``api``          start the FastAPI server locally
-``demo``         batch + evaluate + verify in one command
+``install``            создать venv и поставить зависимости бэкенда
+``test``               прогнать тесты (pytest; OCR нужен не для всех)
+``batch``              пакетный прогон по открытому набору -> results.json
+``evaluate``           вызвать evaluate.py организаторов на этих predictions
+``verify``             целостность, PNG/PDF, автотип, лимиты
+``ocr-quality``        качество OCR: точность по символам и по страницам
+``degraded``           собрать пакет «плохих снимков» (rotate/shadow/glare/lowres/mix)
+``degraded-evaluate``  прогнать этот пакет и посчитать метрики через evaluate.py
+``api``                поднять FastAPI локально
+``demo``               batch + evaluate + verify подряд
 """
 
 from __future__ import annotations
@@ -125,7 +124,7 @@ def task_verify(args: argparse.Namespace) -> int:
 
 
 def task_degraded(args: argparse.Namespace) -> int:
-    """Build the «плохие снимки» benchmark package from the open archive."""
+    """Собираем пакет «плохих снимков» из открытого архива."""
     archive = Path(args.root) if args.root else _archive()
     out = PROJECT_ROOT / "reports" / "degraded"
     effect = getattr(args, "effect", "mix")
@@ -145,7 +144,7 @@ def task_degraded(args: argparse.Namespace) -> int:
 
 
 def task_degraded_evaluate(args: argparse.Namespace) -> int:
-    """Batch-run the degraded package and score it with the organizer evaluator."""
+    """Прогоняем пакет «плохих снимков» batch-ом и считаем метрики оценщиком организаторов."""
     archive = Path(args.root) if args.root else _archive()
     out = PROJECT_ROOT / "reports" / "degraded"
     predictions = PROJECT_ROOT / "reports" / "degraded_results.json"
@@ -204,7 +203,7 @@ def task_api(_: argparse.Namespace) -> int:
 
 
 def task_ocr_quality(args: argparse.Namespace) -> int:
-    """Rebuild the ground truth and measure OCR character accuracy on the open set."""
+    """Пересобираем OCR-эталон и меряем точность распознавания на открытом наборе."""
     archive = Path(args.root) if args.root else _archive()
     ground_truth = PROJECT_ROOT / "benchmarks" / "ground_truth.json"
     report = PROJECT_ROOT / "reports" / "ocr-benchmark.json"

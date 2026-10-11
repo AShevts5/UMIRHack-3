@@ -1,8 +1,8 @@
-"""Date normalization: ``DD.MM.YYYY`` and ``1 сентября 2026 года`` -> ``YYYY-MM-DD``.
+"""Приводим даты к одному виду: ``ДД.ММ.ГГГГ`` и «1 сентября 2026 года» -> ``ГГГГ-ММ-ДД``.
 
-The open case package requires both spellings to produce the same value, so the
-parser never guesses: an unparseable fragment stays ``None`` and the field is
-reported as ``не найдено``.
+В наборе кейса обе записи должны давать одно и то же значение. Поэтому ничего не
+угадываем: если разобрать не получилось, возвращаем ``None``, и поле уходит в
+``не найдено``.
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ MONTHS_NOMINATIVE = {
     "декабрь": 12,
 }
 
-#: Month name -> number, both cases and the common ``ё`` spelling.
+#: Название месяца -> номер, в обоих падежах и с учётом частого «ё».
 MONTHS = {**MONTHS_GENITIVE, **MONTHS_NOMINATIVE}
 
 _MONTH_ALT = "|".join(sorted(MONTHS, key=len, reverse=True))
@@ -68,7 +68,7 @@ def _safe_date(year: int, month: int, day: int) -> date | None:
 
 
 def parse_date(fragment: str | None) -> str | None:
-    """Return ``YYYY-MM-DD`` for the first date-like fragment, else ``None``."""
+    """Возвращаем ``ГГГГ-ММ-ДД`` для первого похожего на дату куска, иначе ``None``."""
     if not fragment:
         return None
     text = fragment.strip()
@@ -90,7 +90,7 @@ def parse_date(fragment: str | None) -> str | None:
 
 
 def parse_date_with_year(fragment: str | None, default_year: int | None) -> str | None:
-    """Like :func:`parse_date` but fills a missing year (``1 сентября``)."""
+    """Как :func:`parse_date`, но подставляет пропавший год (``1 сентября``)."""
     found = parse_date(fragment)
     if found or not fragment or default_year is None:
         return found
@@ -105,7 +105,7 @@ def parse_date_with_year(fragment: str | None, default_year: int | None) -> str 
 
 
 def parse_course(fragment: str | None) -> str | None:
-    """Extract a course number as a *string* of digits (the contract requires str)."""
+    """Достаём номер курса *строкой* из цифр — контракт требует именно str."""
     if not fragment:
         return None
     match = re.search(r"(?<!\d)([1-6])(?!\d)", fragment)
@@ -120,7 +120,7 @@ def looks_like_date(fragment: str | None) -> bool:
 
 
 def month_name(month: int) -> str:
-    """Russian genitive month name (used only for human-readable answers)."""
+    """Русское название месяца в родительном падеже — только для текста ответа."""
     if not 1 <= month <= 12:
         raise ValueError(month)
     for name, number in MONTHS_GENITIVE.items():
@@ -130,7 +130,7 @@ def month_name(month: int) -> str:
 
 
 def human_date(iso: str | None) -> str:
-    """Render ``2026-09-01`` as ``1 сентября 2026 года`` for the answer text."""
+    """Превращаем ``2026-09-01`` в «1 сентября 2026 года» для текста ответа."""
     if not iso:
         return ""
     try:

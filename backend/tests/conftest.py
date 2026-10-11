@@ -1,8 +1,8 @@
-"""Shared pytest fixtures for the UMIR 3 test-suite.
+"""Общие фикстуры для тестового набора UMIR 3.
 
-The open case archive is expected next to the repository (as shipped by the
-organizer).  Tests that need it are skipped when it is absent, so the suite stays
-runnable on a fresh clone; tests that only need synthetic data always run.
+Открытый архив кейса ожидается рядом с репозиторием (как его выдал организатор). Если
+архива нет, тесты, которым он нужен, скипаются — набор остаётся запускаемым на свежем
+клоне; тесты на одной синтетике идут всегда.
 """
 
 from __future__ import annotations

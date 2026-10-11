@@ -1,23 +1,23 @@
-"""Question engine: intent classification, answer text and structured value.
+"""Отвечаем на вопросы: определяем тип вопроса, пишем текст ответа и value.
 
-Four question classes required by the case (README «Формат results.json»):
+В кейсе нужны четыре вида вопросов (README «Формат results.json»):
 
-1. **completeness** — "Содержит ли документ все обязательные сведения?" →
+1. **комплектность** — «Содержит ли документ все обязательные сведения?» →
    ``answerable=true``, ``value=validation.status``, ``sources=validation.sources``.
-2. **field value** — "Укажи значение поля «Дата выдачи»." → ``answerable=true``,
-   ``value=fields[key]``, ``sources=["field:key"]``; if the field is missing →
+2. **значение поля** — «Укажи значение поля «Дата выдачи».» → ``answerable=true``,
+   ``value=fields[key]``, ``sources=["field:key"]``; если поля нет →
    ``answerable=false``, ``value=null``, ``sources=[]``.
-3. **final decision** — "Кто принимает окончательное решение?" →
+3. **кто решает** — «Кто принимает окончательное решение?» →
    ``value="сотрудник деканата"``, ``sources=["rule:1.3"]``.
-4. **unknown** — nothing in the document or the Положение answers it →
+4. **нет данных** — в документе и Положении ответа нет →
    ``answerable=false``, ``value=null``, ``sources=[]``.
 
-Matching is done through a synonym table per field and per intent, so the engine
-does not depend on the exact wording used in ``questions.json``.  An unrecognised
-question never produces an invented value: it yields the honest
-«Не могу определить ответ по документу и Положению» answer (rules.md 2.4, 6.3).
+Формулировки ищем по таблице синонимов для каждого поля и каждого намерения, чтобы
+не зависеть от точной фразы из ``questions.json``. На непонятный вопрос никогда не
+выдумываем ответ, а честно пишем «Не могу определить ответ по документу и
+Положению» (rules.md 2.4, 6.3).
 
-No language model is used: the whole path is deterministic and explainable.
+Языковую модель не используем: всё детерминировано и объяснимо.
 """
 
 from __future__ import annotations
@@ -55,10 +55,10 @@ class Intent(str, Enum):
 
 
 # ---------------------------------------------------------------------------
-# Synonym tables
+# Таблицы синонимов
 # ---------------------------------------------------------------------------
 
-#: Intent markers.  Order matters: the first matching group wins.
+#: Маркеры намерений. Порядок важен: побеждает первая подошедшая группа.
 COMPLETENESS_MARKERS: tuple[str, ...] = (
     "все обязательные сведения",
     "все ли обязательные",
@@ -111,10 +111,10 @@ FINAL_DECISION_MARKERS: tuple[str, ...] = (
     "who decides",
 )
 
-#: Field synonyms.  Only phrases that *name* a field are listed: single adjectives
-#: ("очная", "заочная") are deliberately absent, because they appear inside
-#: questions about topics the Положение does not define (e.g. "стоимость
-#: обучения"), which must be answered with an honest refusal.
+#: Синонимы полей. Перечисляем только фразы, которые *называют* поле: одиночных
+#: прилагательных («очная», «заочная») тут нет специально — они встречаются в
+#: вопросах про темы, которых в Положении нет (например, «стоимость обучения»), а на
+#: такое надо честно отвечать «нет данных».
 FIELD_SYNONYMS: dict[str, tuple[str, ...]] = {
     "student_name": ("фио студента", "фио обучающегося", "фио", "студент", "обучающийся"),
     "university": ("название вуза", "наименование вуза", "вуз", "университет", "учебное заведение"),
@@ -139,7 +139,7 @@ FIELD_SYNONYMS: dict[str, tuple[str, ...]] = {
     "seal_present": ("печать", "наличие печати", "есть ли печать", "м.п."),
 }
 
-#: A question word that does not name a field is a request for a value.
+#: Вопрос без названия поля — это просьба выдать значение.
 VALUE_MARKERS: tuple[str, ...] = (
     "укажи",
     "укажите",
@@ -159,14 +159,14 @@ VALUE_MARKERS: tuple[str, ...] = (
     "value of",
 )
 
-#: No-data topics: ``phrase fragment -> (field keys that must not win, display label)``.
+#: Темы, по которым в Положении нет данных: ``кусок фразы -> (ключи полей, которые
+#: не должны победить, подпись для ответа)``.
 #:
-#: All keys are matched as substrings of the normalized question, so stems are used
-#: where Russian inflection would otherwise need a dozen spellings.  The display
-#: label is what the user sees in the answer, so it is always a full phrase.
-#: The field keys listed for a topic are the ones whose *name occurs inside* the
-#: topic phrase (e.g. «стоимость обучения» contains «обучение» but is not the
-#: «начало периода обучения» field), and they must not win over the refusal.
+#: Сравниваем по подстроке в нормализованном вопросе, поэтому где можно берём основу
+#: слова, а не все падежи. Подпись — то, что человек увидит в ответе, поэтому это
+#: всегда полная фраза. Ключи в скобках — те, чьё *название встречается внутри*
+#: фразы темы (в «стоимость обучения» есть «обучение», но это не поле «начало
+#: периода обучения»), и они не должны перебивать отказ.
 NO_DATA_TOPICS: dict[str, tuple[tuple[str, ...], str]] = {
     "стоимость обучения": (("study_form", "study_start", "study_end"), "стоимость обучения"),
     "цена обучения": (("study_form", "study_start", "study_end"), "стоимость обучения"),
@@ -206,9 +206,9 @@ NO_DATA_TOPICS: dict[str, tuple[tuple[str, ...], str]] = {
     "срок давности": ((), "срок давности документа"),
 }
 
-#: Tokens that must not, on their own, be read as a field name: Russian case
-#: endings make «студенту»/«документа» look like «студент»/«документ».  A single
-#: token match only counts together with an explicit value marker, see
+#: Слова, которые сами по себе не считаем названием поля: из-за падежей «студенту»
+#: и «документа» выглядят как «студент» и «документ». Совпадение по одному слову
+#: учитываем только вместе с явной просьбой дать значение, см.
 #: :func:`_value_requested`.
 STOP_TOKENS = frozenset(
     {
@@ -229,7 +229,7 @@ FIELD_SOURCE_PREFIX = "field:"
 
 
 # ---------------------------------------------------------------------------
-# Classification
+# Определяем тип вопроса
 # ---------------------------------------------------------------------------
 
 
@@ -266,7 +266,7 @@ def _strip_fillers(text: str) -> str:
 def _collect_field_candidates(
     text: str, spec: DocumentTypeSpec, penalty: float = 0.0
 ) -> tuple[float, str, str] | None:
-    """Best (score, key, matched term) for a field/mark mentioned in ``text``."""
+    """Лучшее (score, ключ, совпавший термин) для поля или отметки из ``text``."""
     best: tuple[float, str, str] | None = None
     for field_spec in spec.fields:
         for term in _synonyms_for(field_spec):
@@ -290,7 +290,7 @@ def _collect_field_candidates(
                 continue
             if normalized in STOP_TOKENS:
                 continue
-            score = len(normalized.split()) - 0.2  # generic synonyms rank lower
+            score = len(normalized.split()) - 0.2  # общие синонимы проигрывают точным названиям
             score -= penalty
             if best is None or score > best[0]:
                 best = (score, key, term)
@@ -298,49 +298,49 @@ def _collect_field_candidates(
 
 
 def _value_requested(clean: str) -> bool:
-    """True when the question explicitly asks for a value/state of something."""
+    """Проверяем, просит ли вопрос явно значение или состояние."""
     return any(norm_text(marker) in clean for marker in VALUE_MARKERS)
 
 
 def _no_data_topic(clean: str, candidate_key: str | None) -> str | None:
-    """Display label of the no-data topic in the question, if any.
+    """Подпись темы «нет данных», если она есть в вопросе.
 
-    ``clean`` must already be normalized (``norm_text``); topics are compared the
-    same way so that «ё»/quotes/spacing differences cannot hide a match.
+    ``clean`` уже должен быть нормализован (``norm_text``): темы сравниваем так же,
+    иначе разница в «ё», кавычках или пробелах спрячет совпадение.
     """
     for fragment, (shielded_keys, label) in NO_DATA_TOPICS.items():
         if norm_text(fragment) not in clean:
             continue
         if shielded_keys and candidate_key is not None and candidate_key not in shielded_keys:
-            # The phrase contains a field name, but not *this* field: the question is
-            # about the field, not about the undefined topic.  Keep looking.
+            # Во фразе есть название поля, но не *этого*: вопрос про поле, а не про
+            # тему без данных. Ищем дальше.
             continue
         return label
     return None
 
 
-#: A match of this length or longer names a real field even without a value marker
-#: ("Учебная группа?" is still a field question).
+#: Совпадение такой длины и больше считаем настоящим полем даже без просьбы дать
+#: значение («Учебная группа?» — всё равно вопрос про поле).
 STRONG_MATCH_TOKENS = 1.5
 
 
 def classify_question(question: str, spec: DocumentTypeSpec) -> QuestionAnalysis:
-    """Deterministically classify a Russian question about a document."""
+    """Определяем тип русского вопроса про документ — детерминированно, без догадок."""
     clean = _clean_question(question)
     if not clean:
         return QuestionAnalysis(intent=Intent.UNKNOWN)
 
-    # 1) completeness (checked first: these phrasings contain "сведения")
+    # 1) комплектность — проверяем первой: в таких фразах есть слово «сведения»
     for marker in COMPLETENESS_MARKERS:
         if norm_text(marker) in clean:
             return QuestionAnalysis(intent=Intent.COMPLETENESS, matched_term=marker, score=1.0)
 
-    # 2) final decision
+    # 2) кто принимает окончательное решение
     for marker in FINAL_DECISION_MARKERS:
         if norm_text(marker) in clean:
             return QuestionAnalysis(intent=Intent.FINAL_DECISION, matched_term=marker, score=1.0)
 
-    # 3) field / mark mention
+    # 3) упоминание поля или отметки
     candidate = _collect_field_candidates(clean, spec)
     if candidate is None:
         stripped = _strip_fillers(clean)
@@ -350,11 +350,11 @@ def classify_question(question: str, spec: DocumentTypeSpec) -> QuestionAnalysis
     if candidate is not None:
         score, key, term = candidate
         strong = score >= STRONG_MATCH_TOKENS
-        # A single short token ("студенту", "документа") is not a field name unless
-        # the question really asks for a value.
+        # Одно короткое слово («студенту», «документа») — не название поля, пока
+        # вопрос прямо не просит значение.
         if strong or _value_requested(clean):
-            # A topic the Положение does not define always wins over a field name
-            # that merely occurs inside the phrase ("стоимость обучения").
+            # Тема, которой нет в Положении, всегда важнее поля, чьё название просто
+            # встретилось внутри фразы («стоимость обучения»).
             topic = _no_data_topic(clean, key)
             if topic is None:
                 field_spec = spec.field(key)
@@ -369,7 +369,7 @@ def classify_question(question: str, spec: DocumentTypeSpec) -> QuestionAnalysis
                 )
             return QuestionAnalysis(intent=Intent.UNKNOWN, topic=topic, matched_term=topic, score=1.0)
 
-    # 4) known "no data" topics documented in the Положение
+    # 4) известные темы «нет данных», про которые Положение молчит
     topic = _no_data_topic(clean, None)
     if topic is not None:
         return QuestionAnalysis(intent=Intent.UNKNOWN, topic=topic, matched_term=topic, score=1.0)
@@ -388,7 +388,7 @@ def _synonyms_for(field_spec: FieldSpec) -> tuple[str, ...]:
 
 
 # ---------------------------------------------------------------------------
-# Answer building
+# Собираем ответ
 # ---------------------------------------------------------------------------
 
 
@@ -418,7 +418,7 @@ def build_answer(
     validation: ValidationResult,
     parse_result: ParseResult | None = None,
 ) -> Answer:
-    """Produce the answer record for one question (contract-shaped)."""
+    """Собираем запись ответа на один вопрос — ровно по контракту results.json."""
     analysis = classify_question(question, spec)
 
     if analysis.intent is Intent.COMPLETENESS:
@@ -474,7 +474,7 @@ def build_answer(
                 sources=[f"{FIELD_SOURCE_PREFIX}{key}"],
             )
 
-    # 4) unknown / no data
+    # 4) непонятный вопрос или тема, по которой данных нет
     if analysis.topic:
         return Answer(
             question_id=question_id,
@@ -535,7 +535,7 @@ def answer_document(
     questions: list[tuple[str, str]],
     parse_result: ParseResult | None = None,
 ) -> list[Answer]:
-    """Answer every question of one document, preserving the manifest order."""
+    """Отвечаем на все вопросы документа, сохраняя порядок из questions.json."""
     return [
         build_answer(question_id, text, spec, fields, validation, parse_result)
         for question_id, text in questions
@@ -543,5 +543,5 @@ def answer_document(
 
 
 def default_completeness_question() -> str:
-    """The standard question behind the «Проверить документ» button (rules.md 6.5)."""
+    """Стандартный вопрос кнопки «Проверить документ» (rules.md 6.5)."""
     return "Содержит ли документ все обязательные сведения по Положению?"

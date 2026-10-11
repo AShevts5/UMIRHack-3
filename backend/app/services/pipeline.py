@@ -1,9 +1,9 @@
-"""Single orchestration path used by the web API *and* the batch CLI.
+"""Один общий путь обработки для веб-API и для пакетного CLI.
 
-The technical task requires the batch exporter and the interactive flow to use
-**exactly the same** OCR/parser/validator functions; this module is that shared
-path.  Nothing here reads ``reference_results.json``, file names, or document ids
-to derive values: the only inputs are the image pixels and the document type.
+В задании сказано, что пакетный экспорт и интерактивный режим должны использовать
+одни и те же функции OCR, парсера и проверки — вот этот модуль и есть тот самый
+общий путь. Здесь нигде не читается ``reference_results.json``, имя файла или
+document_id: на вход идут только пиксели картинки и тип документа.
 """
 
 from __future__ import annotations
@@ -11,6 +11,8 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass, field
 from pathlib import Path
+
+import numpy as np
 
 from ..config import settings
 from ..schemas import (
@@ -53,6 +55,15 @@ class PipelineResult:
     document_type_source: str = "request"
     document_type_confidence: float = 0.0
     warnings: list[str] = field(default_factory=list)
+    # Размер страницы, в системе координат которой лежат боксы OCR и зоны отметок.
+    # Интерфейсу это нужно, чтобы правильно наложить подсветку на превью.
+    image_size: tuple[int, int] = (0, 0)
+    # Сама страница после выравнивания — для превью в интерфейсе (нужна адаптеру
+    # контракта команды, /api/files). В results.json она, конечно, не попадает.
+    image_rgb: np.ndarray | None = None
+    rotation_deg: float = 0.0
+    # Миллисекунды по этапам. Тоже только для интерфейса, в results.json не идёт.
+    timings: dict[str, float] = field(default_factory=dict)
 
     def answers(self, questions: list[tuple[str, str]]) -> list[Answer]:
         return answer_document(self.spec, self.fields, self.validation, questions, self.parse)
@@ -76,7 +87,7 @@ class PipelineResult:
 
 
 class Pipeline:
-    """OCR + parse + marker detection + rules, with a small in-process cache."""
+    """OCR, парсер, детектор отметок и правила плюс небольшой кэш в памяти процесса."""
 
     def __init__(self, cache_size: int = 24, use_cache: bool = True) -> None:
         self.registry = get_registry()
@@ -86,7 +97,7 @@ class Pipeline:
         self.use_cache = use_cache
         self.stats = {"documents": 0, "cache_hits": 0, "ocr_seconds": 0.0}
 
-    # -- cache helpers ----------------------------------------------------
+    # -- работа с кэшем ---------------------------------------------------
     def _cache_key(self, payload: bytes, document_type: str) -> str:
         digest = hashlib.sha256()
         digest.update(document_type.encode("utf-8"))
@@ -116,7 +127,7 @@ class Pipeline:
         self._cache.clear()
         self._cache_order.clear()
 
-    # -- main entry points ------------------------------------------------
+    # -- основные точки входа ---------------------------------------------
     def analyze_bytes(
         self,
         payload: bytes,
@@ -134,29 +145,56 @@ class Pipeline:
             if cached is not None:
                 cached.document_id = document_id
                 return cached
+            timings: dict[str, float] = {}
+            started = time.perf_counter()
             image = load_document_bytes(payload, filename, limits=settings.limits)
+            timings["load"] = (time.perf_counter() - started) * 1000
+            started = time.perf_counter()
             image, enhance_report = enhance_document(image)
+            timings["preprocess"] = (time.perf_counter() - started) * 1000
             started = time.perf_counter()
             ocr_result = ocr_service.run_ocr(image)
-            self.stats["ocr_seconds"] += time.perf_counter() - started
-            result = self._process(image, ocr_result, spec, document_id=document_id)
+            timings["ocr"] = (time.perf_counter() - started) * 1000
+            self.stats["ocr_seconds"] += timings["ocr"] / 1000
+            started = time.perf_counter()
+            result = self._process(
+                image,
+                ocr_result,
+                spec,
+                document_id=document_id,
+                rotation_deg=getattr(enhance_report, "angle", 0.0),
+                timings=timings,
+            )
             result.warnings.extend(enhance_report.messages())
             self._cache_put(key, result)
             return result
 
-        # auto-detect (bonus): OCR first, then pick the best matching type
+        # автоопределение типа: сначала OCR, потом выбираем подходящий тип
+        timings = {}
+        started = time.perf_counter()
         image = load_document_bytes(payload, filename, limits=settings.limits)
+        timings["load"] = (time.perf_counter() - started) * 1000
+        started = time.perf_counter()
         image, enhance_report = enhance_document(image)
+        timings["preprocess"] = (time.perf_counter() - started) * 1000
         started = time.perf_counter()
         ocr_result = ocr_service.run_ocr(image)
-        self.stats["ocr_seconds"] += time.perf_counter() - started
+        timings["ocr"] = (time.perf_counter() - started) * 1000
+        self.stats["ocr_seconds"] += timings["ocr"] / 1000
         code, score = registry.detect_type(ocr_result.text)
         if code is None:
             raise ValueError(
                 "Не удалось автоматически определить тип документа. Выберите тип вручную."
             )
         spec = registry.require(code)
-        result = self._process(image, ocr_result, spec, document_id=document_id)
+        result = self._process(
+            image,
+            ocr_result,
+            spec,
+            document_id=document_id,
+            rotation_deg=getattr(enhance_report, "angle", 0.0),
+            timings=timings,
+        )
         result.warnings.extend(enhance_report.messages())
         result.document_type_source = "auto"
         result.document_type_confidence = score
@@ -172,19 +210,34 @@ class Pipeline:
         payload = file_path.read_bytes()
         return self.analyze_bytes(payload, file_path.name, document_type, document_id)
 
-    # -- internals --------------------------------------------------------
+    # -- внутренняя кухня -------------------------------------------------
     def _process(
         self,
         image: DocumentImage,
         ocr_result: ocr_service.OcrResult,
         spec: DocumentTypeSpec,
         document_id: str | None = None,
+        rotation_deg: float = 0.0,
+        timings: dict[str, float] | None = None,
     ) -> PipelineResult:
+        import time
+
+        # Порядок важен: сначала отметки, потом карточка полей, потому что карточка
+        # берёт флаги подписи и печати именно из результата detect_marks.
+        started = time.perf_counter()
         parse_result = parse_document(ocr_result, spec)
         refine_fields(image, ocr_result, spec, parse_result)
+        parse_result.document_type = spec.code
+        if timings is not None:
+            timings["fields"] = (time.perf_counter() - started) * 1000
+
+        started = time.perf_counter()
         mark_verdicts = detect_marks(image, ocr_result, spec)
         parse_result.mark_results = mark_verdicts
-        parse_result.document_type = spec.code
+        if timings is not None:
+            timings["marks"] = (time.perf_counter() - started) * 1000
+
+        started = time.perf_counter()
         fields = fields_payload(parse_result, spec)
         validation = validate(spec, fields)
         warnings: list[str] = []
@@ -194,6 +247,9 @@ class Pipeline:
             )
         if not ocr_result.words:
             warnings.append("Текст на изображении не распознан.")
+        if timings is not None:
+            timings["rules"] = (time.perf_counter() - started) * 1000
+
         self.stats["documents"] += 1
         return PipelineResult(
             document_id=document_id,
@@ -205,6 +261,10 @@ class Pipeline:
             validation=validation,
             marks=mark_verdicts,
             warnings=warnings,
+            image_size=(image.width, image.height),
+            image_rgb=image.rgb,
+            rotation_deg=rotation_deg,
+            timings=timings or {},
         )
 
 
@@ -215,7 +275,7 @@ def build_api_response(
     include_boxes: bool = True,
     max_boxes: int = 1500,
 ) -> AnalysisResponse:
-    """Shape a pipeline result into the ``/api/v1/analyze`` payload."""
+    """Собираем ответ ``/api/v1/analyze`` из результата пайплайна."""
     spec = result.spec
     question_text = question or default_completeness_question()
     answer = result.single_answer(question_text, question_id)
@@ -300,8 +360,8 @@ def normalized(text: str) -> str:
     return norm_text(text)
 
 
-#: Module-level pipeline instance shared by API and CLI (models/engines are not
-#: reloaded per request; OCR runs once per distinct document).
+#: Общий экземпляр пайплайна для API и CLI: модели и движки не перезагружаются на
+#: каждый запрос, а OCR выполняется один раз на документ.
 pipeline = Pipeline()
 
 

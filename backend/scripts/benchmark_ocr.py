@@ -1,32 +1,34 @@
-"""OCR quality benchmark: character accuracy, exact page rate, per-field accuracy.
+"""Замер качества распознавания: точность по символам, по страницам и по полям.
 
-Metric definitions are taken from the PdfOcrDesktop benchmark so the numbers of both
-projects are directly comparable:
+Определения метрик взяты из бенчмарка проекта PdfOcrDesktop — чтобы числа двух
+проектов можно было сравнивать напрямую:
 
 ``char_accuracy``
-    ``1 - CER`` over the concatenated page text (case/ё/quote/space folding applied
-    to both sides, exactly as ``evaluate.py`` of the case does).
+    ``1 - CER`` по склеенному тексту страницы. Обе стороны перед сравнением
+    нормализуются так же, как в ``evaluate.py`` кейса: регистр, ``ё``, кавычки,
+    пробелы.
 ``exact_page_rate``
-    share of pages whose recognized text equals the ground truth after folding.
+    доля страниц, где распознанный текст после нормализации совпал с эталоном
+    целиком.
 ``mean_confidence``
-    mean Tesseract word confidence (0..1 on this scale).
+    средняя уверенность слов Tesseract в шкале 0…1.
 
-Two extra, project-specific numbers are reported separately so that recognition and
-parsing are never mixed:
+Ещё две метрики наши, они считаются отдельно, чтобы не смешивать распознавание и
+разбор:
 
 ``field_exact_rate``
-    share of reference text values extracted exactly by the parser (the metric the
-    case actually grades through ``evaluate.py``).
+    доля значений полей, которые парсер извлёк точно. Именно это оценивает
+    ``evaluate.py`` кейса.
 ``pages_per_second``
-    recognition throughput, measured on the pages that were actually OCRed.
+    скорость распознавания по тем страницам, которые реально прогонялись.
 
-Usage
------
+Запуск:
+
 .. code-block:: bash
 
-    python -m backend.scripts.make_ocr_ground_truth --archive <archive> --output benchmarks/ground_truth.json
+    python -m backend.scripts.make_ocr_ground_truth --archive <архив> --output benchmarks/ground_truth.json
     python -m backend.scripts.benchmark_ocr --ground-truth benchmarks/ground_truth.json \
-        --root <archive> --output reports/ocr-benchmark.json
+        --root <архив> --output reports/ocr-benchmark.json
 """
 
 from __future__ import annotations
@@ -48,7 +50,7 @@ from backend.app.utils.textnorm import norm_text  # noqa: E402
 
 
 def _distance(left: str, right: str) -> int:
-    """Levenshtein distance over code points (matches evaluate.py's normalization)."""
+    """Расстояние Левенштейна по кодпойнтам (как в нормализации evaluate.py)."""
     if left == right:
         return 0
     previous = list(range(len(right) + 1))
@@ -67,7 +69,7 @@ def _field_accuracy(
     field_lines: list[dict],
     parser_fields: dict[str, str | bool],
 ) -> tuple[int, int, list[dict]]:
-    """Split each field line into label/value and compare the value with the reference."""
+    """Делим строку поля на подпись и значение и сверяем значение с эталоном."""
     folded_lines = [norm_text(line) for line in actual_text.splitlines()]
     exact = 0
     checked = 0

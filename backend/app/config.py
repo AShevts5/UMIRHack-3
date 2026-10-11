@@ -1,8 +1,8 @@
-"""Runtime configuration for the UMIR 3 "Онлайн-деканат" service.
+"""Настройки сервиса «Онлайн-деканат» (UMIR 3).
 
-Everything here is local: no external OCR/LLM endpoints are contacted anywhere in
-this project.  Values are read from environment variables so the same code runs on
-a laptop (Windows/Linux/macOS) and in a free Colab runtime.
+Всё считается локально: никакие внешние OCR- и LLM-сервисы в проекте не
+вызываются. Значения читаем из переменных окружения, чтобы один и тот же код
+работал и на ноутбуке (Windows/Linux/macOS), и в бесплатном Colab.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Repository layout
+# Где что лежит в репозитории
 # ---------------------------------------------------------------------------
 PACKAGE_ROOT = Path(__file__).resolve().parent  # .../backend/app
 BACKEND_ROOT = PACKAGE_ROOT.parent  # .../backend
@@ -31,7 +31,7 @@ def _env_path(*names: str) -> Path | None:
 
 
 def _default_tessdata() -> Path | None:
-    """Locate a tessdata directory that contains the Russian traineddata."""
+    """Ищем папку tessdata, в которой лежит русский traineddata."""
     candidates = []
     env = os.environ.get("TESSDATA_PREFIX")
     if env:
@@ -53,13 +53,13 @@ def _default_tessdata() -> Path | None:
         try:
             if candidate.is_dir() and (candidate / "rus.traineddata").is_file():
                 return candidate
-        except OSError:  # pragma: no cover - defensive
+        except OSError:  # pragma: no cover - подстраховка
             continue
     return None
 
 
 def find_tesseract_binary() -> Path | None:
-    """Return the local Tesseract executable, if one can be found."""
+    """Возвращаем локальный исполняемый файл Tesseract, если он вообще есть."""
     explicit = os.environ.get("TESSERACT_CMD")
     if explicit:
         candidate = Path(explicit).expanduser()
@@ -86,55 +86,43 @@ def find_tesseract_binary() -> Path | None:
 
 @dataclass(frozen=True)
 class OcrSettings:
-    """Tesseract/OpenCV knobs.
+    """Настройки Tesseract и предобработки картинки.
 
-    Defaults are not guesswork: they come from the sweep recorded in
-    ``benchmarks/README.md`` (30 pages of the open set, page-level character
-    accuracy, field accuracy, speed, plus a synthetic-page check that catches
-    dropped text blocks):
+    Значения подобраны перебором вариантов на 30 страницах открытого набора, а не
+    взяты «на глаз». Что выяснилось по ходу:
 
-    ==========================  ============  ==========  ==============  ==========
-    configuration               char accuracy  fields      s / page        synthetic
-    ==========================  ============  ==========  ==============  ==========
-    psm 6 + Otsu + 2200 (old)   0.7753        1.000       3.41            ok
-    **psm 3, no binarization**  **0.9075**    **1.000**   **2.92**        **ok**
-    psm 4, no binarization      0.9063        1.000       2.87            ok
-    psm 6, no binarization      0.8713        1.000       2.61            ok
-    psm 11 / psm 12, no binar.  0.9114        1.000       2.74 / 3.28     **loses marks**
-    ==========================  ============  ==========  ==============  ==========
+    * Бинаризация (Otsu) тут только мешает: она съедает тонкие штрихи мелкого
+      серого текста. С ней точность по символам 0.7753, без неё 0.8713. Поэтому по
+      умолчанию выключена, но включается через UMIR_OCR_BINARIZE=1 — для шумных
+      реальных фото, которых в наборе нет и померить их не на чем.
+    * У режимов psm 3, psm 4, psm 11 точность по символам выше (0.90–0.91), но они
+      начинают терять подписи-якоря. У psm 3 и psm 4 пропадает отдельное «М.П.»
+      (20 страниц из 30 → 4), из-за чего уезжает зона печати и потом не находится
+      подпись: точность полей падает с 1.0 до 0.953. А psm 11 и psm 12 на
+      синтетической странице теряют сразу весь блок подписи и печати. Поэтому
+      остаётся psm 6: на нём все 30 страниц дают нужные якоря и поля 1.0.
 
-    Two measured conclusions:
-
-    1. Otsu binarization **hurt** on this material.  It erodes the thin
-       anti-aliased strokes: character accuracy drops from 0.8713 to 0.7753, and
-       the standalone «М.П.» caption survives on only 20 of 30 pages instead of 30,
-       which drags the seal zone leftwards.  ``use_binarization`` therefore defaults
-       to ``False``, but stays switchable (``UMIR_OCR_BINARIZE=1``) for noisy real
-       photos — material this set does not measure.
-    2. Layout modes that score higher still break the marker pipeline: ``psm 3``
-       reaches 0.9075 yet stops recognising the isolated «М.П.», and ``psm 11``/``12``
-       (0.9114) drop the whole signature/seal caption block on synthetic pages.  Both
-       silently disable signature detection, so ``psm 6`` — which keeps every caption
-       (30/30 pages) and every synthetic case — is the default.  Anchors are never
-       guessed from absolute coordinates.
+    Вывод на будущее: точность по символам — не единственный показатель, детектор
+    отметок зависит от того, распознались ли подписи «Подпись» и «М.П.». Если
+    менять psm или бинаризацию, надо гонять и тесты отметок тоже.
     """
 
     languages: str = os.environ.get("UMIR_OCR_LANGS", "rus+eng")
-    oem: int = 1  # LSTM engine only
+    oem: int = 1  # только LSTM-движок
     psm: int = int(os.environ.get("UMIR_OCR_PSM", "6"))
-    target_long_edge: int = 2200  # upscale factor is derived from the page size
+    target_long_edge: int = 2200  # масштаб считается от размера страницы
     upscale_min: float = 1.0
     upscale_max: float = 3.0
     use_binarization: bool = os.environ.get("UMIR_OCR_BINARIZE", "0") not in {"0", "false", "no"}
     tesseract_timeout_s: float = 60.0
-    # Marker (signature/seal) analysis is performed on the *raw* greyscale image
-    # so that faint strokes are not destroyed by binarization.
+    # Подпись и печать ищем на исходной серой картинке, а не на обработанной:
+    # бинаризация может съесть слабые штрихи.
     keep_original_greyscale: bool = True
 
 
 @dataclass(frozen=True)
 class Limits:
-    """Input hardening: size, page count and MIME constraints."""
+    """Ограничения на входной файл: размер, число страниц, форматы."""
 
     max_upload_bytes: int = 12 * 1024 * 1024
     max_pdf_pages: int = 1
@@ -146,6 +134,24 @@ class Limits:
         "image/jpg",
         "application/pdf",
     )
+
+
+def _default_rules_path() -> Path | None:
+    """Где лежит rules.md — Положение из пакета кейса.
+
+    Нужен только разделу «Положение» в интерфейсе. Ищем по обычным местам: переменная
+    окружения, архив кейса рядом с репозиторием, копия в самом репозитории.
+    """
+    candidates = [
+        Path(os.environ["UMIR_RULES"]) if os.environ.get("UMIR_RULES") else None,
+        PROJECT_ROOT / "rules.md",
+        PROJECT_ROOT.parent / "online-dean-participants-v1 (2)" / "rules.md",
+        PROJECT_ROOT.parent / "online-dean-participants-v1" / "rules.md",
+    ]
+    for candidate in candidates:
+        if candidate and candidate.is_file():
+            return candidate
+    return None
 
 
 @dataclass(frozen=True)
@@ -162,7 +168,8 @@ class Settings:
             )
         )
     )
-    # Never log document contents in full; the pipeline only logs counters.
+    rules_path: Path | None = field(default_factory=_default_rules_path)
+    # Текст документов в логи целиком не пишем, только счётчики.
     log_full_text: bool = False
 
 

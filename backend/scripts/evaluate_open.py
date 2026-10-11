@@ -1,9 +1,9 @@
-"""Run the organizer-provided ``evaluate.py`` and store a metric report.
+"""Запускаем ``evaluate.py`` организаторов и сохраняем отчёт с метриками.
 
-The reference file is used **only** here, in the separate evaluation contour: no
-inference module imports it (the technical task forbids using the reference during
-inference).  The evaluator itself is not modified or vendored — it is called from
-the archive path given on the command line.
+Эталон читается **только** здесь, в отдельном контуре оценки: ни один модуль
+инференса его не импортирует (в ТЗ запрещено использовать эталон при распознавании).
+Сам evaluate.py мы не правим и не копируем к себе — запускаем тот, что лежит в архиве,
+путь к которому передали в командной строке.
 
 Example
 -------

@@ -36,7 +36,7 @@ def rotate(img: np.ndarray, rng: random.Random, max_angle: float = 30.0) -> np.n
     matrix[1, 2] += (new_h - h) / 2
     table = tuple(int(c) for c in rng.choice(((92, 74, 58), (180, 180, 175), (40, 40, 45))))
     out = cv2.warpAffine(img, matrix, (new_w, new_h), flags=cv2.INTER_CUBIC, borderValue=table)
-    # Slight perspective: the phone is never perfectly parallel to the sheet.
+    # Чуть-чуть перспективы: телефон никогда не параллелен листу.
     d = 0.03 * min(new_w, new_h)
     src = np.float32([[0, 0], [new_w, 0], [new_w, new_h], [0, new_h]])
     dst = np.float32([[rng.uniform(0, d), rng.uniform(0, d)], [new_w - rng.uniform(0, d), rng.uniform(0, d)],
@@ -55,7 +55,7 @@ def shadow(img: np.ndarray, rng: random.Random) -> np.ndarray:
     edge = rng.uniform(0.3, 0.7)
     factor = np.where(proj < edge, darkest + (1 - darkest) * (proj / edge) ** 0.5, 1.0)
     factor = cv2.GaussianBlur(factor.astype(np.float32), (0, 0), 25)
-    warm = np.array([1.0, 0.97, 0.9], dtype=np.float32)  # RGB: a warm indoor tint
+    warm = np.array([1.0, 0.97, 0.9], dtype=np.float32)  # тёплый оттенок, как от лампы в помещении (RGB)
     return np.clip(img.astype(np.float32) * factor[..., None] * warm, 0, 255).astype(np.uint8)
 
 

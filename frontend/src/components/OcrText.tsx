@@ -7,8 +7,8 @@ interface Props {
 }
 
 /**
- * Shows the raw OCR output.  When a field is selected in the card, its label is
- * highlighted inside the text so the reader can verify the reading directly.
+ * Показывает сырой текст из OCR. Когда в карточке выбрано поле, его подпись
+ * подсвечивается прямо в тексте — так распознанное можно сверить глазами.
  */
 export default function OcrText({ text, boxes, highlight }: Props) {
   const term = highlight?.trim().toLowerCase() ?? ''

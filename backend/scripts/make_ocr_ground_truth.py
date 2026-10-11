@@ -1,19 +1,19 @@
-"""Build the OCR ground truth for the open case set.
+"""Собираем OCR-эталон для открытого набора.
 
-Source of truth
----------------
-* boilerplate lines: taken from the shipped page layout (the same text on every page
-  of a type) and verified against the page images;
-* field lines: the values from the organizer reference file (which this script is
-  allowed to read — it is a test-contour tool, see README «Воспроизводимость»);
-* dates: the page spelling is not part of the reference, so both accepted spellings
-  are stored (``DD.MM.YYYY`` and «1 сентября 2026 года») and the benchmark scores the
-  better one, matching the case rule that both must normalize to the same value;
-* footer: the sample id is printed on the page, therefore it belongs to the page
-  ground truth even though it is not a field.
+Откуда что берём
+----------------
+* шапка и подписи полей: из вёрстки страницы (на всех страницах одного типа текст
+  одинаковый), сверено с картинками;
+* строки полей: значения из эталона организаторов (этому скрипту его читать можно —
+  он относится к тестовому контуру, см. README «Воспроизводимость»);
+* даты: в эталоне написания нет, а на странице дата напечатана одним из двух видов,
+  поэтому храним оба (``DD.MM.YYYY`` и «1 сентября 2026 года») и засчитываем то,
+  которое совпало — по правилу кейса оба должны нормализоваться в одно значение;
+* подвал: id образца напечатан на странице, поэтому он часть эталона текста страницы,
+  хотя полем и не является.
 
-The generated file is the input of ``benchmark_ocr.py`` and mirrors the role of
-``benchmarks/corpus/.../ground_truth.json`` in the PdfOcrDesktop project.
+Полученный файл — вход для ``benchmark_ocr.py``, по роли он такой же, как
+``benchmarks/corpus/.../ground_truth.json`` в проекте PdfOcrDesktop.
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ MONTHS = {
     7: "июля", 8: "августа", 9: "сентября", 10: "октября", 11: "ноября", 12: "декабря",
 }
 
-#: Printed caption of every field, exactly as on the page.
+#: Подпись поля ровно так, как она напечатана на странице.
 LABEL = {
     "student_name": "ФИО студента",
     "university": "Название вуза",
@@ -55,7 +55,7 @@ LABEL = {
     "grade": "Оценка",
 }
 
-#: Line order on the page per document type (labels only; values are filled in).
+#: Порядок строк на странице по типам документов (только подписи, значения подставляем).
 LINE_ORDER = {
     "study_certificate": [
         "student_name", "university", "program", "study_form",
@@ -71,7 +71,7 @@ LINE_ORDER = {
     ],
 }
 
-#: Text printed above the fields.
+#: Текст, который печатается над полями.
 HEADER = {
     "study_certificate": [
         "СИНТЕТИЧЕСКИЙ ДОКУМЕНТ ДЛЯ ХАКАТОНА / НЕ ИМЕЕТ ЮРИДИЧЕСКОЙ СИЛЫ",
@@ -93,7 +93,7 @@ HEADER = {
     ],
 }
 
-#: Signature caption per type (the mark itself is graphics, not text).
+#: Подпись для отметки по каждому типу (сама отметка — графика, а не текст).
 SIGNATURE_CAPTION = {
     "study_certificate": "Подпись сотрудника:",
     "academic_leave_application": "Подпись студента:",

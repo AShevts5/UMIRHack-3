@@ -1,4 +1,4 @@
-"""Date and text normalization tests (rules.md 2.5, README «Нормализация текстов»)."""
+"""Тесты нормализации дат и текста (rules.md 2.5, README «Нормализация текстов»)."""
 
 from __future__ import annotations
 

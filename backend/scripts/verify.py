@@ -1,29 +1,29 @@
-"""Quality / integrity checks that do not need a web server.
+"""Проверки качества и целостности, которым веб-сервер не нужен.
 
-Runs five independent verifications against the open v1.0 archive and prints a JSON
-report (``--report`` also writes it to a file):
+Гоняем пять независимых проверок по открытому архиву v1.0 и печатаем JSON-отчёт
+(``--report`` заодно сохраняет его в файл):
 
 ``integrity``
-    Copies every document to a random file name *and* renumbers the
-    ``document_id`` (``anon-0001`` …), then re-runs the batch flow.  Predictions must
-    stay identical field-by-field — proof that no value is looked up by file name,
-    path or id.  The comparison uses an exported ``results.json``, not in-process
-    state.
+    Копируем каждый документ под случайным именем *и* заново нумеруем
+    ``document_id`` (``anon-0001`` …), после чего повторяем batch-прогон. Предсказания
+    должны совпасть поле в поле — значит, никакое значение не подтягивается по имени
+    файла, пути или id. Сравниваем с экспортированным ``results.json``, а не с
+    состоянием в памяти.
 
 ``representations``
-    Processes the PNG and the PDF of the same sample and compares the extracted
-    fields.  They are two views of one document and must agree.
+    Прогоняем PNG и PDF одной и той же страницы и сверяем поля: это два
+    представления одного документа, расходиться они не должны.
 
 ``auto_type``
-    Runs the pipeline with ``document_type=auto`` and checks the detected type.
+    Запускаем pipeline с ``document_type=auto`` и смотрим, определился ли тип.
 
 ``markers``
-    Compares ``signature_present`` / ``seal_present`` against the reference to make
-    false positives on empty lines and on a lone «М.П.» visible.
+    Сверяем ``signature_present`` / ``seal_present`` с эталоном — так видны ложные
+    срабатывания на пустой линии и на одиноком «М.П.».
 
 ``limits``
-    Feeds a broken file, an unsupported extension and an oversized payload, and
-    expects a readable error instead of a traceback.
+    Подсовываем битый файл, неподдерживаемое расширение и слишком большой payload:
+    ждём понятную ошибку, а не traceback.
 
 Usage
 -----
@@ -60,7 +60,7 @@ def _predictions_by_id(results_path: Path) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 1. Integrity: renamed files + renumbered ids
+# 1. Целостность: переименованные файлы и новые id
 # ---------------------------------------------------------------------------
 
 
@@ -73,7 +73,7 @@ def check_integrity(root: Path, documents: list[dict], questions: list[dict], wo
     id_map: dict[str, str] = {}
     for index, entry in enumerate(documents):
         source = resolve_document_path(entry, root)
-        # Random name, random extension case, no trace of the original id.
+        # Копия под случайным именем: от оригинала не остаётся ни имени, ни id.
         stem = "".join(random_gen.choice(string.ascii_lowercase + string.digits) for _ in range(16))
         target = anon_dir / f"{stem}{source.suffix}"
         shutil.copyfile(source, target)
@@ -154,7 +154,7 @@ def check_integrity(root: Path, documents: list[dict], questions: list[dict], wo
 
 
 # ---------------------------------------------------------------------------
-# 2. PNG vs PDF equivalence
+# 2. PNG и PDF должны давать одно и то же
 # ---------------------------------------------------------------------------
 
 
@@ -195,7 +195,7 @@ def check_representations(root: Path, documents: list[dict], questions: list[dic
 
 
 # ---------------------------------------------------------------------------
-# 3. Auto type detection (bonus)
+# 3. Автоопределение типа (бонус)
 # ---------------------------------------------------------------------------
 
 
@@ -225,7 +225,7 @@ def check_auto_type(root: Path, documents: list[dict]) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 4. Marker detection quality
+# 4. Качество определения отметок
 # ---------------------------------------------------------------------------
 
 
@@ -268,7 +268,7 @@ def check_markers(root: Path, documents: list[dict], reference: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# 5. Input limits + exception control
+# 5. Лимиты входа и контроль исключений
 # ---------------------------------------------------------------------------
 
 
@@ -291,7 +291,7 @@ def check_limits(root: Path) -> dict:
     if sample is not None:
         expect_error("неподдерживаемое расширение", sample.read_bytes(), "document.txt")
         expect_error("слишком большой файл", sample.read_bytes() + b"\x00" * (13 * 1024 * 1024), "big.png")
-    # multi-page PDF guard
+    # многостраничный PDF тоже должен отбиваться
     try:
         import fitz
 

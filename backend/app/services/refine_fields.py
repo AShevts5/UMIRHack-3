@@ -1,20 +1,20 @@
-"""Second look at field values using the page pixels.
+"""Второй проход по значениям полей — уже по пикселям страницы.
 
-Full-page Tesseract with ``rus+eng`` occasionally reads short codes in the wrong
-alphabet (``ОБ/К-1158`` -> ``OB/K-1158``, ``ЭЭ-20-1`` -> ``33-20-1``), drops a
-low-confidence value altogether, or reads a printed fill line ``______`` as a
-couple of letters.  Each of these flips a whole field and, through it, the
-validation result.
+Tesseract по всей странице с ``rus+eng`` иногда читает короткие коды не в той
+азбуке (``ОБ/К-1158`` -> ``OB/K-1158``, ``ЭЭ-20-1`` -> ``33-20-1``), теряет
+значение с низкой уверенностью или принимает напечатанную линию заполнения
+``______`` за пару букв. Любая из этих ошибок переворачивает всё поле, а через
+него и результат проверки.
 
-This module re-checks every field against the pixels to the right of its label:
+Поэтому перепроверяем каждое поле по пикселям справа от подписи:
 
-* no ink besides a horizontal fill line -> the field is empty (rules.md 2.2);
-* ink present, but the parser found nothing -> the value crop is re-read alone;
-* a code field (номер справки, группа) is always re-read from its crop with the
-  Russian model only; the majority of well-formed Cyrillic readings wins.
+* чернил нет, только линия заполнения -> поле пустое (rules.md 2.2);
+* чернила есть, а парсер ничего не нашёл -> читаем кроп со значением отдельно;
+* поле-код (номер справки, группа) всегда перечитываем из кропа только русской
+  моделью; побеждает большинство нормальных кириллических прочтений.
 
-Only value crops are re-read (code fields and suspicious fields), so a clean page
-costs a pixel check per field plus a few OCR calls on tiny crops.
+Перечитываем только кропы значений (коды и подозрительные поля), так что чистая
+страница стоит одну проверку пикселей на поле плюс пару OCR по крошечным кропам.
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ from .loader import DocumentImage
 from .ocr import OcrResult, TextLine, resolve_languages
 from .parse_fields import ParseResult, _normalize_field, detect_field_blocks, match_label
 
-#: Field types whose values are short letter+digit codes.
+#: Типы полей, у которых значение — короткий код из букв и цифр.
 CODE_TYPES = {"document_number", "code"}
 #: «ОБ-1001», «ОБ/К-11580», «ИВТ-23-4», «ЭЭ-20-1».
 CODE_RE = re.compile(r"^[А-ЯЁ]{1,6}(?:/[А-ЯЁ]{1,4})?(?:-\d{1,6})+$")
@@ -40,16 +40,16 @@ _LATIN_LOOKALIKES = str.maketrans("ABCEHKMOPTXY", "АВСЕНКМОРТХУ")
 
 
 def _value_start_x(line: TextLine, field_spec: FieldSpec) -> int | None:
-    """Pixel column where the value begins: right after the label (and colon)."""
+    """Пиксельная колонка, где начинается значение — сразу после подписи и двоеточия."""
     words = line.words
     for index, word in enumerate(words[:6]):
         if ":" in word.text or "：" in word.text:
-            # «Курс:3» glued to the colon: the value starts inside this word.
+            # «Курс:3» слиплось с двоеточием, значит значение начинается внутри слова.
             tail = word.text.split(":", 1)[-1]
             if tail.strip():
                 return word.left + int(word.width * (len(word.text) - len(tail)) / max(len(word.text), 1))
-            # Tesseract boxes may overlap («Курс:» swallowing half of «3»), so the
-            # next word's own left edge wins when it is further left.
+            # Рамки Tesseract могут пересекаться («Курс:» залезает на половину «3»),
+            # поэтому берём левый край следующего слова, если он левее.
             following = words[index + 1].left - 1 if index + 1 < len(words) else word.right + 1
             return min(word.right + 1, following)
     match = match_label(line.text, field_spec)
@@ -65,19 +65,19 @@ def _value_region(image: DocumentImage, line: TextLine, x0: int) -> tuple[int, i
     pad = max(2, int(line.height * 0.25))
     top = max(0, line.top - pad)
     bottom = min(image.height, line.bottom + pad)
-    # A value is a few dozen characters at most; do not wander into margins.
+    # Значение — это пара десятков символов, в поля страницы не залезаем.
     right = min(int(image.rgb.shape[1] * 0.97), x0 + line.height * 40)
     return x0, top, right, bottom
 
 
 def value_has_ink(grey: np.ndarray, region: tuple[int, int, int, int], line_height: int) -> bool:
-    """True when the region holds glyphs, not just an underscore fill line."""
+    """Проверяем, есть ли в области буквы, а не только линия из подчёркиваний."""
     x0, y0, x1, y1 = region
     crop = grey[y0:y1, x0:x1]
     if crop.size == 0:
         return False
     mask = (crop < 150).astype(np.uint8)
-    # Remove horizontal rules (underscore runs) before looking for glyphs.
+    # Сначала убираем горизонтальные линейки из подчёркиваний, потом ищем буквы.
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (max(15, line_height * 2), 1))
     rules = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask = cv2.subtract(mask, rules)
@@ -101,7 +101,7 @@ def _reread(grey: np.ndarray, region: tuple[int, int, int, int], line_height: in
             crop, lang=resolve_languages(lang), config="--oem 1 --psm 7",
             timeout=settings.ocr.tesseract_timeout_s,
         )
-    except RuntimeError:  # timeout: keep the full-page reading
+    except RuntimeError:  # таймаут: оставляем то, что прочиталось по всей странице
         return ""
     return text.strip()
 
@@ -117,8 +117,8 @@ def _best_code(grey: np.ndarray, region: tuple[int, int, int, int], line_height:
         _clean_code(_reread(grey, region, line_height, "rus", scale)).upper()
         for scale in (0.8, 1.0, 1.3)
     ]
-    # The page reading votes too and wins ties: crops are better at the alphabet,
-    # the page is sometimes better at slashes.
+    # Прочтение со всей страницы тоже голосует и выигрывает при равенстве: кроп
+    # лучше разбирает азбуку, а страница иногда — слэши.
     page = _clean_code(original or "")
     valid = [reading for reading in [page, *readings] if CODE_RE.match(reading)]
     if valid:
@@ -135,7 +135,7 @@ def _best_code(grey: np.ndarray, region: tuple[int, int, int, int], line_height:
 
 
 def refine_fields(image: DocumentImage, ocr: OcrResult, spec: DocumentTypeSpec, parse: ParseResult) -> None:
-    """Correct ``parse.field_results`` in place using the value pixels."""
+    """Правим ``parse.field_results`` на месте, глядя на пиксели значений."""
     lines = [line for line in ocr.lines if line.text.strip()]
     blocks = detect_field_blocks(lines, spec)
     for key, (index, _inline) in blocks.items():
@@ -163,14 +163,14 @@ def refine_fields(image: DocumentImage, ocr: OcrResult, spec: DocumentTypeSpec, 
             continue
 
         if is_code:
-            # Codes are always re-read: the page model mixes alphabets and drops
-            # slashes even when the result looks well-formed.
+            # Коды перечитываем всегда: модель по всей странице путает азбуки и
+            # теряет слэши, даже когда результат выглядит правильным.
             fixed = _best_code(image.grey, region, line.height, result.value)
             if fixed:
                 result.value, result.confidence = fixed, 0.85
             continue
 
-        # Ink is there but the page-level OCR lost it: read the value crop alone.
+        # Чернила есть, а OCR по всей странице их потерял: читаем кроп значения отдельно.
         for lang in ("rus+eng", "rus"):
             raw = _reread(image.grey, region, line.height, lang, 1.0)
             value, confidence = _normalize_field(field_spec, raw)

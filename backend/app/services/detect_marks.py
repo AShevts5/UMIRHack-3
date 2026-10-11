@@ -1,27 +1,24 @@
-"""Detection of *graphic* signature and seal marks.
+"""Поиск графических подписи и печати.
 
-rules.md 2.3 and README are explicit: a printed caption such as «Подпись» or
-«М.П.» is **not** a signature/seal.  This module therefore never treats OCR text
-as evidence for a mark — it only uses text to *localise the zone*, and then
-analyses the pixels of that zone:
+Главное правило из rules.md 2.3: напечатанное слово «Подпись» или «М.П.» — это ещё
+не подпись и не печать. Поэтому текст тут используется только чтобы найти место
+(зону), а решение принимается по пикселям этой зоны.
 
-``detect_marks(image, ocr_result, document_type)``
-    Canonical entry point (the signature required by the technical task).
+Точка входа: ``detect_marks(image, ocr_boxes, document_type)``.
 
-Two independent evidence paths are combined so that the result does not depend on
-one fragile signal:
+Сигналов два, чтобы результат не висел на одном признаке:
 
 ``colour``
-    Signature ink and the seal mock-up are drawn in blue; printed body text is
-    black.  A chroma mask (blue minus red/green) isolates real ink even when the
-    scan is noisy.  This is genuine pixel analysis, not a caption lookup.
+    Подпись и макет печати нарисованы синим, а печатный текст чёрный. Маска по
+    синему каналу (синий заметно больше красного и зелёного) вытаскивает именно
+    чернила. Это анализ картинки, а не поиск слова «Подпись».
 ``geometry``
-    For monochrome scans the same zones are analysed in greyscale: handwriting
-    strokes have a high perimeter/area ("roughness") ratio, while printed glyphs,
-    the horizontal signature rule and fill lines are smooth.  Seals are found as
-    large ring-shaped components (with an optional Hough-circle confirmation).
+    Для чёрно-белых сканов те же зоны смотрим в сером: у рукописного штриха
+    отношение периметра к площади («лохматость») большое, а у печатных букв,
+    линии для подписи и линеек заполнения — маленькое. Печать ищем как крупную
+    кольцевую компоненту, при возможности подтверждаем кругами Хафа.
 
-Positive and negative examples of all three document types are covered by
+Положительные и отрицательные примеры для всех трёх типов лежат в
 ``tests/test_signatures.py``.
 """
 
@@ -40,19 +37,19 @@ from .loader import DocumentImage
 from .ocr import OcrResult, TextLine, Word
 
 # ---------------------------------------------------------------------------
-# Tuning constants (measured on the open v1.0 set, see README «Проверка качества»)
+# Пороги подбирали на открытом наборе v1.0 (см. README «Проверка качества»)
 # ---------------------------------------------------------------------------
-BLUE_CHROMA_DIFF = 28  # B - R threshold for "this pixel is blue ink"
-BLUE_GREEN_DIFF = 8  # B - G threshold
+BLUE_CHROMA_DIFF = 28  # насколько синий должен быть ярче красного, чтобы счесть пиксель синими чернилами
+BLUE_GREEN_DIFF = 8  # то же самое для зелёного канала
 BLUE_MIN_VALUE = 60
-MIN_MARK_PIXELS = 90  # a mark smaller than this is OCR speckle, not ink
+MIN_MARK_PIXELS = 90  # меньше — это уже мусор от OCR, а не штрих
 MIN_MARK_WIDTH = 45
 MIN_MARK_HEIGHT = 5
-MAX_MARK_HEIGHT_RATIO = 0.22  # a "signature" taller than this share of the page is a graphic
+MAX_MARK_HEIGHT_RATIO = 0.22  # «подпись» выше этой доли страницы — уже картинка
 MAX_MARK_WIDTH_RATIO = 0.45
 MIN_SEAL_DIAMETER_RATIO = 0.045
 MAX_SEAL_DIAMETER_RATIO = 0.30
-SEAL_MIN_FILL = 0.012  # ring pixels / bounding box area
+SEAL_MIN_FILL = 0.012  # доля закрашенных пикселей в рамке: у кольца печати она маленькая
 
 _HANDWRITING_HINTS = ("подпис", "одпись", "подпи", "подгис", "signature")
 _SEAL_HINTS = ("печат", "м.п", "м п", "штамп", "seal")
@@ -60,7 +57,7 @@ _SEAL_HINTS = ("печат", "м.п", "м п", "штамп", "seal")
 
 @dataclass
 class Zone:
-    """A pixel rectangle (x, y, w, h) with the words that anchored it."""
+    """Прямоугольник в пикселях (x, y, w, h) вместе со словами, по которым его нашли."""
 
     x: int
     y: int
@@ -101,12 +98,12 @@ class Zone:
 
 
 # ---------------------------------------------------------------------------
-# Image masks
+# Маски по цвету
 # ---------------------------------------------------------------------------
 
 
 def blue_ink_mask(rgb: np.ndarray) -> np.ndarray:
-    """Boolean mask of blue-dominant pixels (ink of the signature/seal mock-up)."""
+    """Маска синих пикселей: так вытаскиваем чернила подписи и макета печати."""
     data = rgb.astype(np.int16)
     red, green, blue = data[..., 0], data[..., 1], data[..., 2]
     mask = (
@@ -118,12 +115,12 @@ def blue_ink_mask(rgb: np.ndarray) -> np.ndarray:
 
 
 def dark_ink_mask(grey: np.ndarray, threshold: int = 150) -> np.ndarray:
-    """Boolean mask of dark pixels — used by the monochrome fallback path."""
+    """Маска тёмных пикселей — запасной вариант для чёрно-белых сканов."""
     return grey < threshold
 
 
 # ---------------------------------------------------------------------------
-# Anchors
+# Якоря: слова, по которым находим место
 # ---------------------------------------------------------------------------
 
 
@@ -132,7 +129,7 @@ def _word_text_pairs(ocr: OcrResult) -> list[Word]:
 
 
 def find_signature_words(ocr: OcrResult) -> list[Word]:
-    """Words that print the signature caption (used only for localisation)."""
+    """Слова с напечатанным «Подпись» — только чтобы найти место, а не как доказательство."""
     hits: list[Word] = []
     for word in _word_text_pairs(ocr):
         low = norm_text(word.text)
@@ -154,7 +151,7 @@ def find_seal_words(ocr: OcrResult) -> list[Word]:
 
 
 def _lines_with(ocr: OcrResult, hints: tuple[str, ...]) -> list[TextLine]:
-    """Text lines containing any of ``hints`` (diagnostics/self-test helper)."""
+    """Строки, где встречается любой из ``hints`` (нужно для диагностики и тестов)."""
     found = []
     for line in ocr.lines:
         low = norm_text(line.text)
@@ -163,7 +160,7 @@ def _lines_with(ocr: OcrResult, hints: tuple[str, ...]) -> list[TextLine]:
     return found
 
 
-#: Printed seal captions that OCR sometimes merges into the signature caption line.
+#: Печатные подписи печати, которые OCR иногда приклеивает к строке с «Подпись».
 _SEAL_PRINT_RE = re.compile(r"^(м\.?\s?п\.?|печать|печ|макет|штамп|ученая|учебная)$")
 
 
@@ -172,7 +169,7 @@ def _is_seal_print(word: Word) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Geometry helpers
+# Геометрия: линии и компоненты
 # ---------------------------------------------------------------------------
 
 
@@ -181,7 +178,7 @@ def find_horizontal_rules(
     min_length_ratio: float = 0.06,
     max_thickness: int = 6,
 ) -> list[Zone]:
-    """Locate long thin horizontal segments (signature rule, fill-in blanks)."""
+    """Ищем длинные тонкие горизонтальные отрезки: линию для подписи и линейки заполнения."""
     height, width = grey.shape
     min_length = max(40, int(width * min_length_ratio))
     dark = (grey < 190).astype(np.uint8)
@@ -198,7 +195,7 @@ def find_horizontal_rules(
 
 
 def _roughness(mask: np.ndarray) -> float:
-    """Perimeter² / area of the largest component — high for handwriting."""
+    """Периметр² / площадь самой крупной компоненты: у рукописного штриха это число большое."""
     if mask.sum() == 0:
         return 0.0
     count, _, stats, _ = cv2.connectedComponentsWithStats(mask.astype(np.uint8), connectivity=8)
@@ -240,7 +237,7 @@ def _component_stats(mask: np.ndarray, min_area: int = 12) -> list[dict]:
 
 
 def _merge_boxes(boxes: list[dict], gap_x: int, gap_y: int) -> dict | None:
-    """Union of nearby components: a signature is many separate strokes."""
+    """Склеиваем близкие компоненты: подпись состоит из отдельных штрихов."""
     if not boxes:
         return None
     boxes = sorted(boxes, key=lambda item: (item["y"], item["x"]))
@@ -274,7 +271,7 @@ def _merge_boxes(boxes: list[dict], gap_x: int, gap_y: int) -> dict | None:
 
 
 # ---------------------------------------------------------------------------
-# Zone construction
+# Строим зоны
 # ---------------------------------------------------------------------------
 
 
@@ -284,15 +281,15 @@ def signature_zone(
     spec: DocumentTypeSpec,
     seal_zone: Zone | None = None,
 ) -> Zone | None:
-    """Zone where a signature is expected.
+    """Зона, где ждём подпись.
 
-    Anchoring rules (no absolute page coordinates are used):
+    Абсолютные координаты страницы не используем, привязываемся к напечатанному:
 
-    * start **after the last word of the printed caption**, so the caption glyphs can
-      never be mistaken for handwriting;
-    * if a horizontal signature rule is printed next to the caption, the rule's span
-      is the most reliable indicator of where a signature may be placed;
-    * the zone never extends into the seal's bounding box.
+    * начинаем **после последнего слова подписи**, чтобы буквы «Подпись» не попали
+      в зону и не сошли за рукопись;
+    * если рядом напечатана линия для подписи, берём её границы — для места подписи
+      это самый надёжный ориентир;
+    * в рамку печати зона никогда не заходит.
     """
     height, width = image.height, image.width
     words = [word for word in find_signature_words(ocr) if word.cy >= height * 0.45]
@@ -301,13 +298,13 @@ def signature_zone(
     label = words[0]
     line = ocr.line_at(label.cy)
     raw_words = line.words if line is not None else [label]
-    # OCR often merges the seal print ("ПЕЧАТЬ", "МАКЕТ") into the caption line.
-    # Those words are not part of the caption: they must not push the signature zone.
+    # OCR часто приклеивает к строке подписи печатные «ПЕЧАТЬ» и «МАКЕТ»: это не
+    # часть подписи, и сдвигать зону они не должны.
     caption_words = [word for word in raw_words if not _is_seal_print(word)]
     if not caption_words:
         caption_words = [label]
-    # Keep only words reasonably close to the caption word, so a distant print block
-    # on the same OCR line cannot widen the caption.
+    # Берём только слова рядом с «Подписью», иначе далёкий текстовый блок в той же
+    # OCR-строке растянет подпись.
     limit_x = label.left + max(label.width, 40) * 3.2
     caption_words = [word for word in caption_words if word.left <= limit_x] or [label]
     caption_bottom = max(word.bottom for word in caption_words)
@@ -324,15 +321,15 @@ def signature_zone(
     left = max(0, caption_right + 6)
     right = width
     if seal_zone is not None:
-        # The seal mock-up must never be counted as a signature.
+        # Макет печати не должен попасть в подпись.
         right = max(left + 40, min(right, seal_zone.x - 6))
     zone = Zone(x=left, y=top, w=max(0, right - left), h=max(0, bottom - top), anchors=[label.text])
 
-    # Prefer the printed signature rule as the horizontal extent of the zone.
+    # Границы зоны лучше всего задаёт напечатанная линия для подписи.
     rules = find_horizontal_rules(image.grey)
     for rule in rules:
-        # A short piece is a rule partly hidden under the signature itself; its
-        # extent would cut the signature off, so only a whole rule is trusted.
+        # Короткий обрывок — это линейка, частично закрытая самой подписью: по ней
+        # зона обрежет подпись, поэтому верим только целой линии.
         if rule.w < max(80, int(width * 0.12)):
             continue
         if not (rule.y2 >= top - 6 and rule.y <= bottom + 6):
@@ -340,7 +337,7 @@ def signature_zone(
         if rule.x2 <= caption_right:
             continue
         if seal_zone is not None and rule.x >= seal_zone.x2 - 8:
-            # The rule lies inside/right of the seal area: not a signature rule.
+            # Линейка внутри печати или правее неё — это не линия для подписи.
             continue
         zone_left = max(zone.x, rule.x - 4)
         zone_top = min(zone.y, rule.y - int(caption_height * 0.8))
@@ -358,8 +355,8 @@ def signature_zone(
 
 
 def _signature_zone_from_rule(image: DocumentImage, seal_zone: Zone | None) -> Zone | None:
-    """Fallback when OCR lost the caption (blurred photo): the printed signature
-    rule in the lower part of the page still marks where a signature goes."""
+    """Запасной путь, когда OCR не увидел подпись (смазанное фото): напечатанная
+    линия в нижней части страницы всё ещё показывает, где расписываются."""
     height, width = image.height, image.width
     candidates = [
         rule
@@ -370,8 +367,8 @@ def _signature_zone_from_rule(image: DocumentImage, seal_zone: Zone | None) -> Z
         and (seal_zone is None or rule.x2 <= seal_zone.x + 8)
     ]
     if not candidates:
-        # No caption, no rule: the lower band left of the seal is the only place a
-        # signature can be; the ink detectors below still demand a real stroke.
+        # Ни подписи, ни линии: остаётся только полоса слева от печати, а детекторы
+        # чернил ниже всё равно потребуют настоящий штрих.
         right = seal_zone.x - 6 if seal_zone is not None else int(width * 0.62)
         top = int(height * 0.55)
         return Zone(x=int(width * 0.03), y=top, w=max(0, right - int(width * 0.03)),
@@ -388,10 +385,10 @@ def _signature_zone_from_rule(image: DocumentImage, seal_zone: Zone | None) -> Z
 
 
 def seal_zone(image: DocumentImage, ocr: OcrResult, spec: DocumentTypeSpec) -> Zone | None:
-    """Zone of the seal mock-up: right side, centred on the lowest seal caption.
+    """Зона макета печати: справа, вокруг самой нижней подписи печати.
 
-    Only captions in the lower half of the page are considered, so the footer note
-    «… печать являются учебными макетами» cannot move the zone upwards.
+    Смотрим только на нижнюю половину страницы, иначе сноска «… печать являются
+    учебными макетами» утащит зону наверх.
     """
     height, width = image.height, image.width
     points = [
@@ -399,7 +396,7 @@ def seal_zone(image: DocumentImage, ocr: OcrResult, spec: DocumentTypeSpec) -> Z
     ]
     if not points:
         return None
-    # «М.П.» is the dedicated place-of-seal caption: prefer it when present.
+    # «М.П.» — специальная подпись места печати, если она есть, берём её.
     marked = [word for word in points if norm_text(word.text).strip(" .:;,") in {"м.п", "мп", "м п"}]
     if marked:
         anchor = max(marked, key=lambda word: word.cy)
@@ -407,7 +404,7 @@ def seal_zone(image: DocumentImage, ocr: OcrResult, spec: DocumentTypeSpec) -> Z
         top = max(0, int(anchor.top - depth))
         bottom = min(height, int(anchor.bottom + height * 0.02))
         left = max(0, int(anchor.left - anchor.width * 2.2))
-        if anchor.width < 3:  # pragma: no cover - OCR returned a degenerate box
+        if anchor.width < 3:  # pragma: no cover - OCR вернул вырожденную рамку
             left = int(width * 0.72)
         return Zone(x=left, y=top, w=max(0, width - left), h=max(0, bottom - top), anchors=[anchor.text])
 
@@ -420,17 +417,17 @@ def seal_zone(image: DocumentImage, ocr: OcrResult, spec: DocumentTypeSpec) -> Z
 
 
 # ---------------------------------------------------------------------------
-# Signature evidence
+# Доказательства подписи
 # ---------------------------------------------------------------------------
 
 
 def _is_printed_glyph(item: dict, median_height: float) -> bool:
-    """True for components whose shape matches a printed character.
+    """Проверяем, похожа ли компонента на печатную букву.
 
-    The caption itself is excluded by geometry (the zone starts after it), but a
-    caption printed by another layout variant, a header/footer note or the seal
-    text can still fall inside the zone.  A single glyph is small in both
-    directions; handwriting is wide (or has wide letter spacing) even when short.
+    Саму подпись отсекает геометрия зоны, но внутрь может попасть текст из другого
+    варианта вёрстки, колонтитул или слова печати. Печатная буква мелкая по обеим
+    сторонам, а рукописный штрих широкий (или с широкими пробелами), даже если
+    короткий.
     """
     width_limit = max(MIN_MARK_WIDTH, median_height * 3.0)
     height_limit = max(24.0, median_height * 1.8)
@@ -444,7 +441,7 @@ def _signature_from_mask(
     method: str,
     min_components: int = 1,
 ) -> dict | None:
-    """Shared plausibility logic for a signature candidate inside ``zone``."""
+    """Общая проверка правдоподобности кандидата в подпись внутри ``zone``."""
     if mask.sum() == 0:
         return None
     components = _component_stats(mask, min_area=8)
@@ -494,14 +491,14 @@ def _signature_from_greyscale(
     seal_box: Zone | None,
     rules: list[Zone],
 ) -> dict | None:
-    """Fallback for monochrome scans: look for irregular (handwritten) strokes."""
+    """Запасной путь для чёрно-белых сканов: ищем неровные, рукописные штрихи."""
     grey = image.grey
     zone_mask = np.zeros(grey.shape, dtype=bool)
     zone_mask[zone.y : zone.y2, zone.x : zone.x2] = True
     if seal_box is not None:
         zone_mask[seal_box.y : seal_box.y2, seal_box.x : seal_box.x2] = False
     dark = dark_ink_mask(grey) & zone_mask
-    # Drop long thin rules (smooth and would mask the ink lying on top of them).
+    # Убираем длинные тонкие линейки: они гладкие и перекрывают чернила поверх себя.
     for rule in rules:
         if rule.intersects(zone):
             dark[rule.y - 1 : rule.y2 + 2, rule.x : rule.x2] = False
@@ -518,7 +515,7 @@ def _signature_from_greyscale(
         ]
         rough = _roughness(patch)
         fill = item["area"] / max(item["w"] * item["h"], 1)
-        # Printed words are dense and smooth; handwriting is sparse and jagged.
+        # Печатные слова плотные и гладкие, рукопись — разреженная и рваная.
         if fill > 0.34 and rough < 60.0:
             continue
         kept.append(item)
@@ -537,7 +534,7 @@ def _signature_from_greyscale(
 
 
 # ---------------------------------------------------------------------------
-# Seal evidence
+# Доказательства печати
 # ---------------------------------------------------------------------------
 
 
@@ -610,15 +607,15 @@ def _seal_from_greyscale(image: DocumentImage, zone: Zone) -> dict | None:
     candidate = _seal_from_mask(mask, image, "greyscale")
     if candidate is None:
         return None
-    # Printed words inside the region would not survive a ring test; keep them out
-    # by requiring either a ring-like fill ratio or a Hough-circle confirmation.
+    # Печатные слова кольца не образуют, поэтому требуем либо «кольцевую» долю
+    # закраски, либо подтверждение кругами Хафа.
     if candidate["fill"] > 0.62 and candidate["circles"] < 1:
         return None
     return candidate
 
 
 # ---------------------------------------------------------------------------
-# Public API
+# Публичный интерфейс
 # ---------------------------------------------------------------------------
 
 
@@ -638,19 +635,12 @@ def detect_marks(
     document_type: str | DocumentTypeSpec,
     spec: DocumentTypeSpec | None = None,
 ) -> dict[str, MarkVerdict]:
-    """Detect graphic signature/seal marks for a document type.
+    """Ищем графические подпись и печать для типа документа.
 
-    Parameters
-    ----------
-    image:
-        Loaded page (RGB + greyscale).  Colour is used when available; the
-        greyscale fallback keeps working on monochrome scans.
-    ocr_boxes:
-        OCR output — used *only* to localise zones by printed captions.
-    document_type:
-        Type code (``study_certificate`` …) or a :class:`DocumentTypeSpec`.
-    spec:
-        Optional pre-loaded spec (avoids a config lookup).
+    Цвет используем, когда он есть; серый запасной путь нужен для чёрно-белых
+    сканов. OCR тут только ищет зоны по напечатанным словам «Подпись» и «М.П.», а
+    не решает, есть ли отметка. Если spec уже загружен, передаём его, чтобы не
+    читать конфиг второй раз.
     """
     if spec is None:
         if isinstance(document_type, DocumentTypeSpec):
@@ -666,13 +656,14 @@ def detect_marks(
 
     verdicts: dict[str, MarkVerdict] = {}
 
-    # ---------------- signature ----------------
+    # ---------------- подпись ----------------
     signature_evidence: dict = {}
     if sig_zone is not None:
         for collector in (
             lambda: _signature_from_blue(image, sig_zone, seal_zone_box),
             lambda: (
-                # A caption-less band also holds printed text: only coloured ink counts there.
+                # В полосе без подписи тоже есть печатный текст, поэтому там считаем
+                # только цветные чернила.
                 None
                 if sig_zone.anchors == ["band"]
                 else _signature_from_greyscale(image, ocr_boxes, sig_zone, seal_zone_box, rules)
@@ -680,7 +671,7 @@ def detect_marks(
         ):
             try:
                 evidence = collector()
-            except Exception:  # noqa: BLE001 - a failed heuristic must not break the pipeline
+            except Exception:  # noqa: BLE001 - упавшая эвристика не должна ломать разбор
                 evidence = None
             if evidence and evidence.get("plausible"):
                 signature_evidence = evidence
@@ -689,7 +680,7 @@ def detect_marks(
     signature_conf = round(float(signature_evidence.get("strength", 0.0)), 3) if signature_present else 0.0
     sig_box = signature_evidence.get("box") if signature_evidence else None
     if signature_present and sig_box and seal_zone_box is not None:
-        # The seal is a different mark: require a minimum separation.
+        # Печать — отдельная отметка, поэтому между ней и подписью нужен зазор.
         if not (
             sig_box[0] + sig_box[2] <= seal_zone_box.x + 4 or sig_box[0] >= seal_zone_box.x2 - 4
         ):
@@ -699,7 +690,7 @@ def detect_marks(
                 signature_conf = 0.0
                 sig_box = None
 
-    # ---------------- seal ----------------
+    # ---------------- печать ----------------
     seal_evidence: dict = {}
     if spec.has_seal and seal_zone_box is not None:
         for collector in (
@@ -747,6 +738,6 @@ def detect_marks_dict(
     document_type: str | DocumentTypeSpec,
     spec: DocumentTypeSpec | None = None,
 ) -> dict[str, bool]:
-    """Convenience wrapper returning only the boolean flags."""
+    """Обёртка для удобства: возвращает только флаги «есть / нет»."""
     verdicts = detect_marks(image, ocr_boxes, document_type, spec=spec)
     return {key: verdict.present for key, verdict in verdicts.items()}

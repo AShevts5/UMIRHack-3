@@ -1,4 +1,4 @@
-"""Robustness additions: photo enhancement, pixel re-check of values, batch fallback."""
+"""Дополнительные проверки на прочность: улучшение фото, перепроверка значений по пикселям, фолбэк в batch."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ registry = get_registry()
 
 
 def _page(seed: int = 3) -> np.ndarray:
-    """A white A4-like page with dark text-like lines (no OCR needed)."""
+    """Белая страница как А4, а вместо текста — тёмные полоски (OCR здесь не нужен)."""
     rng = random.Random(seed)
     page = np.full((1600, 1132, 3), 255, np.uint8)
     for row in range(14):
@@ -65,7 +65,7 @@ class TestEnhance:
         out, report = enhance_document(_image(shaded))
         assert "page_crop" not in report.steps
         assert "flatten_lighting" in report.steps
-        # Paper is bright again everywhere after relighting.
+        # После выравнивания света бумага снова светлая по всей странице.
         assert np.percentile(out.grey, 20) > 200
 
 

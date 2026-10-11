@@ -7,11 +7,11 @@ interface Props {
 }
 
 /**
- * Renders the uploaded page and overlays the selected zone.
+ * Рисует загруженную страницу и накладывает сверху выбранную зону.
  *
- * The overlay is computed from the *natural* image size reported by the browser —
- * the same pixel space as the OCR boxes returned by the backend — and is positioned
- * inside a wrapper that hugs the image, so it stays correct at any zoom level.
+ * Координаты считаем от *натурального* размера картинки, который сообщает браузер —
+ * это тот же пиксельный размер, в котором backend отдаёт боксы OCR, — а слой лежит
+ * внутри обёртки по размеру картинки, поэтому при любом зуме всё остаётся на месте.
  */
 export function DocumentPreview({ url, highlight }: Props) {
   const [natural, setNatural] = useState<{ width: number; height: number } | null>(null)

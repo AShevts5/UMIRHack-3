@@ -1,13 +1,12 @@
-"""Safe input loading: PNG/JPG/PDF -> RGB numpy array + greyscale.
+"""Загрузка входного файла: PNG/JPG/PDF -> массив RGB + серая картинка.
 
-Security/robustness rules implemented here (see README, section «Ограничения»):
+Что тут проверяем (см. README, раздел про ограничения):
 
-* only ``.png``, ``.jpg``, ``.jpeg`` and ``.pdf`` are accepted;
-* file size, image pixel count, and PDF page count are bounded;
-* PDF is rendered locally with PyMuPDF — no network, no external renderer;
-* a broken/encrypted file produces the typed :class:`UnsupportedDocumentError`
-  instead of a traceback;
-* nothing is written to disk unless the caller explicitly asks for a temp file.
+* принимаем только ``.png``, ``.jpg``, ``.jpeg`` и ``.pdf``;
+* ограничиваем размер файла, число пикселей в картинке и число страниц PDF;
+* PDF рендерим локально через PyMuPDF — без сети и без внешних рендереров;
+* на битом или зашифрованном файле отдаём понятную ошибку, а не трассировку;
+* на диск ничего не пишем, всё держим в памяти.
 """
 
 from __future__ import annotations
@@ -22,18 +21,18 @@ from PIL import Image, ImageFile, ImageOps
 from ..config import Limits, settings
 
 ImageFile.LOAD_TRUNCATED_IMAGES = False
-Image.MAX_IMAGE_PIXELS = None  # we enforce our own limit
+Image.MAX_IMAGE_PIXELS = None  # свой лимит по пикселям проверяем сами
 
 PDF_RENDER_DPI = 200
 
 
 class DocumentLoadError(Exception):
-    """Raised for any unacceptable or unreadable input document."""
+    """Файл не подходит по формату или не читается."""
 
 
 @dataclass
 class DocumentImage:
-    """A single-page document image ready for OCR and marker analysis."""
+    """Одна страница документа, готовая к OCR и поиску отметок."""
 
     rgb: np.ndarray  # HxWx3, uint8
     grey: np.ndarray  # HxW, uint8
@@ -42,8 +41,8 @@ class DocumentImage:
     page_count: int = 1
     render_dpi: int | None = None
     inverted_preview: bool = False
-    #: "clean" scan/render, "photo" (straightened/relit) or "lowres" (upscaled);
-    #: set by enhance.py and used by the OCR preprocessing.
+    #: "clean" — скан или рендер, "photo" — выровненное и пересвеченное фото,
+    #: "lowres" — увеличенное фото; ставит enhance.py, читает предобработка OCR.
     quality: str = "clean"
 
     @property
@@ -90,14 +89,14 @@ def _from_pil(image: Image.Image) -> np.ndarray:
 def _render_pdf(data: bytes, limits: Limits, name: str) -> tuple[np.ndarray, int, int]:
     try:
         import fitz  # PyMuPDF
-    except ImportError as exc:  # pragma: no cover - dependency guard
+    except ImportError as exc:  # pragma: no cover - проверка зависимости
         raise DocumentLoadError(
             "Для обработки PDF требуется PyMuPDF (pip install PyMuPDF)."
         ) from exc
 
     try:
         document = fitz.open(stream=data, filetype="pdf")
-    except Exception as exc:  # noqa: BLE001 - third-party parser errors
+    except Exception as exc:  # noqa: BLE001 - ошибки стороннего парсера бывают любые
         raise DocumentLoadError("PDF не удалось открыть: файл повреждён или зашифрован.") from exc
     try:
         if document.needs_pass:
@@ -119,7 +118,7 @@ def _render_pdf(data: bytes, limits: Limits, name: str) -> tuple[np.ndarray, int
 
 
 def load_document_bytes(data: bytes, filename: str, limits: Limits | None = None) -> DocumentImage:
-    """Load an uploaded document from raw bytes."""
+    """Загружаем присланный документ из сырых байтов."""
     limits = limits or settings.limits
     _check_size(len(data), limits)
     suffix = _validate_suffix(filename, limits)
@@ -133,7 +132,7 @@ def load_document_bytes(data: bytes, filename: str, limits: Limits | None = None
                 rgb = _from_pil(image)
         except DocumentLoadError:
             raise
-        except Exception as exc:  # noqa: BLE001 - Pillow raises many types
+        except Exception as exc:  # noqa: BLE001 - Pillow кидает исключения разных типов
             raise DocumentLoadError("Изображение не удалось прочитать: файл повреждён.") from exc
         pages, dpi = 1, None
 
@@ -153,7 +152,7 @@ def load_document_bytes(data: bytes, filename: str, limits: Limits | None = None
 
 
 def load_document(path: str | Path, limits: Limits | None = None) -> DocumentImage:
-    """Load a document from the filesystem (used by the CLI/batch flow)."""
+    """Загружаем документ с диска — этим пользуется CLI и пакетный режим."""
     file_path = Path(path)
     if not file_path.is_file():
         raise DocumentLoadError(f"Файл не найден: {file_path.name}")

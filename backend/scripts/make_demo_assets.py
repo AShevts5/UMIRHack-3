@@ -1,15 +1,16 @@
-"""Export ready-to-show demo payloads and slide numbers from real runs.
+"""Готовые демо-примеры и цифры для слайдов из реальных прогонов.
 
-Creates ``reports/demo/`` with:
+Складываем в ``reports/demo/``:
 
-* ``demo.json`` — eight demonstration cases (three document types, missing-field case,
-  mark cases, honest refusal, final-decision answer) with the actual pipeline output;
-* ``api_examples.json`` — the same cases as they leave ``POST /api/v1/analyze``
-  (without word boxes, to keep the file small);
-* ``summary.md`` — a compact table for the slides.
+* ``demo.json`` — показательные случаи (три типа документов, пропущенное поле, случаи
+  с отметками, честный отказ, ответ про окончательное решение) с настоящим выводом
+  pipeline;
+* ``api_examples.json`` — те же случаи, как их отдаёт ``POST /api/v1/analyze``
+  (без боксов слов, чтобы файл не раздувался);
+* ``summary.md`` — компактная таблица для слайдов.
 
-The script reads only documents from the archive and never the reference file, so
-everything it prints is genuine model output.
+Из архива скрипт читает только документы и никогда — эталон, поэтому всё, что он
+печатает, это честный вывод модели.
 """
 
 from __future__ import annotations
@@ -21,7 +22,7 @@ from pathlib import Path
 from ..app.services.pipeline import Pipeline, build_api_response
 from .run_batch import resolve_document_path
 
-#: (document_id, document_type, question, what the case demonstrates)
+#: (document_id, тип документа, вопрос, что показывает случай)
 CASES = [
     ("open-001", "study_certificate", None, "Полная справка об обучении: все обязательные сведения и обе отметки"),
     ("open-002", "study_certificate", "Укажи значение поля «Дата выдачи».", "Поле отсутствует: честный отказ вместо значения"),
@@ -48,7 +49,7 @@ def build(root: Path, out_dir: Path, prefer: str = "image") -> dict:
 
     for document_id, document_type, question, purpose in CASES:
         key = (document_id, question)
-        if key in seen:  # pragma: no cover - defensive
+        if key in seen:  # pragma: no cover - на всякий случай
             continue
         seen.add(key)
         entry = by_id[document_id]

@@ -209,7 +209,7 @@ def rand_date(rng: random.Random, start: date, span_days: int) -> date:
 
 
 def make_values(doc_type: str, rng: random.Random, index: int) -> tuple[dict, dict]:
-    """(normalized expected values, printed values)."""
+    """(нормализованные значения для эталона, напечатанные значения)."""
     expected: dict[str, str] = {}
     printed: dict[str, str] = {}
 
@@ -409,7 +409,7 @@ def main(argv: list[str] | None = None) -> int:
         manifest.append({"document_id": doc_id, "document_type": doc_type,
                          "image": f"documents/{doc_id}.png", "pdf": f"documents/{doc_id}.pdf"})
         field_keys = [key for key, _ in TYPES[doc_type]["fields"]]
-        # Half of the field questions target a missing field, as in the open set.
+        # Половина вопросов про поля — про пропущенное поле, как в открытом наборе.
         missing_text = [k for k in field_keys if k in missing]
         key = rng.choice(missing_text) if missing_text and rng.random() < 0.5 else rng.choice(field_keys)
         label = dict(TYPES[doc_type]["fields"])[key]

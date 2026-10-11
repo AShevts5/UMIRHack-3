@@ -80,6 +80,11 @@ docker --version
 log "2/6 Забираю код (ветка $BRANCH)"
 if [ -d "$APP_DIR/.git" ]; then
   git -C "$APP_DIR" fetch --depth 1 origin "$BRANCH"
+  # Папка может быть «грязной»: сюда могли положить файлы руками (например,
+  # rules.md до того, как он появился в репозитории). Иначе git откажется
+  # переключаться. Репозиторий тут только для деплоя, поэтому чистим смело.
+  git -C "$APP_DIR" clean -fdq
+  git -C "$APP_DIR" reset -q --hard
   git -C "$APP_DIR" checkout -q FETCH_HEAD
   git -C "$APP_DIR" reset -q --hard FETCH_HEAD
 else

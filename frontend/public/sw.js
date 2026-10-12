@@ -6,7 +6,7 @@
  * сервера никак: POST-запросы и /api/auth/* не кешируем вообще никогда. Тайлы карты
  * OpenStreetMap тоже не кешируем — у них в правилах это запрещено, не нарываемся.
  */
-const VERSION = 'umir-v1'
+const VERSION = 'umir-v2'
 const SHELL = `${VERSION}-shell`
 const DATA = `${VERSION}-data`
 const PRECACHE = [
@@ -14,6 +14,9 @@ const PRECACHE = [
   '/manifest.webmanifest',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
+  '/brand/academium-mark.webp',
+  '/brand/academium-mark-128.webp',
+  '/brand/doodles.svg',
   '/universities/rinh/building.svg',
   '/universities/rinh/hall.svg',
   '/universities/rinh/logo.svg',
@@ -71,7 +74,7 @@ self.addEventListener('fetch', (event) => {
     if (DATA_PATHS.some((re) => re.test(url.pathname))) event.respondWith(networkFirst(request, DATA))
     return
   }
-  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/universities/') || url.pathname.startsWith('/icons/')) {
+  if (['/assets/', '/universities/', '/icons/', '/brand/'].some((prefix) => url.pathname.startsWith(prefix))) {
     event.respondWith(cacheFirst(request))
   }
 })

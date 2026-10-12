@@ -1,116 +1,175 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="t">
-<title id="t">Холл главного корпуса: пост охраны, турникеты, мраморная лестница (иллюстрация)</title>
+<title id="t">Светлый холл главного корпуса: большие окна, гирлянда, растения, шарики и пост охраны (иллюстрация)</title>
 <defs>
-<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8D9C8"/><stop offset="1" stop-color="#CDB8A4"/></linearGradient>
-<linearGradient id="ceil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFA992"/><stop offset="1" stop-color="#E3D3C1"/></linearGradient>
-<linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9CFC6"/><stop offset="1" stop-color="#A99A90"/></linearGradient>
-<linearGradient id="col" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9BBB0"/><stop offset=".35" stop-color="#F4EEE8"/><stop offset=".7" stop-color="#DCD0C6"/><stop offset="1" stop-color="#B3A397"/></linearGradient>
-<linearGradient id="stair" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFE6DE"/><stop offset="1" stop-color="#D4C6BA"/></linearGradient>
-<linearGradient id="door" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9C2"/><stop offset="1" stop-color="#F3C58A"/></linearGradient>
-<radialGradient id="glow" cx=".5" cy=".18" r=".6"><stop offset="0" stop-color="#FFF4DD" stop-opacity=".45"/><stop offset="1" stop-color="#FFF4DD" stop-opacity="0"/></radialGradient>
-<pattern id="marble" width="120" height="120" patternUnits="userSpaceOnUse"><rect width="120" height="120" fill="none"/><path d="M0 40c30-10 50 20 80 5s30-30 40-25M10 100c20-15 40 5 60-10s40 0 50 -5" stroke="#FFFFFF" stroke-opacity=".35" stroke-width="1.4" fill="none"/></pattern>
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D9E8FF"/><stop offset=".55" stop-color="#F3F7FF"/><stop offset="1" stop-color="#FFF1DF"/></linearGradient>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4FB2FF"/><stop offset=".7" stop-color="#A9DEFF"/><stop offset="1" stop-color="#E4F6FF"/></linearGradient>
+<linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6DDBA"/><stop offset="1" stop-color="#E9C08F"/></linearGradient>
+<linearGradient id="rug" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B7BFF"/><stop offset="1" stop-color="#1D3FC4"/></linearGradient>
+<linearGradient id="desk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCE6FA"/></linearGradient>
+<radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF6C9"/><stop offset=".55" stop-color="#FFD24A"/><stop offset="1" stop-color="#FFC233" stop-opacity="0"/></radialGradient>
+<radialGradient id="beam" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#FFF7D6" stop-opacity=".75"/><stop offset="1" stop-color="#FFF7D6" stop-opacity="0"/></radialGradient>
+<radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE9A8" stop-opacity=".9"/><stop offset="1" stop-color="#FFE9A8" stop-opacity="0"/></radialGradient>
+<pattern id="dots" width="44" height="44" patternUnits="userSpaceOnUse"><circle cx="6" cy="6" r="2" fill="#B9CCF5" opacity=".55"/></pattern>
+<path id="spark" d="M0-18C2-6 6-2 18 0C6 2 2 6 0 18C-2 6-6 2-18 0C-6-2-2-6 0-18Z"/>
 </defs>
+
+<!-- стена и потолок -->
 <rect width="1600" height="1000" fill="url(#wall)"/>
-<polygon points="0,0 1600,0 1250,170 350,170" fill="url(#ceil)"/>
-<path d="M200 0L462 170" stroke="#A8927C" stroke-width="2" opacity=".5"/>
-<path d="M400 0L575 170" stroke="#A8927C" stroke-width="2" opacity=".5"/>
-<path d="M600 0L688 170" stroke="#A8927C" stroke-width="2" opacity=".5"/>
-<path d="M800 0L800 170" stroke="#A8927C" stroke-width="2" opacity=".5"/>
-<path d="M1000 0L912 170" stroke="#A8927C" stroke-width="2" opacity=".5"/>
-<path d="M1200 0L1025 170" stroke="#A8927C" stroke-width="2" opacity=".5"/>
-<path d="M1400 0L1138 170" stroke="#A8927C" stroke-width="2" opacity=".5"/>
-<path d="M175 85H1425" stroke="#A8927C" stroke-width="2" opacity=".4"/>
-<rect x="350" y="170" width="900" height="460" fill="#E2D4C4"/>
-<path d="M600 630V360a200 200 0 0 1 400 0v270z" fill="#B7A08C"/>
-<path d="M630 630V370a170 170 0 0 1 340 0v260z" fill="url(#door)"/>
-<path d="M800 200v170M630 470h340M700 630V400M900 630V400" stroke="#E7B985" stroke-width="5" opacity=".7"/>
-<rect x="700" y="196" width="200" height="40" rx="6" fill="#C9B29C"/><text x="800" y="223" text-anchor="middle" font-family="Onest, Arial, sans-serif" font-weight="700" font-size="20" fill="#5C4636" letter-spacing="2">ДОБРО ПОЖАЛОВАТЬ</text>
-<path d="M800 0v70" stroke="#8A6A55" stroke-width="3"/><ellipse cx="800" cy="88" rx="70" ry="18" fill="#F7E3B5"/><ellipse cx="800" cy="80" rx="46" ry="10" fill="#FFF2CF"/>
-<circle cx="740" cy="100" r="7" fill="#FFF7DE"/>
-<circle cx="770" cy="100" r="7" fill="#FFF7DE"/>
-<circle cx="800" cy="100" r="7" fill="#FFF7DE"/>
-<circle cx="830" cy="100" r="7" fill="#FFF7DE"/>
-<circle cx="860" cy="100" r="7" fill="#FFF7DE"/>
-<rect width="1600" height="1000" fill="url(#glow)"/>
-<polygon points="350,630 1250,630 1600,1000 0,1000" fill="url(#floor)"/>
-<polygon points="350,630 440,630 417,660 322,660" fill="#8E7F78" opacity=".55"/>
-<polygon points="530,630 620,630 609,660 513,660" fill="#8E7F78" opacity=".55"/>
-<polygon points="710,630 800,630 800,660 704,660" fill="#8E7F78" opacity=".55"/>
-<polygon points="890,630 980,630 991,660 896,660" fill="#8E7F78" opacity=".55"/>
-<polygon points="1070,630 1160,630 1183,660 1087,660" fill="#8E7F78" opacity=".55"/>
-<polygon points="417,660 513,660 490,700 387,700" fill="#8E7F78" opacity=".55"/>
-<polygon points="609,660 704,660 697,700 594,700" fill="#8E7F78" opacity=".55"/>
-<polygon points="800,660 896,660 903,700 800,700" fill="#8E7F78" opacity=".55"/>
-<polygon points="991,660 1087,660 1110,700 1006,700" fill="#8E7F78" opacity=".55"/>
-<polygon points="1183,660 1278,660 1316,700 1213,700" fill="#8E7F78" opacity=".55"/>
-<polygon points="284,700 387,700 348,752 235,752" fill="#8E7F78" opacity=".55"/>
-<polygon points="490,700 594,700 574,752 461,752" fill="#8E7F78" opacity=".55"/>
-<polygon points="697,700 800,700 800,752 687,752" fill="#8E7F78" opacity=".55"/>
-<polygon points="903,700 1006,700 1026,752 913,752" fill="#8E7F78" opacity=".55"/>
-<polygon points="1110,700 1213,700 1252,752 1139,752" fill="#8E7F78" opacity=".55"/>
-<polygon points="348,752 461,752 422,820 296,820" fill="#8E7F78" opacity=".55"/>
-<polygon points="574,752 687,752 674,820 548,820" fill="#8E7F78" opacity=".55"/>
-<polygon points="800,752 913,752 926,820 800,820" fill="#8E7F78" opacity=".55"/>
-<polygon points="1026,752 1139,752 1178,820 1052,820" fill="#8E7F78" opacity=".55"/>
-<polygon points="1252,752 1365,752 1430,820 1304,820" fill="#8E7F78" opacity=".55"/>
-<polygon points="170,820 296,820 232,905 90,905" fill="#8E7F78" opacity=".55"/>
-<polygon points="422,820 548,820 516,905 374,905" fill="#8E7F78" opacity=".55"/>
-<polygon points="674,820 800,820 800,905 658,905" fill="#8E7F78" opacity=".55"/>
-<polygon points="926,820 1052,820 1084,905 942,905" fill="#8E7F78" opacity=".55"/>
-<polygon points="1178,820 1304,820 1368,905 1226,905" fill="#8E7F78" opacity=".55"/>
-<polygon points="232,905 374,905 320,1000 160,1000" fill="#8E7F78" opacity=".55"/>
-<polygon points="516,905 658,905 640,1000 480,1000" fill="#8E7F78" opacity=".55"/>
-<polygon points="800,905 942,905 960,1000 800,1000" fill="#8E7F78" opacity=".55"/>
-<polygon points="1084,905 1226,905 1280,1000 1120,1000" fill="#8E7F78" opacity=".55"/>
-<polygon points="1368,905 1510,905 1600,1000 1440,1000" fill="#8E7F78" opacity=".55"/>
-<polygon points="350,630 1250,630 1600,1000 0,1000" fill="url(#marble)"/>
-<rect x="560" y="630" width="480" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="532" y="646" width="536" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="504" y="662" width="592" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="476" y="678" width="648" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="448" y="694" width="704" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="420" y="710" width="760" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="392" y="726" width="816" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="364" y="742" width="872" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="336" y="758" width="928" height="16" fill="url(#stair)" stroke="#C3B3A6" stroke-width="1"/>
-<rect x="520" y="560" width="22" height="200" rx="6" fill="#8A6A55"/><rect x="1058" y="560" width="22" height="200" rx="6" fill="#8A6A55"/>
-<path d="M531 560l-120 214M1069 560l120 214" stroke="#8A6A55" stroke-width="10" stroke-linecap="round"/>
-<rect x="120" y="0" width="120" height="1000" fill="url(#col)"/>
-<rect x="108" y="960" width="144" height="40" fill="#CBBDB1"/>
-<rect x="110" y="0" width="140" height="26" fill="#D9CCC1"/>
-<rect x="1360" y="0" width="120" height="1000" fill="url(#col)"/>
-<rect x="1348" y="960" width="144" height="40" fill="#CBBDB1"/>
-<rect x="1350" y="0" width="140" height="26" fill="#D9CCC1"/>
-<rect x="300" y="140" width="70" height="520" fill="url(#col)"/>
-<rect x="288" y="620" width="94" height="40" fill="#CBBDB1"/>
-<rect x="290" y="140" width="90" height="26" fill="#D9CCC1"/>
-<rect x="1230" y="140" width="70" height="520" fill="url(#col)"/>
-<rect x="1218" y="620" width="94" height="40" fill="#CBBDB1"/>
-<rect x="1220" y="140" width="90" height="26" fill="#D9CCC1"/>
-<g transform="translate(280 640)">
-<rect x="0" y="40" width="300" height="150" rx="8" fill="#6B4E3D"/><rect x="0" y="30" width="320" height="22" rx="6" fill="#8A6A55"/>
-<rect x="20" y="70" width="260" height="90" rx="6" fill="#5A4031"/>
-<rect x="120" y="-40" width="80" height="60" rx="6" fill="#2B3852"/><rect x="128" y="-32" width="64" height="44" rx="3" fill="#8FA9EA" opacity=".7"/>
-<circle cx="250" cy="-6" r="22" fill="#2B3852"/><path d="M232 30q18-44 36 0" fill="#2B3852"/><rect x="228" y="-34" width="44" height="12" rx="5" fill="#1E2940"/>
-<rect x="40" y="96" width="220" height="36" rx="6" fill="#F4EEE8"/><text x="150" y="121" text-anchor="middle" font-family="Onest, Arial, sans-serif" font-weight="800" font-size="20" fill="#3A2A20" letter-spacing="1.5">ПОСТ ОХРАНЫ</text>
+<rect width="1600" height="760" fill="url(#dots)"/>
+<rect width="1600" height="70" fill="#C7DAFF"/>
+<rect y="70" width="1600" height="8" fill="#AFC8FA"/>
+<circle cx="230" cy="470" r="210" fill="#FFFFFF" opacity=".55"/>
+<circle cx="520" cy="300" r="120" fill="#E6EEFF" opacity=".7"/>
+
+<!-- большое окно в центре: небо, солнце, облака -->
+<g>
+  <path d="M800 760V330a200 200 0 0 1 400 0v430z" fill="#FFFFFF"/>
+  <path d="M820 740V335a180 180 0 0 1 360 0v405z" fill="url(#sky)"/>
+  <circle cx="1080" cy="280" r="90" fill="url(#sun)"/>
+  <circle cx="1080" cy="280" r="34" fill="#FFE07A"/>
+  <g fill="#FFFFFF">
+    <ellipse cx="900" cy="300" rx="52" ry="20"/><ellipse cx="935" cy="288" rx="34" ry="22"/><ellipse cx="872" cy="292" rx="24" ry="16"/>
+    <ellipse cx="1110" cy="430" rx="60" ry="20" opacity=".9"/><ellipse cx="1140" cy="418" rx="34" ry="20" opacity=".9"/>
+    <ellipse cx="930" cy="520" rx="44" ry="15" opacity=".8"/>
+  </g>
+  <path d="M960 360q8-8 16 0q8-8 16 0M1010 390q6-6 12 0q6-6 12 0" fill="none" stroke="#2A4C99" stroke-width="3" stroke-linecap="round"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="10">
+    <path d="M1000 160v580M820 470h360M820 610h360"/>
+  </g>
+  <rect x="790" y="740" width="420" height="22" rx="8" fill="#FFFFFF"/>
 </g>
-<g transform="translate(700 700)">
-<rect x="-14" y="0" width="28" height="120" rx="6" fill="#9AA3B5"/><rect x="-18" y="-10" width="36" height="20" rx="5" fill="#C9D0DC"/>
-<path d="M14 40h56M14 40l40-26M14 40l40 26" stroke="#C9D0DC" stroke-width="6" stroke-linecap="round"/>
-<circle cx="0" cy="0" r="5" fill="#5DC598"/>
+<!-- лучи из окна на полу -->
+<path d="M820 760L640 1000H1360L1180 760z" fill="url(#beam)" opacity=".7"/>
+
+<!-- окна поменьше справа и слева -->
+<g>
+  <path d="M1280 700V420a90 90 0 0 1 180 0v280z" fill="#FFFFFF"/>
+  <path d="M1294 688V424a76 76 0 0 1 152 0v264z" fill="url(#sky)"/>
+  <ellipse cx="1350" cy="470" rx="34" ry="12" fill="#FFFFFF"/>
+  <path d="M1370 350v338M1294 520h152" stroke="#FFFFFF" stroke-width="8"/>
+  <path d="M540 700V420a90 90 0 0 1 180 0v280z" fill="#FFFFFF"/>
+  <path d="M554 688V424a76 76 0 0 1 152 0v264z" fill="url(#sky)"/>
+  <ellipse cx="660" cy="500" rx="30" ry="11" fill="#FFFFFF"/>
+  <path d="M630 350v338M554 520h152" stroke="#FFFFFF" stroke-width="8"/>
 </g>
-<g transform="translate(800 700)">
-<rect x="-14" y="0" width="28" height="120" rx="6" fill="#9AA3B5"/><rect x="-18" y="-10" width="36" height="20" rx="5" fill="#C9D0DC"/>
-<path d="M14 40h56M14 40l40-26M14 40l40 26" stroke="#C9D0DC" stroke-width="6" stroke-linecap="round"/>
-<circle cx="0" cy="0" r="5" fill="#5DC598"/>
+
+<!-- вывеска с приветствием -->
+<g>
+  <path d="M842 70L862 104M1158 70L1138 104" stroke="#8AA3D6" stroke-width="3"/>
+  <rect x="790" y="100" width="420" height="58" rx="29" fill="#1E5BEA"/>
+  <rect x="796" y="106" width="408" height="46" rx="23" fill="none" stroke="#FFFFFF" stroke-opacity=".35" stroke-width="2"/>
+  <text x="985" y="138" text-anchor="middle" font-family="Onest, 'Golos Text', Arial, sans-serif" font-size="26" font-weight="800" letter-spacing="2" fill="#FFFFFF">ДОБРО ПОЖАЛОВАТЬ!</text>
+  <use href="#spark" transform="translate(1176 129) scale(.85)" fill="#FFC633"/>
 </g>
-<g transform="translate(900 700)">
-<rect x="-14" y="0" width="28" height="120" rx="6" fill="#9AA3B5"/><rect x="-18" y="-10" width="36" height="20" rx="5" fill="#C9D0DC"/>
-<path d="M14 40h56M14 40l40-26M14 40l40 26" stroke="#C9D0DC" stroke-width="6" stroke-linecap="round"/>
-<circle cx="0" cy="0" r="5" fill="#5DC598"/>
+
+<!-- гирлянда из флажков -->
+<g>
+  <path d="M0 96Q200 190 400 96" fill="none" stroke="#6F86C2" stroke-width="2.5"/>
+  <path d="M400 96Q600 190 800 96" fill="none" stroke="#6F86C2" stroke-width="2.5"/>
+  <path d="M1200 96Q1400 190 1600 96" fill="none" stroke="#6F86C2" stroke-width="2.5"/>
+  <g stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round">
+    <path d="M-17 0h34l-17 36z" fill="#2F6BFF" transform="translate(67 122) rotate(17)"/>
+    <path d="M-17 0h34l-17 36z" fill="#FFC633" transform="translate(133 138) rotate(9)"/>
+    <path d="M-17 0h34l-17 36z" fill="#FF7A6B" transform="translate(200 143) rotate(0)"/>
+    <path d="M-17 0h34l-17 36z" fill="#35CFAE" transform="translate(267 138) rotate(-9)"/>
+    <path d="M-17 0h34l-17 36z" fill="#8E6BFF" transform="translate(333 122) rotate(-17)"/>
+    <path d="M-17 0h34l-17 36z" fill="#2F6BFF" transform="translate(467 122) rotate(17)"/>
+    <path d="M-17 0h34l-17 36z" fill="#FFC633" transform="translate(533 138) rotate(9)"/>
+    <path d="M-17 0h34l-17 36z" fill="#FF7A6B" transform="translate(600 143) rotate(0)"/>
+    <path d="M-17 0h34l-17 36z" fill="#35CFAE" transform="translate(667 138) rotate(-9)"/>
+    <path d="M-17 0h34l-17 36z" fill="#8E6BFF" transform="translate(733 122) rotate(-17)"/>
+    <path d="M-17 0h34l-17 36z" fill="#2F6BFF" transform="translate(1267 122) rotate(17)"/>
+    <path d="M-17 0h34l-17 36z" fill="#FFC633" transform="translate(1333 138) rotate(9)"/>
+    <path d="M-17 0h34l-17 36z" fill="#FF7A6B" transform="translate(1400 143) rotate(0)"/>
+    <path d="M-17 0h34l-17 36z" fill="#35CFAE" transform="translate(1467 138) rotate(-9)"/>
+    <path d="M-17 0h34l-17 36z" fill="#8E6BFF" transform="translate(1533 122) rotate(-17)"/>
+  </g>
 </g>
-<rect x="1000" y="680" width="32" height="140" rx="6" fill="#9AA3B5"/>
-<g transform="translate(1040 560)"><rect x="0" y="0" width="160" height="110" rx="6" fill="#2A4C99"/><rect x="10" y="12" width="140" height="14" rx="3" fill="#E2E8F6"/><rect x="10" y="34" width="100" height="8" rx="3" fill="#8FA9EA"/><rect x="10" y="50" width="120" height="8" rx="3" fill="#8FA9EA"/><rect x="10" y="66" width="80" height="8" rx="3" fill="#8FA9EA"/><path d="M40 110v60M120 110v60" stroke="#6B4E3D" stroke-width="6"/></g>
-<rect x="30" y="900" width="60" height="70" rx="8" fill="#6B4E3D"/><circle cx="60" cy="880" r="40" fill="#3C7059"/><circle cx="36" cy="860" r="26" fill="#2F5B4A"/><circle cx="82" cy="856" r="24" fill="#356450"/>
-<rect x="1500" y="900" width="60" height="70" rx="8" fill="#6B4E3D"/><circle cx="1530" cy="880" r="40" fill="#3C7059"/><circle cx="1506" cy="860" r="26" fill="#2F5B4A"/><circle cx="1552" cy="856" r="24" fill="#356450"/>
+
+<!-- подвесные лампы -->
+<g>
+  <circle cx="380" cy="300" r="90" fill="url(#lamp)"/>
+  <path d="M380 70v170" stroke="#6F86C2" stroke-width="3"/>
+  <path d="M340 270a40 34 0 0 1 80 0z" fill="#FFC633"/>
+  <rect x="338" y="268" width="84" height="8" rx="4" fill="#E8A916"/>
+  <circle cx="380" cy="284" r="9" fill="#FFF3C4"/>
+  <circle cx="1530" cy="250" r="70" fill="url(#lamp)"/>
+  <path d="M1530 70v130" stroke="#6F86C2" stroke-width="3"/>
+  <path d="M1500 226a30 26 0 0 1 60 0z" fill="#2F6BFF"/>
+  <rect x="1498" y="224" width="64" height="7" rx="3.5" fill="#1D3FC4"/>
+  <circle cx="1530" cy="238" r="7" fill="#FFF3C4"/>
+</g>
+
+<!-- бумажный самолётик с пунктирным следом -->
+<g>
+  <path d="M90 300C170 230 250 380 330 300S470 210 520 236" fill="none" stroke="#2F6BFF" stroke-width="3" stroke-dasharray="2 12" stroke-linecap="round" opacity=".7"/>
+  <g transform="translate(530 232) rotate(-14)">
+    <path d="M0 0L58-20L36 22z" fill="#FFFFFF" stroke="#1E5BEA" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M0 0L36 22L28 2z" fill="#CFE0FF" stroke="#1E5BEA" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M28 2L58-20" stroke="#1E5BEA" stroke-width="3"/>
+  </g>
+</g>
+
+<!-- пол и коврик со звездой -->
+<rect y="760" width="1600" height="240" fill="url(#floor)"/>
+<g stroke="#E2B47F" stroke-width="2" opacity=".7">
+  <path d="M0 820H1600M0 890H1600M0 960H1600"/>
+  <path d="M180 760v60M520 820v70M900 760v60M1260 820v70M300 890v70M760 890v70M1180 890v70M1500 760v60"/>
+</g>
+<ellipse cx="800" cy="900" rx="330" ry="70" fill="url(#rug)"/>
+<ellipse cx="800" cy="900" rx="300" ry="56" fill="none" stroke="#FFFFFF" stroke-opacity=".5" stroke-width="3" stroke-dasharray="10 10"/>
+<use href="#spark" transform="translate(800 900) scale(2.2 .9)" fill="#FFC633"/>
+
+<!-- шарики у поста охраны -->
+<g>
+  <path d="M1220 640C1210 560 1240 500 1214 420M1236 640C1250 560 1268 480 1288 400M1228 640C1228 560 1196 520 1170 470" fill="none" stroke="#8AA3D6" stroke-width="2"/>
+  <ellipse cx="1214" cy="380" rx="34" ry="42" fill="#FF7A6B"/><path d="M1208 422l6 8 6-8z" fill="#FF7A6B"/>
+  <ellipse cx="1290" cy="360" rx="34" ry="42" fill="#FFC633"/><path d="M1284 402l6 8 6-8z" fill="#FFC633"/>
+  <ellipse cx="1166" cy="432" rx="30" ry="37" fill="#35CFAE"/><path d="M1160 469l6 8 6-8z" fill="#35CFAE"/>
+  <g fill="#FFFFFF" opacity=".55"><ellipse cx="1202" cy="364" rx="8" ry="13"/><ellipse cx="1278" cy="344" rx="8" ry="13"/><ellipse cx="1156" cy="418" rx="7" ry="11"/></g>
+</g>
+
+<!-- пост охраны: стойка с лампой и табличкой -->
+<g>
+  <rect x="1060" y="640" width="330" height="140" rx="26" fill="url(#desk)" stroke="#B7C8EE" stroke-width="3"/>
+  <rect x="1060" y="640" width="330" height="22" rx="11" fill="#2F6BFF"/>
+  <rect x="1150" y="690" width="150" height="40" rx="20" fill="#E8F0FF" stroke="#2F6BFF" stroke-width="2"/>
+  <text x="1225" y="717" text-anchor="middle" font-family="Onest, 'Golos Text', Arial, sans-serif" font-size="18" font-weight="700" fill="#1D3FC4">Пост охраны</text>
+  <path d="M1350 640v-50l-26-20" fill="none" stroke="#1D3FC4" stroke-width="5" stroke-linecap="round"/>
+  <path d="M1300 566l34-16 10 22-36 12z" fill="#FFC633"/>
+  <path d="M1116 640v-26h44v26" fill="#35CFAE"/>
+  <rect x="1110" y="606" width="56" height="10" rx="5" fill="#2BB596"/>
+</g>
+
+<!-- растения в горшках -->
+<g>
+  <path d="M60 760h120l-14 120H74z" fill="#FF7A6B"/>
+  <rect x="52" y="748" width="136" height="20" rx="10" fill="#F05E50"/>
+  <g fill="#2FB57F">
+    <path d="M120 750C60 700 20 620 40 540C90 590 120 660 120 750z"/>
+    <path d="M120 750C170 690 230 640 250 560C190 580 140 650 120 750z"/>
+    <path d="M120 750C110 660 120 560 160 480C180 560 160 660 120 750z" fill="#3ACB8F"/>
+    <path d="M120 750C80 680 70 600 92 520C120 590 130 670 120 750z" fill="#25996A"/>
+  </g>
+  <path d="M1460 760h100l-12 100h-76z" fill="#2F6BFF"/>
+  <rect x="1452" y="748" width="116" height="18" rx="9" fill="#1D3FC4"/>
+  <g fill="#2FB57F">
+    <ellipse cx="1480" cy="690" rx="26" ry="62" transform="rotate(-24 1480 690)"/>
+    <ellipse cx="1540" cy="684" rx="26" ry="64" transform="rotate(22 1540 684)"/>
+    <ellipse cx="1510" cy="660" rx="24" ry="78" fill="#3ACB8F"/>
+  </g>
+</g>
+
+<!-- искорки -->
+<g fill="#FFC633">
+  <use href="#spark" transform="translate(700 250) scale(.9)"/>
+  <use href="#spark" transform="translate(250 200) scale(.6)"/>
+  <use href="#spark" transform="translate(1440 330) scale(.7)"/>
+  <use href="#spark" transform="translate(760 590) scale(.5)"/>
+</g>
+<g fill="#2F6BFF" opacity=".55">
+  <use href="#spark" transform="translate(470 420) scale(.45)"/>
+  <use href="#spark" transform="translate(1250 240) scale(.5)"/>
+  <use href="#spark" transform="translate(60 420) scale(.5)"/>
+</g>
 </svg>

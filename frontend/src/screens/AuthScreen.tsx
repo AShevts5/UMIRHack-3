@@ -148,27 +148,44 @@ export default function AuthScreen({ initialMode = 'login', initialError, challe
 
   return (
     <div className="auth force-dark">
-      <figure className="auth__art">
-        <img src={building} alt={university?.hall?.building_caption ?? 'Главный корпус университета'} />
-        <figcaption>
-          <b>{university?.short_name ?? 'Онлайн-деканат'}</b>
-          <span>{caption}</span>
-        </figcaption>
-        {universities && universities.length > 1 ? (
-          <label className="auth__uni">
-            <span>Ваш вуз</span>
-            <select value={universityId} onChange={(event) => chooseUniversity(event.target.value)}>
-              {universities.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.short_name}
-                </option>
-              ))}
-            </select>
-          </label>
-        ) : null}
-      </figure>
+      {/* чисто декор: искорки и самолётик летают по фону, скринридеру это не нужно */}
+      <div className="auth__deco" aria-hidden="true">
+        <i className="auth__spark auth__spark--1" />
+        <i className="auth__spark auth__spark--2" />
+        <i className="auth__spark auth__spark--3" />
+        <i className="auth__spark auth__spark--4" />
+        <i className="auth__plane" />
+      </div>
+      <div className="auth__stage">
+        <figure className="auth__art">
+          <img src={building} alt={university?.hall?.building_caption ?? 'Главный корпус университета'} />
+          <figcaption>
+            <b>{university?.short_name ?? 'Онлайн-деканат'}</b>
+            <span>{caption}</span>
+          </figcaption>
+          {universities && universities.length > 1 ? (
+            <label className="auth__uni">
+              <span>Ваш вуз</span>
+              <select value={universityId} onChange={(event) => chooseUniversity(event.target.value)}>
+                {universities.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.short_name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+        </figure>
+      </div>
 
       <div className="auth__side">
+        <div className="auth__brand">
+          <img src="/brand/academium-mark.webp" alt="" width={84} height={67} />
+          <div>
+            <b>Академиум</b>
+            <span>Онлайн-деканат: справки, заявления и путеводитель по вузу</span>
+          </div>
+        </div>
         <form className="auth__card" onSubmit={submit} noValidate={false}>
           <h1>{titles[mode]}</h1>
 

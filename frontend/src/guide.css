@@ -17,8 +17,37 @@ body { min-height: 100vh; display: flex; flex-direction: column }
 .splash { flex: 1; min-height: 60vh }
 
 /* ---------- вход */
-.auth { flex: 1; min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(380px, .9fr); background: var(--paper) }
-.auth__art { margin: 0; position: relative; overflow: hidden; background: #1B2550 }
+/* фон входа: фирменная синева логотипа, цветные пятна, каракули и искорки, без чопорности */
+.auth {
+  flex: 1; min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(380px, .9fr);
+  position: relative; isolation: isolate; overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(64, 132, 255, .55), transparent 38%),
+    radial-gradient(circle at 88% 12%, rgba(255, 198, 51, .22), transparent 28%),
+    radial-gradient(circle at 78% 88%, rgba(142, 107, 255, .45), transparent 42%),
+    radial-gradient(circle at 30% 96%, rgba(53, 207, 174, .28), transparent 36%),
+    linear-gradient(160deg, #0B1E5B 0%, #0A1440 50%, #160F45 100%);
+}
+.auth::before { content: ""; position: absolute; inset: -20%; z-index: -1; background: url("/brand/doodles.svg") 0 0 / 360px 360px; opacity: .09; transform: rotate(-8deg) }
+.auth__deco { position: absolute; inset: 0; z-index: -1; pointer-events: none }
+.auth__spark { position: absolute; width: 22px; height: 22px; background: #FFC633; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); filter: drop-shadow(0 0 8px rgba(255, 198, 51, .7)); animation: auth-twinkle 3.2s ease-in-out infinite }
+.auth__spark--1 { left: 47%; top: 12% }
+.auth__spark--2 { left: 92%; top: 40%; width: 14px; height: 14px; animation-delay: -1.1s }
+.auth__spark--3 { left: 56%; top: 86%; width: 16px; height: 16px; animation-delay: -2s; background: #8FC1FF; filter: drop-shadow(0 0 8px rgba(143, 193, 255, .8)) }
+.auth__spark--4 { left: 4%; top: 6%; width: 12px; height: 12px; animation-delay: -.6s }
+.auth__plane { position: absolute; left: 52%; top: 22%; width: 54px; height: 40px; opacity: .85; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 44' fill='none' stroke='%23FFFFFF' stroke-width='3' stroke-linejoin='round'%3E%3Cpath d='M3 22L57 3L40 41z' fill='%23FFFFFF' fill-opacity='.18'/%3E%3Cpath d='M3 22L40 41L32 24zM32 24L57 3'/%3E%3C/svg%3E") center / contain no-repeat; animation: auth-fly 9s ease-in-out infinite }
+@keyframes auth-twinkle { 0%, 100% { transform: scale(.7) rotate(0); opacity: .55 } 50% { transform: scale(1.15) rotate(20deg); opacity: 1 } }
+@keyframes auth-fly { 0%, 100% { transform: translate(0, 0) rotate(-8deg) } 50% { transform: translate(-26px, 14px) rotate(4deg) } }
+@media (prefers-reduced-motion: reduce) { .auth__spark, .auth__plane { animation: none } }
+
+/* корпус вуза — как открытка, чуть наискосок, а не строгая фотография во всю стену */
+.auth__stage { position: relative; display: grid; padding: var(--s-6) var(--s-5) var(--s-6) var(--s-6) }
+.auth__art { margin: 0; position: relative; overflow: hidden; background: #1B2550; border-radius: 28px; border: 6px solid rgba(255, 255, 255, .92); box-shadow: 0 24px 60px rgba(4, 8, 30, .55), 0 0 0 1px rgba(255, 255, 255, .2); transform: rotate(-1.6deg) }
+.auth__stage::after { content: ""; position: absolute; top: 22px; left: 50%; width: 120px; height: 30px; margin-left: -60px; background: rgba(255, 198, 51, .78); border-radius: 4px; transform: rotate(-4deg); box-shadow: 0 2px 6px rgba(0, 0, 0, .2) }
+.auth__brand { width: 100%; max-width: 400px; display: flex; align-items: center; gap: var(--s-3); margin-bottom: var(--s-4); color: #F4F6FF }
+.auth__brand img { flex: none; filter: drop-shadow(0 6px 18px rgba(47, 107, 255, .55)) }
+.auth__brand b { display: block; font-family: var(--f-display); font-size: 32px; font-weight: 800; line-height: 1; letter-spacing: -.01em; background: linear-gradient(90deg, #FFFFFF, #A9CBFF 70%, #FFD666); -webkit-background-clip: text; background-clip: text; color: transparent }
+.auth__brand span { display: block; margin-top: 6px; font-size: var(--t-sm); color: #C9D5F2 }
 .auth__art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 70% }
 .auth__art figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: var(--s-6) var(--s-6) var(--s-5); background: linear-gradient(180deg, transparent, rgba(14,20,32,.85)); color: #F4F6FF; display: grid; gap: 2px }
 .auth__art figcaption b { font-family: var(--f-display); font-size: var(--t-xl) }
@@ -26,8 +55,8 @@ body { min-height: 100vh; display: flex; flex-direction: column }
 .auth__uni { position: absolute; top: var(--s-4); left: var(--s-4); display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 12px; border-radius: 999px; background: rgba(14,20,32,.72); color: #F4F6FF; font-size: var(--t-sm); backdrop-filter: blur(6px) }
 .auth__uni select { font: inherit; color: #F4F6FF; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 4px 10px; max-width: 46vw }
 .auth__uni select option { color: #0E1420 }
-.auth__side { display: grid; place-items: center; padding: var(--s-6) var(--s-5) 96px }
-.auth__card { width: 100%; max-width: 400px; display: grid; gap: var(--s-3); background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r-lg); padding: var(--s-6) var(--s-5); box-shadow: var(--shadow) }
+.auth__side { display: grid; place-content: center; justify-items: center; padding: var(--s-6) var(--s-5) 96px }
+.auth__card { width: 100%; max-width: 400px; display: grid; gap: var(--s-3); background: rgba(14, 22, 56, .72); border: 1px solid rgba(160, 190, 255, .24); border-radius: 22px; padding: var(--s-6) var(--s-5); box-shadow: 0 20px 50px rgba(4, 8, 30, .45); backdrop-filter: blur(14px) }
 .auth__card h1 { font-size: var(--t-xs); text-transform: uppercase; letter-spacing: .12em; color: var(--ink-2); font-weight: 700; margin-bottom: var(--s-2) }
 .auth__demo { width: 100%; justify-content: center; margin-top: 10px; border-radius: 999px }
 .auth__oauth { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 11px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--sheet-2); color: var(--ink); text-decoration: none; font-weight: 600; font-size: var(--t-sm); cursor: pointer }
@@ -46,22 +75,30 @@ body { min-height: 100vh; display: flex; flex-direction: column }
 .auth__hint { font-size: var(--t-sm); color: var(--ink-2) }
 .auth__link { border: 0; background: none; padding: 0; color: var(--accent); font-size: var(--t-sm); text-decoration: underline; text-underline-offset: 3px }
 .auth__forgot { justify-self: end; margin-top: -4px }
-.auth__submit { margin-top: var(--s-2); border: 0; border-radius: 999px; padding: 12px 16px; background: #F1EEEA; color: #131E36; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: var(--t-sm) }
-.auth__submit:hover { background: #fff }
+.auth__submit { margin-top: var(--s-2); border: 0; border-radius: 999px; padding: 12px 16px; background: linear-gradient(90deg, #2F6BFF, #1D4FD8); color: #FFFFFF; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: var(--t-sm); box-shadow: 0 8px 22px rgba(47, 107, 255, .45) }
+.auth__submit:hover { background: linear-gradient(90deg, #4A80FF, #2A5CE6) }
 .auth__submit:disabled { opacity: .6; cursor: progress }
 .auth__error { font-size: var(--t-sm); color: var(--miss); background: var(--miss-soft); border-radius: var(--r-md); padding: 8px 12px }
 .auth__info { font-size: var(--t-sm); color: var(--ink); background: var(--accent-soft); border-radius: var(--r-md); padding: 8px 12px }
 .auth__small { font-size: var(--t-xs); color: var(--ink-3) }
 .auth__links { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ink-3) }
 @media (max-width: 860px) {
-  .auth { grid-template-columns: 1fr; grid-template-rows: 170px 1fr; min-height: 100vh }
+  .auth { grid-template-columns: 1fr; grid-template-rows: 200px 1fr; min-height: 100vh }
+  .auth__stage { padding: var(--s-4) var(--s-4) 0 }
+  .auth__stage::after { top: 8px; width: 90px; height: 22px; margin-left: -45px }
+  .auth__art { border-width: 4px; border-radius: 20px; transform: rotate(-1deg) }
+  .auth__brand { margin-bottom: var(--s-3) }
+  .auth__brand img { width: 60px; height: auto }
+  .auth__brand b { font-size: 26px }
+  .auth__plane { display: none }
+  .auth__spark--1 { left: 86%; top: 28% }
   .auth__art img { object-position: 50% 36% }
   .auth__art figcaption { padding: var(--s-4) }
   .auth__art figcaption b { font-size: var(--t-lg) }
   .auth__art figcaption span { display: none }
   .auth__uni { top: auto; bottom: var(--s-4); left: auto; right: var(--s-4); padding: 4px; font-size: var(--t-xs) }
   .auth__uni > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0) }
-  .auth__side { padding: var(--s-4) var(--s-4) 96px; place-items: start center }
+  .auth__side { padding: var(--s-4) var(--s-4) 96px; place-content: start center }
   .auth__card { padding: var(--s-5) var(--s-4) }
 }
 
@@ -73,7 +110,7 @@ body { min-height: 100vh; display: flex; flex-direction: column }
 
 /* ---------- общая шапка путеводителя */
 .brand--btn { border: 0; background: none; padding: 0; text-align: left; color: inherit }
-.brand--btn img { border-radius: 50% }
+.brand__mark { flex: none; filter: drop-shadow(0 2px 6px rgba(47, 107, 255, .35)) }
 .user-chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--sheet); border-radius: 999px; padding: 5px 12px 5px 8px; font-size: var(--t-sm); max-width: 200px }
 .user-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .user-chip:hover { border-color: var(--accent) }
@@ -92,13 +129,21 @@ body { min-height: 100vh; display: flex; flex-direction: column }
 /* ---------- холл */
 .hall { position: relative; min-height: calc(100vh - 64px); display: grid; align-items: end; overflow: hidden }
 .hall__bg { position: absolute; inset: 0; background-size: cover; background-position: 50% 40% }
-.hall__bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(14,20,32,.05) 0%, rgba(14,20,32,.35) 45%, rgba(14,20,32,.88) 100%) }
+/* светлая подложка только под заголовком, чтобы гирлянды и окна остались яркими */
+.hall__bg::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 46% 34% at 20% 58%, rgba(243,247,255,.92), rgba(243,247,255,.6) 55%, rgba(243,247,255,0) 100%), linear-gradient(180deg, transparent 60%, rgba(30,70,180,.22) 100%) }
+/* в тёмной теме тот же холл, только «вечером»: приглушаем картинку и подкрашиваем синим */
+:root[data-theme="dark"] .hall__bg { filter: brightness(.62) saturate(1.15) }
+:root[data-theme="dark"] .hall__bg::after { background: linear-gradient(90deg, rgba(8,14,40,.88) 0%, rgba(8,14,40,.6) 40%, rgba(8,14,40,.15) 70%), linear-gradient(180deg, transparent 50%, rgba(8,14,40,.75) 100%) }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hall__bg { filter: brightness(.62) saturate(1.15) }
+  :root:not([data-theme="light"]) .hall__bg::after { background: linear-gradient(90deg, rgba(8,14,40,.88) 0%, rgba(8,14,40,.6) 40%, rgba(8,14,40,.15) 70%), linear-gradient(180deg, transparent 50%, rgba(8,14,40,.75) 100%) }
+}
 .hall__in { position: relative; max-width: 1360px; width: 100%; margin: 0 auto; padding: var(--s-7) var(--s-5) var(--s-6); display: grid; gap: var(--s-5) }
-.hall__head { color: #F4F6FF; display: grid; gap: var(--s-2); max-width: 62ch; text-shadow: 0 1px 12px rgba(0,0,0,.35) }
-.hall__head .eyebrow { color: #D6DCEC }
+.hall__head { color: var(--ink); display: grid; gap: var(--s-2); max-width: 62ch }
+.hall__head .eyebrow { color: var(--accent) }
 .hall__head h1 { font-size: clamp(28px, 4vw, 44px); line-height: 1.08 }
-.hall__guard { justify-self: start; display: inline-flex; gap: 8px; align-items: center; margin-top: var(--s-2); padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,.35); background: rgba(14,20,32,.55); color: #F4F6FF; font-size: var(--t-sm); font-weight: 600; text-shadow: none; backdrop-filter: blur(6px) }
-.hall__guard:hover { border-color: #F4F6FF }
+.hall__guard { justify-self: start; display: inline-flex; gap: 8px; align-items: center; margin-top: var(--s-2); padding: 9px 16px; border-radius: 999px; border: 0; background: linear-gradient(90deg, #2F6BFF, #1D4FD8); color: #FFFFFF; font-size: var(--t-sm); font-weight: 600; box-shadow: 0 8px 20px rgba(47,107,255,.35) }
+.hall__guard:hover { background: linear-gradient(90deg, #4A80FF, #2A5CE6) }
 .skip { position: fixed; left: 12px; top: -60px; z-index: 100; padding: 10px 16px; border-radius: var(--r-md); background: var(--accent); color: var(--accent-ink); font-weight: 600; border: 0 }
 .skip:not(:focus) { opacity: 0; pointer-events: none }
 .skip:focus { top: 12px }
@@ -106,6 +151,18 @@ main.guide:focus { outline: none }
 .hall__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-4) }
 @media (max-width: 1020px) { .hall__grid { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
 @media (max-width: 560px) { .hall__grid { grid-template-columns: 1fr } .hall__in { padding: var(--s-6) var(--s-4) var(--s-5) } }
+/* на телефоне холл длинный, и cover раздувал картинку в разы: прибиваем сцену к верху в нормальном масштабе */
+@media (max-width: 560px) {
+  .hall__bg { background-size: 250% auto; background-position: 66% 0; background-repeat: no-repeat; background-color: #EEF3FF }
+  .hall__bg::after { background: linear-gradient(180deg, rgba(243,247,255,0) 0, rgba(243,247,255,0) 160px, rgba(243,247,255,.88) 250px, rgba(243,247,255,.6) 100%) }
+  .hall__in { padding-top: 230px }
+  :root[data-theme="dark"] .hall__bg { background-color: #1A2340 }
+  :root[data-theme="dark"] .hall__bg::after { background: linear-gradient(180deg, rgba(8,14,40,0) 0, rgba(8,14,40,.1) 160px, rgba(8,14,40,.88) 250px, rgba(8,14,40,.6) 100%) }
+}
+@media (max-width: 560px) and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hall__bg { background-color: #1A2340 }
+  :root:not([data-theme="light"]) .hall__bg::after { background: linear-gradient(180deg, rgba(8,14,40,0) 0, rgba(8,14,40,.1) 160px, rgba(8,14,40,.88) 250px, rgba(8,14,40,.6) 100%) }
+}
 .hall__tile { text-align: left; display: grid; gap: var(--s-2); align-content: start; padding: var(--s-5); border-radius: var(--r-lg); border: 1px solid color-mix(in srgb, var(--line) 70%, transparent); background: color-mix(in srgb, var(--sheet) 90%, transparent); backdrop-filter: blur(10px); box-shadow: var(--shadow); transition: transform .15s, border-color .15s }
 .hall__tile:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--accent) }
 .hall__tile:disabled { cursor: not-allowed; opacity: .82 }
@@ -113,7 +170,7 @@ main.guide:focus { outline: none }
 .hall__tile > span:last-child { font-size: var(--t-sm); color: var(--ink-2) }
 .hall__icon { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent) }
 .hall__tile--dean .hall__icon { background: var(--accent); color: var(--accent-ink) }
-.hall__note { color: #D6DCEC; font-size: var(--t-xs); max-width: 80ch }
+.hall__note { justify-self: start; color: var(--ink-2); font-size: var(--t-xs); max-width: 80ch; padding: 8px 14px; border-radius: var(--r-md); background: color-mix(in srgb, var(--sheet) 86%, transparent); backdrop-filter: blur(8px) }
 
 /* ---------- факультеты */
 .fac-tools { display: flex; gap: var(--s-3); flex-wrap: wrap; align-items: center }

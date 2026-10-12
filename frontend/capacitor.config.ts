@@ -10,7 +10,7 @@ import type { CapacitorConfig } from '@capacitor/cli'
  */
 const config: CapacitorConfig = {
   appId: 'ru.umir.onlinedean',
-  appName: 'Онлайн-деканат',
+  appName: 'Академиум',
   webDir: 'dist',
   android: {
     // пускаем http до сервера в локалке (демо гоняем с ноутбука)

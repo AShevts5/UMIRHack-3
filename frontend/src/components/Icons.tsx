@@ -1,23 +1,8 @@
 /** Наш маленький набор иконок: всё рисуем локально, никаких внешних наборов не тащим. */
 
+/** Знак «Академиума» для шапки: картинка из public/brand, рядом всегда стоит название текстом. */
 export function Logo() {
-  return (
-    <svg width="38" height="38" viewBox="0 0 38 38" aria-hidden="true">
-      <circle cx="19" cy="19" r="17" fill="none" stroke="var(--accent)" strokeWidth="2.2" />
-      <circle cx="19" cy="19" r="13" fill="none" stroke="var(--accent)" strokeWidth="1" opacity=".6" />
-      <text
-        x="19"
-        y="23.5"
-        textAnchor="middle"
-        fontFamily="Onest, sans-serif"
-        fontWeight="700"
-        fontSize="12"
-        fill="var(--accent)"
-      >
-        ОД
-      </text>
-    </svg>
-  )
+  return <img className="brand__mark" src="/brand/academium-mark-128.webp" alt="" width={46} height={37} />
 }
 
 const line = { fill: 'none', stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round' } as const

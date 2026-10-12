@@ -136,7 +136,7 @@ function Shell() {
 
   const signedOut = ready && !user && !guest && !PUBLIC_PATHS.has(path)
   useEffect(() => {
-    document.title = `${TITLES[signedOut ? '/login' : path] ?? 'Холл'} · Онлайн-деканат`
+    document.title = `${TITLES[signedOut ? '/login' : path] ?? 'Холл'} · Академиум`
   }, [path, signedOut])
 
   const onSignedIn = useCallback(
@@ -190,7 +190,7 @@ function Shell() {
             theme={theme}
             onTheme={setTheme}
             initialRule={route.params.get('rule')}
-            universityTitle={university ? `${university.short_name} · обращение в деканат` : undefined}
+            universityTitle={university ? `Обращение в деканат · ${university.short_name}` : undefined}
             leading={
               <button
                 type="button"
@@ -238,10 +238,10 @@ function Shell() {
       <header className="bar">
         <div className="bar__in">
           <button type="button" className="brand brand--btn" onClick={() => go('/hall')}>
-            {university?.logo ? <img src={university.logo} alt="" width={38} height={38} /> : <Logo />}
+            <Logo />
             <div>
-              <b>Онлайн-деканат</b>
-              <small>{university ? university.name : 'Путеводитель по вузу'}</small>
+              <b>Академиум</b>
+              <small>{university ? `Онлайн-деканат · ${university.short_name}` : 'Онлайн-деканат и путеводитель по вузу'}</small>
             </div>
           </button>
           <nav className="seg" aria-label="Разделы">

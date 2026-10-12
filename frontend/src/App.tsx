@@ -307,8 +307,8 @@ export default function App({ theme: sharedTheme, onTheme, initialRule, universi
             {leading}
             <Logo />
             <div>
-              <b>Онлайн-деканат</b>
-              <small>{universityTitle ?? 'Университет «Меридиан» · учебный кейс'}</small>
+              <b>Академиум</b>
+              <small>{universityTitle ?? 'Онлайн-деканат · учебный кейс «Меридиан»'}</small>
             </div>
           </div>
           <nav className="seg" aria-label="Разделы">

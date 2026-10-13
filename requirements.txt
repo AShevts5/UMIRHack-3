@@ -27,3 +27,6 @@ segno==1.6.6                 # QR-код для 2FA, рисуется локал
 # --- Тестирование ---
 pytest==9.1.1
 httpx==0.28.1                # TestClient для FastAPI и smoke-тесты API
+
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
+llama-cpp-python>=0.3

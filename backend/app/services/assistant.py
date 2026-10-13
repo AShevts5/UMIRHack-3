@@ -26,7 +26,7 @@ from typing import Any
 import yaml
 
 from ..config import PACKAGE_ROOT, settings
-from . import universities
+from . import llm, universities
 
 FAQ_PATH = Path(os.environ.get("UMIR_ASSISTANT_FAQ", str(PACKAGE_ROOT / "configs" / "assistant_faq.yaml")))
 
@@ -193,6 +193,55 @@ def _score(query: list[str], entry: Entry, idf: dict[str, float]) -> float:
     return coverage * 0.75 + min(focus, 1.0) * 0.25
 
 
+# Генерация ответа локальной LLM по найденным фрагментам
+
+LLM_CONTEXT_SIZE = 3  # сколько лучших фрагментов отдаём модели
+MIN_SCORE = 0.34  # ниже этого порога считаем, что ответа в источниках нет
+
+SYSTEM_PROMPT = (
+    "Ты - AI-помощник приложения «Академиум». Отвечай на русском языке, вежливо и кратко: "
+    "2–4 предложения. Используй ТОЛЬКО факты из фрагментов, которые даны ниже. Ничего не придумывай: "
+    "не называй номера пунктов, телефоны, кабинеты, адреса и даты, которых нет во фрагментах. "
+    "Если во фрагментах нет ответа на вопрос, так и скажи и посоветуй обратиться в деканат. "
+    "Не упоминай слово «фрагмент» в ответе."
+)
+
+_NUMBER = re.compile(r"\d+(?:[.,:\-]\d+)*")
+
+
+def _numbers(text: str) -> set[str]:
+    return set(_NUMBER.findall(text))
+
+
+def _generate(question: str, entries: list[Entry]) -> str | None:
+    """Просит модель ответить по найденным фрагментам. None - если модель недоступна
+    или в ответе появились числа, которых нет ни в вопросе, ни в источниках."""
+    context = "\n\n".join(f"[{i}] {entry.title}\n{entry.answer}" for i, entry in enumerate(entries, start=1))
+    text = llm.chat(
+        [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": f"Фрагменты:\n{context}\n\nВопрос пользователя: {question}"},
+        ]
+    )
+    if not text:
+        return None
+    invented = _numbers(text) - _numbers(context) - _numbers(question)
+    if invented:
+        # модель «придумала» номер пункта, телефон или кабинет — такой ответ не показываем
+        return None
+    return text
+
+
+def _merge_sources(entries: list[Entry]) -> list[dict[str, str]]:
+    merged, seen = [], set()
+    for entry in entries:
+        for source in entry.sources:
+            key = (source.get("label"), source.get("url"), source.get("route"))
+            if key not in seen:
+                seen.add(key)
+                merged.append(source)
+    return merged
+
 def suggestions() -> list[str]:
     data = yaml.safe_load(FAQ_PATH.read_text(encoding="utf-8")) if FAQ_PATH.is_file() else {}
     return list((data or {}).get("suggestions") or [])
@@ -216,7 +265,7 @@ def answer(question: str, university_id: str | None = None) -> dict[str, Any]:
             score -= 0.15
         scored.append((score, entry))
     scored.sort(key=lambda pair: pair[0], reverse=True)
-    if not scored or scored[0][0] < 0.34:
+    if not scored or scored[0][0] < MIN_SCORE:
         return {
             "answer": (
                 "Не нашёл ответа в справке приложения, данных о вузах и Положении. "
@@ -227,6 +276,7 @@ def answer(question: str, university_id: str | None = None) -> dict[str, Any]:
             "confidence": round(scored[0][0], 3) if scored else 0.0,
             "sources": [],
             "suggestions": suggestions()[:4],
+            "generated": False,
         }
     best_score, best = scored[0]
     related = [
@@ -234,11 +284,18 @@ def answer(question: str, university_id: str | None = None) -> dict[str, Any]:
         for score, entry in scored[1:6]
         if score > 0.3 and entry.kind == best.kind and entry.key != best.key and entry.university_id == best.university_id
     ][:3]
-    return {
+    reply = {
         "answer": best.answer,
         "kind": best.kind,
         "title": best.title,
         "confidence": round(min(best_score, 1.0), 3),
         "sources": best.sources,
         "suggestions": related,
+        "generated": False,
     }
+    if llm.enabled():
+        context = [entry for score, entry in scored[:LLM_CONTEXT_SIZE] if score >= MIN_SCORE]
+        generated = _generate(question, context)
+        if generated:
+            reply.update(answer=generated, sources=_merge_sources(context), generated=True)
+    return reply

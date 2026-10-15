@@ -33,7 +33,7 @@ reports/stress/
 # документы от организаторов или те, что нагенерили тесты.
 data/private/
 # веса OCR, которые скачивает backend/scripts/download_models.py
-models/
+/models/
 # пользователи, история обращений и секрет JWT (UMIR_DATA_DIR) — сюда точно не коммитим
 var/
 *.env

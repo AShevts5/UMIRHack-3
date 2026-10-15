@@ -294,6 +294,9 @@ def _normalize_field(field_spec: FieldSpec, raw: str) -> tuple[str | None, float
         return (course, 0.9) if course else (None, 0.0)
     if field_spec.type in _TEXT_TYPES:
         collapsed = re.sub(r"\s+", " ", text).strip()
+        if field_spec.key == "program":
+            # код направления всегда ДД.ДД.ДД, а на мелком снимке точка читается как пробел или запятая
+            collapsed = re.sub(r"^(\d{2})\s?[.,\s]\s?(\d{2})\s?[.,\s]\s?(\d{2})\b", r"\1.\2.\3", collapsed)
         if len(collapsed) < 2:
             return None, 0.0
         return collapsed, 0.9

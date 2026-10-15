@@ -60,6 +60,34 @@ def _default_tessdata() -> Path | None:
     return None
 
 
+# Своя модель распознавания: rus от tessdata_best, дообученная на снимках печатного
+# датасета и испорченных бланках кейса (как и почему — docs/ocr-finetune.md).
+OWN_MODEL = BACKEND_ROOT / "models" / "rus_umir.traineddata"
+
+
+def with_own_model(base: Path | None) -> Path | None:
+    """Tesseract берёт модели из одной папки, поэтому собираем свою: системные rus/eng
+    и конфиги + rus_umir из репы. Если что-то не вышло, остаёмся на системной папке —
+    тогда rus_umir подменится на обычный rus (см. ocr.resolve_languages)."""
+    if base is None or not OWN_MODEL.is_file() or (base / OWN_MODEL.name).is_file():
+        return base
+    import tempfile
+
+    target = Path(os.environ.get("UMIR_TESSDATA_DIR") or Path(tempfile.gettempdir()) / "umir-tessdata")
+    try:
+        target.mkdir(parents=True, exist_ok=True)
+        for src in [*base.glob("*.traineddata"), OWN_MODEL]:
+            dst = target / src.name
+            if not dst.is_file() or dst.stat().st_size != src.stat().st_size or dst.stat().st_mtime < src.stat().st_mtime:
+                shutil.copyfile(src, dst)
+        for folder in ("configs", "tessconfigs"):
+            if (base / folder).is_dir() and not (target / folder).is_dir():
+                shutil.copytree(base / folder, target / folder)
+        return target
+    except OSError:
+        return base
+
+
 def find_tesseract_binary() -> Path | None:
     """Отдаём локальный бинарник Tesseract, если он вообще где-то есть."""
     explicit = os.environ.get("TESSERACT_CMD")
@@ -109,7 +137,7 @@ class OcrSettings:
     крутите psm или бинаризацию — гоняйте и тесты отметок тоже.
     """
 
-    languages: str = os.environ.get("UMIR_OCR_LANGS", "rus+eng")
+    languages: str = os.environ.get("UMIR_OCR_LANGS", "rus_umir+eng")
     oem: int = 1  # только LSTM-движок, другие не берём
     psm: int = int(os.environ.get("UMIR_OCR_PSM", "6"))
     target_long_edge: int = 2200  # масштаб считаем от размера страницы
@@ -161,7 +189,7 @@ class Settings:
     ocr: OcrSettings = field(default_factory=OcrSettings)
     limits: Limits = field(default_factory=Limits)
     tesseract_cmd: Path | None = field(default_factory=find_tesseract_binary)
-    tessdata_prefix: Path | None = field(default_factory=_default_tessdata)
+    tessdata_prefix: Path | None = field(default_factory=lambda: with_own_model(_default_tessdata()))
     document_types_config: Path = field(
         default_factory=lambda: Path(
             os.environ.get(

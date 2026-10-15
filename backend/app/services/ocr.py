@@ -209,6 +209,8 @@ def ocr_environment() -> dict[str, str]:
     tessdata = settings.tessdata_prefix or _default_tessdata()
     if tessdata is not None:
         env["TESSDATA_PREFIX"] = str(tessdata)
+        # pytesseract запускает tesseract с окружением процесса — иначе папка с rus_umir не видна
+        os.environ["TESSDATA_PREFIX"] = str(tessdata)
         pytesseract.pytesseract.tesseract_cmd = str(binary)
     else:
         pytesseract.pytesseract.tesseract_cmd = str(binary)
@@ -224,13 +226,18 @@ def available_languages() -> tuple[str, ...]:
         return ()
 
 
+LANGUAGE_FALLBACK = {"rus_umir": "rus"}
+
+
 def resolve_languages(requested: str) -> str:
     """Языки без traineddata просто выкидываем, а не падаем с ошибкой."""
     installed = set(available_languages())
     if not installed:
         return requested
     wanted = [code.strip() for code in requested.split("+") if code.strip()]
-    usable = [code for code in wanted if code in installed]
+    # нет своей модели (запуск без репы, чужая папка tessdata) — берём обычный rus
+    wanted = [LANGUAGE_FALLBACK.get(code, code) if code not in installed else code for code in wanted]
+    usable = [code for code in dict.fromkeys(wanted) if code in installed]
     if not usable:
         if "eng" in installed:
             return "eng"
@@ -364,7 +371,7 @@ def ocr_health() -> dict:
     if binary is None:
         info["error"] = "tesseract binary not found"
         return info
-    tessdata = _default_tessdata()
+    tessdata = settings.tessdata_prefix or _default_tessdata()
     info["tessdata"] = str(tessdata) if tessdata else None
     try:
         ocr_environment()

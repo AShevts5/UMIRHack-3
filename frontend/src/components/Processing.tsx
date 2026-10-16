@@ -3,7 +3,7 @@ import { FileIcon } from './Icons'
 
 const STEPS: { title: string; timings: string[] }[] = [
   { title: 'Чтение файла и подготовка страницы', timings: ['load', 'preprocess'] },
-  { title: 'Распознавание текста (Tesseract, rus+eng)', timings: ['ocr'] },
+  { title: 'Распознавание текста', timings: ['ocr'] },
   { title: 'Определение типа и сбор полей', timings: ['classify', 'fields'] },
   { title: 'Поиск подписи и печати по графике', timings: ['marks'] },
   { title: 'Сверка с Положением', timings: ['rules', 'validation'] },

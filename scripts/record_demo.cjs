@@ -63,7 +63,7 @@ const INIT = `
 
   // 1. полная справка
   await click(p.locator('text=Обращение в деканат')); await wait(1200); mark('dean');
-  await cap('Шаг 1. Справка об обучении', 'реальный OCR Tesseract на этом ноутбуке');
+  await cap('Шаг 1. Справка об обучении', 'реальный OCR на этом ноутбуке');
   await p.setInputFiles('input[type=file]', D + 'open-001.png');
   await p.locator('.tabs').waitFor({ timeout: 30000 }); await wait(800); mark('result1');
   await cap('Все обязательные сведения есть', 'у каждого поля — ключ, пункт Положения и уверенность');

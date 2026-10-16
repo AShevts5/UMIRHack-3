@@ -16,7 +16,7 @@ RUN corepack enable && pnpm install --frozen-lockfile
 COPY frontend/ ./
 RUN pnpm run build
 
-# --- 2. backend + свой локальный Tesseract -----------------------------------
+# --- 2. backend + локальный OCR ----------------------------------------------
 FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \

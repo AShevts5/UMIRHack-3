@@ -32,7 +32,7 @@ class TestHealthEndpoints:
         assert response.status_code == 200
         payload = response.json()
         assert payload["status"] in {"ok", "degraded"}
-        assert payload["ocr"]["engine"] == "tesseract"
+        assert payload["ocr"]["engine"] == "local"
         assert set(payload["document_types"]) == set(FIELD_KEYS)
 
     def test_document_types_shape(self) -> None:

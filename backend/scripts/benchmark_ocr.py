@@ -11,7 +11,7 @@
     доля страниц, где распознанный текст после нормализации совпал с эталоном
     целиком, буква в букву.
 ``mean_confidence``
-    средняя уверенность слов Tesseract в шкале 0…1.
+    средняя уверенность распознанных слов в шкале 0…1.
 
 Ещё две метрики наши собственные, считаем их отдельно, чтобы не мешать в одну кучу
 распознавание и разбор:
@@ -184,7 +184,7 @@ def run_benchmark(
         "recognition_seconds": round(recognition_seconds, 2),
         "pages_per_second": round(len(page_reports) / recognition_seconds, 4) if recognition_seconds else None,
         "total_seconds": round(time.perf_counter() - started, 2),
-        "engine": "tesseract",
+        "engine": "local",
         "languages": ocr_service.resolve_languages(settings.ocr.languages),
         "ocr_settings": {
             "oem": settings.ocr.oem,

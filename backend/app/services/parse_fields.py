@@ -32,7 +32,7 @@ if TYPE_CHECKING:  # импорт чисто для типов: detect_marks с�
 
 NOT_FOUND = "не найдено"
 
-#: Всякие символы, которые Tesseract иногда выдаёт вместо двоеточия.
+#: Всякие символы, которые OCR иногда выдаёт вместо двоеточия.
 _COLON_CHARS = ":：﹕"
 _COLON_RE = re.compile(r"[" + re.escape(_COLON_CHARS) + r"]")
 
@@ -295,7 +295,7 @@ def _normalize_field(field_spec: FieldSpec, raw: str) -> tuple[str | None, float
     if field_spec.type in _TEXT_TYPES:
         collapsed = re.sub(r"\s+", " ", text).strip()
         if field_spec.key == "program":
-            # код направления всегда ДД.ДД.ДД, а на мелком снимке точка читается как пробел или запятая
+            # код направления всегда вида ДД.ДД.ДД, но на мелких фотках точка превращается в пробел или запятую
             collapsed = re.sub(r"^(\d{2})\s?[.,\s]\s?(\d{2})\s?[.,\s]\s?(\d{2})\b", r"\1.\2.\3", collapsed)
         if len(collapsed) < 2:
             return None, 0.0

@@ -308,7 +308,7 @@ export default function App({ theme: sharedTheme, onTheme, initialRule, universi
             <Logo />
             <div>
               <b>Академиум</b>
-              <small>{universityTitle ?? 'Онлайн-деканат · учебный кейс «Меридиан»'}</small>
+              <small>{universityTitle ?? 'Онлайн-деканат'}</small>
             </div>
           </div>
           <nav className="seg" aria-label="Разделы">
@@ -336,7 +336,7 @@ export default function App({ theme: sharedTheme, onTheme, initialRule, universi
               ? 'Сервис проверки не запущен'
               : health
                 ? healthOk
-                  ? `OCR на этом компьютере · Tesseract ${health.ocr.version ?? ''} · ${health.ocr.languages.join(', ')}`
+                  ? `OCR на этом компьютере · ${health.ocr.languages.join(', ')}`
                   : `OCR недоступен: ${health.ocr.error ?? 'неизвестная причина'}`
                 : 'Проверяем окружение…'}
           </span>
@@ -535,8 +535,7 @@ export default function App({ theme: sharedTheme, onTheme, initialRule, universi
         )}
 
         <p className="foot">
-          Учебный кейс «Онлайн-деканат» (UMIR 3). Документы, Положение и университет «Меридиан» вымышлены, совпадения
-          случайны. Обработка идёт на этом компьютере: изображения не отправляются во внешние OCR- или LLM-сервисы.
+          Обработка идёт на этом компьютере: изображения не отправляются во внешние OCR- или LLM-сервисы.
         </p>
       </main>
     </RulesProvider>

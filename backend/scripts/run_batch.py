@@ -126,7 +126,7 @@ def run_batch(
             results.append(DocumentResult(**fallback_payload(document_id, document_type, grouped.get(document_id, []))))
             continue
         result = None
-        for attempt in (1, 2):  # под нагрузкой Tesseract иногда отваливается по таймауту — разок повторить не помешает
+        for attempt in (1, 2):  # под нагрузкой OCR иногда отваливается по таймауту — разок повторить не помешает
             try:
                 result = pipeline.analyze_path(path, document_type, document_id=document_id)
                 break

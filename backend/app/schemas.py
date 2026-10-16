@@ -220,7 +220,7 @@ class AnalysisResponse(StrictModel):
     document_type_source: Literal["request", "auto"] = "request"
     document_type_confidence: float = 0.0
     ocr_text: str
-    ocr_engine: str = "tesseract"
+    ocr_engine: str = "local"
     ocr_languages: str = "rus+eng"
     ocr_mean_confidence: float = 0.0
     fields: dict[str, Any]

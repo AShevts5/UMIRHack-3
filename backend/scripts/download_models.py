@@ -1,8 +1,7 @@
-"""Проверяем и качаем веса OCR, чтобы демо не легло без интернета.
+"""Проверяем и качаем веса OCR, чтобы всё работало и без интернета.
 
-Вся наша «модель» — это языковые файлы Tesseract ``rus`` и ``eng``. Метрики на
-открытом наборе мы снимали на ``tessdata_fast`` версии 4.1.0: ровно эти файлы ставит
-пакет ``tesseract-ocr-rus`` в Debian/Ubuntu и в Docker-образе. Скрипт сверяет
+Базовые языковые модели ``rus`` и ``eng`` версии 4.1.0 (их же ставит системный пакет
+в Debian/Ubuntu и в Docker-образе), поверх них работает наша ``rus_umir``. Скрипт сверяет
 установленные файлы с этой версией по SHA-256 и, если надо, докачивает их в
 ``models/tessdata`` — сервис сам найдёт эту папку (см. ``config._default_tessdata``).
 
@@ -79,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     binary = find_tesseract_binary()
-    print(f"Tesseract: {binary or 'не найден — установите его (см. README, раздел про установку)'}")
+    print(f"OCR: {binary or 'не найден — установите его (см. README, раздел про установку)'}")
     found = _default_tessdata()
     state = inspect(found)
     print(f"tessdata: {found or 'не найдена'}")
@@ -103,7 +102,7 @@ def main(argv: list[str] | None = None) -> int:
         except Exception as exc:  # noqa: BLE001 - сообщаем и выходим с ошибкой
             print(f"  не получилось: {exc}", file=sys.stderr)
             return 1
-    # eng может уже стоять в системе, но Tesseract берёт все языки из одной папки, так что качаем оба
+    # eng может уже стоять в системе, но движок берёт все языки из одной папки, так что качаем оба
     for lang in MODELS:
         if not (target / f"{lang}.traineddata").is_file() and found and (found / f"{lang}.traineddata").is_file():
             shutil.copyfile(found / f"{lang}.traineddata", target / f"{lang}.traineddata")

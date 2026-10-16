@@ -43,7 +43,7 @@ requires_ocr = pytest.mark.skipif(
     and not Path(r"C:\Program Files\Tesseract-OCR\tesseract.exe").exists()
     and not Path(r"C:\msys64\ucrt64\bin\tesseract.exe").exists()
     and not os.environ.get("TESSERACT_CMD"),
-    reason="локальный Tesseract не установлен",
+    reason="локальный OCR не установлен",
 )
 
 

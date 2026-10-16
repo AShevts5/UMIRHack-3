@@ -20,7 +20,7 @@ interface Props {
 
 const ACCEPT = '.png,.jpg,.jpeg,.pdf'
 
-/** Образцы для демо-режима: выдуманные документы из backend/scripts/make_demo_samples.py. */
+/** Образцы для кнопок «Пример»: собираются скриптом backend/scripts/make_demo_samples.py. */
 export const DEMO_SAMPLES = [
   { file: 'study-certificate.png', title: 'Справка об обучении', note: 'все сведения на месте' },
   { file: 'academic-leave.png', title: 'Заявление на отпуск', note: 'нет подписи и даты' },

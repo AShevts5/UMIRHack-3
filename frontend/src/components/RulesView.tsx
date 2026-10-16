@@ -35,7 +35,7 @@ export default function RulesView({ sections, required, flash }: Props) {
       </nav>
       <article ref={articleRef}>
         <div>
-          <span className="eyebrow">Версия 1.0 · вымышленный документ кейса</span>
+          <span className="eyebrow">Версия 1.0</span>
           <h1>Положение о предварительной проверке студенческих документов</h1>
           <p className="muted" style={{ marginTop: 8 }}>
             Единственный источник правил сервиса. Пункты с точкой — обязательные требования, на которые ссылается

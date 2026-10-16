@@ -12,7 +12,7 @@
 ``degraded-evaluate``  прогнать эту пачку и посчитать метрики через evaluate.py
 ``api``                поднять FastAPI у себя локально
 ``demo``               batch + evaluate + verify одним махом
-``models``             проверить веса Tesseract и докачать, чего не хватает (для демо без сети)
+``models``             проверить веса OCR и докачать, чего не хватает (чтобы работать без сети)
 ``bot``                Telegram-бот на том же пайплайне (UMIR_TELEGRAM_TOKEN)
 ``demo-samples``       заново собрать образцы демо-режима и пример четвёртого типа
 """
@@ -240,7 +240,7 @@ def task_ocr_quality(args: argparse.Namespace) -> int:
 
 
 def task_models(args: argparse.Namespace) -> int:
-    """Смотрим веса Tesseract (rus, eng) и докачиваем, чего нет, в models/tessdata."""
+    """Смотрим веса OCR (rus, eng) и докачиваем, чего нет, в models/tessdata."""
     return _run([_python(), "-m", "backend.scripts.download_models"])
 
 

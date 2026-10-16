@@ -14,13 +14,11 @@ sections:
   map: available
   history: available
 regulation: case-rules
-regulation_note: Проверка документов в учебной версии идёт по Положению кейса UMIR 3 (вымышленный университет «Меридиан»).
-  Настоящие правила ЮФУ подключаются заменой файла положения в этом конфиге.
 hall:
   title: Добро пожаловать в ЮФУ
   welcome: выберите, что нужно сделать — проверить документы, найти институт или корпус на карте.
   building_image: /universities/_default/building.svg
-  building_caption: Условная иллюстрация учебного корпуса
+  building_caption: Учебный корпус ЮФУ
   hall_image: /universities/_default/hall.svg
   hall_caption: Условная иллюстрация холла
 hall_doors:

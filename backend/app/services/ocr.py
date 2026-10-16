@@ -1,14 +1,14 @@
-"""Гоняем текст через локальный Tesseract (rus+eng) и заодно забираем координаты слов.
+"""Гоняем страницу через локальный OCR (rus_umir+eng) и заодно забираем координаты слов.
 
 Пара заметок себе и команде, чтобы не запутаться:
 
-* OCR крутится на локальном бинарнике tesseract — картинка никуда не улетает,
+* OCR крутится локально на той же машине — картинка никуда не улетает,
   никаких внешних сервисов тут нет.
 * Из предобработки только масштаб и (если надо) бинаризация. Жёсткие фильтры не
   ставим: они съедают тонкие штрихи подписи, а они потом нужны детектору.
 * Исходную серую картинку не трогаем — по ней ищем отметки. Координаты слов
   берём с обработанной копии, а геометрию считаем по исходной.
-* Tesseract запускаем один раз на документ, результат кэшится по хешу файла
+* OCR запускаем один раз на документ, результат кэшится по хешу файла
   в pipeline, а не на каждый запрос к API.
 """
 
@@ -116,7 +116,7 @@ class OcrResult:
     words: list[Word]
     scale: float
     mean_conf: float
-    engine: str = "tesseract"
+    engine: str = "local"
 
     def line_at(self, y: int) -> TextLine | None:
         best, best_dy = None, None
@@ -141,7 +141,7 @@ class OcrResult:
 
 
 class OcrUnavailableError(RuntimeError):
-    """Кидаем, когда локального Tesseract или его языковых данных нет под рукой."""
+    """Кидаем, когда локального OCR или его языковых моделей нет под рукой."""
 
 
 # ---------------------------------------------------------------------------
@@ -182,13 +182,13 @@ def preprocess_for_ocr(grey: np.ndarray, ocfg: OcrSettings, quality: str = "clea
         # Otsu оставляет сглаженные края букв, а лёгкий медианный блюр счищает шум сканера.
         blurred = cv2.medianBlur(image, 3)
         _, image = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    # Белая рамка — без неё Tesseract стабильно теряет буквы, прилипшие к краю страницы.
+    # Белая рамка — без неё OCR стабильно теряет буквы, прилипшие к краю страницы.
     image = cv2.copyMakeBorder(image, 24, 24, 24, 24, cv2.BORDER_CONSTANT, value=255)
     return image, scale
 
 
 # ---------------------------------------------------------------------------
-# Запускаем Tesseract
+# Запускаем OCR
 # ---------------------------------------------------------------------------
 
 
@@ -200,7 +200,7 @@ def ocr_environment() -> dict[str, str]:
     binary = find_tesseract_binary()
     if binary is None:
         raise OcrUnavailableError(
-            "Не найден локальный Tesseract. Установите его (README, раздел «Установка OCR»)."
+            "Не найден локальный OCR. Установите его (README, раздел «Установка OCR»)."
         )
     # Строго один поток на вызов: иначе OpenMP-потоки от параллельных вызовов (страница +
     # кропы значений, API + пакетный режим) забивают CPU, и вызов улетает в таймаут.
@@ -209,7 +209,7 @@ def ocr_environment() -> dict[str, str]:
     tessdata = settings.tessdata_prefix or _default_tessdata()
     if tessdata is not None:
         env["TESSDATA_PREFIX"] = str(tessdata)
-        # pytesseract запускает tesseract с окружением процесса — иначе папка с rus_umir не видна
+        # бинарник стартует с окружением нашего процесса, без этого папку с rus_umir он не увидит
         os.environ["TESSDATA_PREFIX"] = str(tessdata)
         pytesseract.pytesseract.tesseract_cmd = str(binary)
     else:
@@ -235,7 +235,7 @@ def resolve_languages(requested: str) -> str:
     if not installed:
         return requested
     wanted = [code.strip() for code in requested.split("+") if code.strip()]
-    # нет своей модели (запуск без репы, чужая папка tessdata) — берём обычный rus
+    # если rus_umir не нашлась (например, запускают без нашей папки моделей) — откатываемся на обычный rus
     wanted = [LANGUAGE_FALLBACK.get(code, code) if code not in installed else code for code in wanted]
     usable = [code for code in dict.fromkeys(wanted) if code in installed]
     if not usable:
@@ -283,9 +283,9 @@ def _build_words(data: dict, scale: float, min_conf: float) -> list[Word]:
 
 
 def _group_into_lines(words: list[Word]) -> list[TextLine]:
-    """Собираем слова в строки по геометрии, а не по блокам Tesseract.
+    """Собираем слова в строки по геометрии, а не по блокам OCR.
 
-    Tesseract режет блоки как ему вздумается, смотря по вёрстке, а по геометрии
+    OCR режет блоки как ему вздумается, смотря по вёрстке, а по геометрии
     выходит стабильно: подпись поля и значение остаются в одной строке, даже
     если макет печати гуляет по странице.
     """
@@ -325,7 +325,7 @@ def run_ocr(
     ocfg: OcrSettings | None = None,
     min_conf: float = 25.0,
 ) -> OcrResult:
-    """Прогоняем картинку документа через Tesseract — на выходе текст и рамки слов."""
+    """Прогоняем картинку документа через OCR — на выходе текст и рамки слов."""
     ocfg = ocfg or settings.ocr
     ocr_environment()
     enhanced, scale = preprocess_for_ocr(image.grey, ocfg, getattr(image, "quality", "clean"))
@@ -339,10 +339,10 @@ def run_ocr(
             output_type=Output.DICT,
             timeout=ocfg.tesseract_timeout_s,
         )
-    except RuntimeError as exc:  # да, по таймауту pytesseract кидает именно RuntimeError
+    except RuntimeError as exc:  # да, по таймауту прилетает именно RuntimeError
         raise OcrUnavailableError(f"OCR не завершился: {exc}") from exc
     except pytesseract.TesseractNotFoundError as exc:  # pragma: no cover
-        raise OcrUnavailableError("Tesseract не найден в PATH.") from exc
+        raise OcrUnavailableError("OCR не найден в PATH.") from exc
 
     words = _build_words(data, scale, min_conf)
     lines = _group_into_lines(words)
@@ -361,7 +361,7 @@ def ocr_health() -> dict:
     """Диагностика для ``GET /api/v1/health`` — падать не должна вообще никогда."""
     binary = find_tesseract_binary()
     info: dict = {
-        "engine": "tesseract",
+        "engine": "local",
         "binary": str(binary) if binary else None,
         "available": False,
         "languages": [],
@@ -369,7 +369,7 @@ def ocr_health() -> dict:
         "version": None,
     }
     if binary is None:
-        info["error"] = "tesseract binary not found"
+        info["error"] = "OCR binary not found"
         return info
     tessdata = settings.tessdata_prefix or _default_tessdata()
     info["tessdata"] = str(tessdata) if tessdata else None

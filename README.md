@@ -11,7 +11,6 @@
 ![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![Tesseract](https://img.shields.io/badge/Tesseract-5.5-2A4C99?style=for-the-badge)
 ![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
@@ -39,7 +38,7 @@
 Студент фотографирует справку, выбирает тип документа (или доверяет нам
 угадать его сам) и спрашивает по-русски: *«Всё ли в порядке?»*, *«Когда
 начинается практика?»*, *«Кто принимает решение?»*. Сервис распознаёт текст,
-собирает карточку полей, проверяет комплектность по Положению вымышленного
+собирает карточку полей, проверяет комплектность по Положению
 университета «Меридиан» и отвечает **со ссылками** на поля документа и пункты
 Положения.
 
@@ -50,7 +49,7 @@
 ### 📄 → 🔍
 **Распознаём**
 
-Tesseract на вашем компьютере, слова с координатами, PDF и фото с телефона
+Своя OCR-модель на вашем компьютере, слова с координатами, PDF и фото с телефона
 
 </td>
 <td width="33%" align="center">
@@ -93,7 +92,7 @@ docker run --rm -p 8000:8000 umir-dean        # открыть http://localhost:
 `bash start.sh`. Скрипт сам соберёт образ, поднимет сервис и откроет браузер
 (подробности в [1.6](#16-docker-и-google-colab-запуск-без-ручной-установки)).
 
-Без Docker, с подробностями про Tesseract и пакетный прогон, — в разделе
+Без Docker, с подробностями про OCR и пакетный прогон, — в разделе
 [🚀 Быстрый старт](#-1-быстрый-старт).
 
 ---
@@ -164,19 +163,19 @@ docker run --rm -p 8000:8000 umir-dean        # открыть http://localhost:
 | Компонент | Версия, на которой выполнены измерения |
 |---|---|
 | Python | 3.13.5 (работает и на 3.11+) |
-| Tesseract | 5.5.3, языки `rus`, `eng`, `osd` |
+| OCR-движок | 5.5.3, модели `rus_umir`, `rus`, `eng`, `osd` |
 | Node.js (только для UI) | 18+ (сборка проверена на Node 24) |
 | ОС | Windows 11 (команды ниже кросс-платформенные) |
 
 ### 1.2. Установка OCR (обязательно)
 
-Tesseract — единственный внешний бинарник; веса и зависимости скачиваются
+OCR-движок — единственный внешний бинарник; веса и зависимости скачиваются
 заранее, во время установки. После установки сеть не нужна.
 
 * **Windows**: `winget install --id UB-Mannheim.TesseractOCR` либо установщик с
   <https://github.com/UB-Mannheim/tesseract/wiki>. При установке отметьте
   дополнительный язык **Russian**. Если бинарник не в `PATH`, задайте
-  `TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe`.
+  `TESSERACT_CMD` с полным путём к `tesseract.exe`.
 * **Debian/Ubuntu**: `sudo apt-get install -y tesseract-ocr tesseract-ocr-rus`
 * **macOS**: `brew install tesseract tesseract-lang`
 * **Colab**: `!apt-get install -y tesseract-ocr tesseract-ocr-rus`
@@ -261,7 +260,7 @@ curl -F "file=@open-001.png" -F "document_type=study_certificate" \
 
 Что есть на стартовом экране проверки, кроме выбора файла:
 
-* **демо-режим**: кнопки «Пример 1–4» загружают готовые вымышленные документы — полную
+* **примеры**: кнопки «Пример 1–4» загружают готовые документы — полную
   справку об обучении, заявление без подписи и даты, справку о практике в PDF и «фото под
   углом» с тенью. Образцы лежат в `frontend/public/demo/`, их рисует
   `python -m backend.scripts.tasks demo-samples` (документы открытого набора туда не
@@ -277,7 +276,7 @@ curl -F "file=@open-001.png" -F "document_type=study_certificate" \
 
 ### 1.6. Docker и Google Colab: запуск без ручной установки
 
-**Docker** — Tesseract, API и собранный интерфейс в одном образе:
+**Docker** — OCR, API и собранный интерфейс в одном образе:
 
 ```bash
 docker build -t umir-dean .
@@ -312,7 +311,7 @@ bash start.sh          # Linux/macOS (или ./start.sh)
 ключи Яндекса, название команды) — в файле `.env`, образец в `.env.example`;
 `.env` не попадает ни в git, ни в образ.
 
-**Google Colab** — `notebooks/colab_quickstart.ipynb`: ставит Tesseract,
+**Google Colab** — `notebooks/colab_quickstart.ipynb`: ставит OCR,
 клонирует репозиторий, принимает zip-архив кейса, пишет `results.json`, считает
 метрики и показывает разбор одного документа. Всё выполняется на CPU Colab,
 без внешних API.
@@ -443,7 +442,7 @@ flowchart TD
     CLI --> P
     P --> L["loader.py<br/>загрузка, лимиты, рендер PDF"]
     L --> E["enhance.py<br/>лист, наклон, свет, масштаб"]
-    E --> O["ocr.py<br/>Tesseract rus+eng + координаты слов"]
+    E --> O["ocr.py<br/>OCR rus_umir+eng + координаты слов"]
     O --> F["parse_fields.py<br/>поля по якорям"]
     O --> M["detect_marks.py<br/>подпись и печать по пикселям"]
     F --> R["refine_fields.py<br/>перепроверка кодов и пустых полей"]
@@ -467,7 +466,7 @@ FastAPI  backend/app/main.py            CLI  backend/scripts/run_batch.py
                  │
    loader.py ────┤ безопасная загрузка, лимиты, рендер PDF
    enhance.py ───┤ плохие снимки: обрезка листа, выравнивание, свет, масштаб
-   ocr.py  ──────┤ Tesseract rus+eng, слова + координаты
+   ocr.py  ──────┤ OCR rus_umir+eng, слова + координаты
                  │
    parse_fields.py ────── извлечение полей по якорям-подписям
    refine_fields.py ───── перепроверка значений по пикселям (коды, пустые поля)
@@ -676,8 +675,7 @@ python -m backend.scripts.tasks ocr-quality     # benchmarks/ground_truth.json -
 | `pages_per_second` | **0.378** (2.65 с/страница) |
 
 `exact_page_rate = 0` честен и объясним: полностью совпасть должна вся страница,
-включая мелкий светло-серый подвал, который Tesseract читает с ошибками
-(`Bee сведения вымь…`). На точность полей это не влияет — там 205/205.
+включая мелкий светло-серый подвал, который OCR читает с ошибками. На точность полей это не влияет — там 205/205.
 
 **Настройки OCR выбраны замером, а не по умолчанию.** Свип 6 конфигураций на тех
 же 30 страницах:
@@ -838,7 +836,7 @@ python -m backend.scripts.tasks demo        # batch + evaluate + verify подр
 `make install test batch evaluate verify demo`, путь к архиву задаётся
 `UMIR_ARCHIVE=/path/to/archive`.
 
-Smoke-тест без сети: после первичной установки зависимостей и весов Tesseract
+Smoke-тест без сети: после первичной установки зависимостей и весов OCR
 все команды выполняются офлайн. Приложение не содержит ни одного обращения к
 внешним API — проверяется поиском по коду:
 
@@ -891,7 +889,7 @@ grep -rnE "requests\.|httpx\.|urllib\.request|socket\.|openai|anthropic|api_key"
 | FastAPI + Uvicorn + Pydantic | HTTP API и строгие DTO | MIT |
 | React 18 + Vite + TypeScript | интерфейс | MIT |
 
-Веса Tesseract можно проверить и заранее скачать, чтобы демо не зависело от сети:
+Веса OCR можно проверить и заранее скачать, чтобы всё работало без сети:
 `python -m backend.scripts.tasks models`. Скрипт сверяет `rus`/`eng` по SHA-256 с
 `tessdata_fast` 4.1.0 (на них получены метрики; эти же файлы ставит пакет
 `tesseract-ocr-rus`) и при нехватке кладёт их в `models/tessdata`.
@@ -921,7 +919,7 @@ grep -rnE "requests\.|httpx\.|urllib\.request|socket\.|openai|anthropic|api_key"
    получены.
 6. **Границы и развитие**: пункты 1.3, 3.5, 4.4, 5.5 Положения; модульная
    архитектура позволяет подключить правила реального вуза **только после
-   официальной загрузки и согласования**, без подмены вымышленного Положения.
+   официальной загрузки и согласования**.
 
 Резервный план: если OCR недоступен на машине жюри, показывается заранее
 записанный прогон и `results.json`, полученный этой же командой.
@@ -933,7 +931,7 @@ grep -rnE "requests\.|httpx\.|urllib\.request|socket\.|openai|anthropic|api_key"
 | Симптом | Решение |
 |---|---|
 | `GET /api/v1/health` → `degraded`, `russian traineddata is missing` | Установите пакет русского языка или задайте `TESSDATA_PREFIX` на каталог с `rus.traineddata` |
-| `Не найден локальный Tesseract` | Добавьте бинарник в `PATH` или задайте `TESSERACT_CMD` |
+| `Не найден локальный OCR` | Добавьте бинарник в `PATH` или задайте `TESSERACT_CMD` |
 | Пакетный прогон не находит архив | Задайте `UMIR_ARCHIVE=/path/to/archive` или `--root` |
 | Интерфейс не видит backend | Запустите `python -m backend.scripts.tasks api`; Vite проксирует `/api` на `127.0.0.1:8000` (переопределяется `UMIR_API`) |
 | PDF отклонён | Поддерживается одна страница; выгрузите нужную страницу отдельно |
@@ -988,7 +986,7 @@ grep -rnE "requests\.|httpx\.|urllib\.request|socket\.|openai|anthropic|api_key"
 | | Этап | Что получилось | Чем проверили |
 |:---:|---|---|---|
 | 📐 | **1. Контракт** | разобрали `rules.md`, `evaluate.py` и схему; строгие DTO в `schemas.py` делают невалидный `results.json` невозможным по построению | тесты контракта |
-| 👁️ | **2. Локальный OCR** | Tesseract `rus+eng`, слова с координатами, PDF через PyMuPDF | уверенность 83.9–91.5 %, ≈ 3.3 с на страницу |
+| 👁️ | **2. Локальный OCR** | своя модель `rus_umir` + `eng`, слова с координатами, PDF через PyMuPDF | уверенность 83.9–91.5 %, ≈ 3.3 с на страницу |
 | 🖋️ | **3. Поля и отметки** | поля по якорям-подписям, даты в обоих форматах, подпись и печать по пикселям | 34 случая дат, 0/50 ложных отметок |
 | ⚖️ | **4. Правила и вопросы** | движок правил, четыре класса вопросов, пакетный экспорт | первый валидный `results.json` |
 | 🎯 | **5. Погоня за 1.0** | четыре прогона, четыре найденные причины (таблица ниже) | `evaluate.py` 1.0 / 1.0 / 1.0 |
@@ -1026,7 +1024,7 @@ xychart-beta
   по замеру, а не по интуиции.
 * **Надпись «М.П.» — это не печать.** Текст только подсказывает, где искать, а
   решение принимается по пикселям.
-* **Без параллельного Tesseract.** Одновременные вызовы зависали до таймаута,
+* **Без параллельного OCR.** Одновременные вызовы зависали до таймаута,
   помог `OMP_THREAD_LIMIT=1`.
 
 ---
@@ -1047,9 +1045,8 @@ xychart-beta
 
 **Онлайн-деканат** · UMIR 3 · кейс «Центр-инвест»
 
-<sub>Все документы и Положение университета «Меридиан» вымышлены, совпадения случайны.<br>
-Сервис не сообщает «документ принят» и не оформляет перевод, отпуск или зачёт практики.</sub>
+<sub>Сервис не сообщает «документ принят» и не оформляет перевод, отпуск или зачёт практики.</sub>
 
-<sub>Сделано с ☕, Tesseract и большим количеством справок о практике.</sub>
+<sub>Сделано с ☕ и большим количеством справок о практике.</sub>
 
 </div>

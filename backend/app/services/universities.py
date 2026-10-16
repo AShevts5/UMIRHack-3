@@ -35,7 +35,7 @@ def _resolve_regulation(raw: str | None) -> Path | None:
     if not raw:
         return None
     if raw == "case-rules":
-        # учебное Положение из кейса (rules.md) — то самое, по которому идёт проверка документов
+        # Положение из кейса (rules.md) — по нему и проверяем документы
         return settings.rules_path
     path = Path(raw)
     if not path.is_absolute():
@@ -56,7 +56,7 @@ def _validate(data: dict[str, Any], source: Path) -> dict[str, Any]:
         sections[key] = value
     regulation = _resolve_regulation(data.get("regulation"))
     if sections["dean"] == "available" and regulation is None:
-        # без положения документы проверять не по чему, так что честно пишем «скоро»
+        # без положения документы проверять не по чему, раздел помечаем «скоро»
         sections["dean"] = "soon"
     buildings = data.get("buildings") or []
     building_ids = {b.get("id") for b in buildings}

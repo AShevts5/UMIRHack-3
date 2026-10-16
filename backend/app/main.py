@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,6 +31,7 @@ from .config import settings
 from .guide_api import record_history
 from .guide_api import router as guide_router
 from .schemas import AnalysisResponse, Answer, HealthResponse
+from .services import llm
 from .services import ocr as ocr_service
 from .services.document_config import get_registry
 from .services.loader import DocumentLoadError
@@ -38,6 +40,14 @@ from .services.question_engine import default_completeness_question
 
 logger = logging.getLogger("umir.api")
 
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # мини-LLM помощника грузится секунды, поэтому делаем это заранее в фоне
+    llm.warm_up()
+    yield
+
+
 app = FastAPI(
     title="Онлайн-деканат — предварительная проверка студенческих документов",
     description=(
@@ -45,6 +55,7 @@ app = FastAPI(
         "Положению университета «Меридиан» (rules.md). Решение принимает сотрудник деканата."
     ),
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -88,6 +99,7 @@ def health() -> HealthResponse:
         status="ok" if ocr_info.get("available") else "degraded",
         ocr=ocr_info,
         document_types=registry.titles(),
+        llm=llm.status(),
     )
 
 

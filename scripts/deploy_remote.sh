@@ -19,6 +19,11 @@
 # в /app/var), так что передеплой их больше не стирает. Настройки (демо-аккаунт, ключи Яндекса,
 # UMIR_PUBLIC_URL) кладём в ENV_FILE по образцу .env.example. Оба пути специально лежат вне
 # APP_DIR: там git clean, и всё лишнее он сносит.
+#
+# Мини-LLM для AI-помощника (Qwen2.5-1.5B, ~1 ГБ на диске и ~1.5 ГБ в памяти) на нашем
+# сервере по умолчанию не включаем: на одном ядре и 960 МБ она не влезет. На машине
+# помощнее: LLM=1 bash scripts/deploy_remote.sh — модель скачается в MODELS_DIR (тоже вне
+# APP_DIR), подключится в контейнер, а памяти контейнеру дадим 3g.
 
 set -euo pipefail
 
@@ -28,7 +33,12 @@ BRANCH="${BRANCH:-main}"
 PORT="${PORT:-8000}"
 IMAGE="${IMAGE:-umir-dean:latest}"
 CONTAINER="${CONTAINER:-umir-dean}"
-MEMORY="${MEMORY:-700m}"
+LLM="${LLM:-0}"
+if [ "$LLM" = "1" ]; then MEMORY="${MEMORY:-3g}"; else MEMORY="${MEMORY:-700m}"; fi
+MEMORY_SWAP="${MEMORY_SWAP:-$([ "$LLM" = "1" ] && echo "$MEMORY" || echo 1g)}"
+MODELS_DIR="${MODELS_DIR:-/opt/umir-online-dean-models}"
+LLM_FILE="qwen2.5-1.5b-instruct-q4_k_m.gguf"
+LLM_URL="${LLM_URL:-https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/$LLM_FILE}"
 CPUS="${CPUS:-0.9}"
 DATA_DIR="${DATA_DIR:-/opt/umir-online-dean-data}"
 ENV_FILE="${ENV_FILE:-/opt/umir-online-dean.env}"
@@ -120,6 +130,17 @@ if [ ! -s "$RULES_PATH" ]; then
   [ -s "$RULES_PATH" ] && echo "rules.md: $(wc -c <"$RULES_PATH") байт"
 fi
 
+if [ "$LLM" = "1" ] && [ ! -s "$MODELS_DIR/llm/$LLM_FILE" ]; then
+  log "2.2 Качаю мини-LLM для помощника (~1 ГБ, один раз)"
+  mkdir -p "$MODELS_DIR/llm"
+  if curl -fL --progress-bar -o "$MODELS_DIR/llm/$LLM_FILE.part" "$LLM_URL"; then
+    mv "$MODELS_DIR/llm/$LLM_FILE.part" "$MODELS_DIR/llm/$LLM_FILE"
+  else
+    rm -f "$MODELS_DIR/llm/$LLM_FILE.part"
+    echo "модель не скачалась, помощник будет отвечать без неё" >&2
+  fi
+fi
+
 if [ "$NO_BUILD" -eq 0 ]; then
   log "3/6 Собираю образ (самая долгая часть, несколько минут)"
   export DOCKER_BUILDKIT=1
@@ -137,6 +158,10 @@ MOUNTS=(-v "$DATA_DIR:/app/var" -e UMIR_DATA_DIR=/app/var)
 if [ -s "$APP_DIR/rules.md" ]; then
   MOUNTS+=(-v "$APP_DIR/rules.md:/app/rules.md:ro")
 fi
+if [ "$LLM" = "1" ] && [ -s "$MODELS_DIR/llm/$LLM_FILE" ]; then
+  MOUNTS+=(-v "$MODELS_DIR/llm:/app/models/llm:ro")
+  echo "мини-LLM: $MODELS_DIR/llm/$LLM_FILE"
+fi
 if [ -f "$ENV_FILE" ]; then
   MOUNTS+=(--env-file "$ENV_FILE")
   echo "настройки: $ENV_FILE"
@@ -145,7 +170,7 @@ echo "данные: $DATA_DIR"
 docker run -d \
   --name "$CONTAINER" \
   --restart unless-stopped \
-  --memory "$MEMORY" --memory-swap 1g \
+  --memory "$MEMORY" --memory-swap "$MEMORY_SWAP" \
   --cpus "$CPUS" \
   -p "$PORT:8000" \
   -e UMIR_OCR_LANGS=rus+eng \

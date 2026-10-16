@@ -28,5 +28,9 @@ segno==1.6.6                 # QR-код для 2FA, рисуется локал
 pytest==9.1.1
 httpx==0.28.1                # TestClient для FastAPI и smoke-тесты API
 
+# --- Мини-LLM для AI-помощника (llama.cpp, работает на CPU) ---
+# Готовые колёса под CPU берём с индекса автора, чтобы pip ничего не компилировал
+# (в slim-образе нет ни gcc, ни cmake). Версию фиксируем: под неё есть колёса и для Linux, и для Windows.
 --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
-llama-cpp-python>=0.3
+--only-binary llama-cpp-python
+llama-cpp-python==0.3.36

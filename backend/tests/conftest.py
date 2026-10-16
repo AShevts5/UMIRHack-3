@@ -14,6 +14,10 @@ from pathlib import Path
 
 import pytest
 
+# Тесты гоняем без мини-LLM помощника, даже если модель скачана: ответы должны быть
+# стабильными, а грузить гигабайт на каждый прогон незачем. Генерацию проверяем на заглушке.
+os.environ.setdefault("UMIR_LLM", "0")
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ARCHIVE_ENV = "UMIR_ARCHIVE"
 ARCHIVE_CANDIDATES = (

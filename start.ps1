@@ -43,6 +43,22 @@ switch ($Command) {
     default { Write-Host "неизвестная команда: $Command (есть: up, stop, logs, status, rebuild)"; exit 2 }
 }
 
+# мини-LLM для помощника качаем один раз (~1 ГБ), если в .env не выключили UMIR_LLM=0
+$llmFile = Join-Path $PSScriptRoot "models\llm\qwen2.5-1.5b-instruct-q4_k_m.gguf"
+$llmUrl = "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+New-Item -ItemType Directory -Force (Split-Path $llmFile) | Out-Null
+$llmOff = (Test-Path (Join-Path $PSScriptRoot ".env")) -and (Select-String -Quiet -Pattern '^UMIR_LLM=(0|false|no|off)' (Join-Path $PSScriptRoot ".env"))
+if (-not (Test-Path $llmFile) -and -not $llmOff) {
+    Write-Host "Качаю мини-LLM для помощника (~1 ГБ, один раз)..."
+    # curl.exe есть в любой Windows 10/11 и качает в разы быстрее Invoke-WebRequest
+    curl.exe -fL --progress-bar -o "$llmFile.part" $llmUrl
+    if ($LASTEXITCODE -eq 0) { Move-Item -Force "$llmFile.part" $llmFile }
+    else {
+        Remove-Item -ErrorAction SilentlyContinue "$llmFile.part"
+        Write-Host "Модель не скачалась, помощник пока поработает без неё. Повторите start.cmd позже." -ForegroundColor Yellow
+    }
+}
+
 Write-Host "Запускаю (первая сборка займёт несколько минут)..."
 docker compose up -d --build
 if ($LASTEXITCODE -ne 0) { Write-Host "docker compose завершился с ошибкой" -ForegroundColor Red; exit $LASTEXITCODE }

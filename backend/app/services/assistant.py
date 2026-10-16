@@ -1,7 +1,7 @@
-"""AI-помощник: ищем ответ локально, без всяких внешних LLM.
+"""AI-помощник: ищем ответ локально, без всяких внешних LLM API.
 
 По кейсу нельзя никаких внешних OCR/LLM API, всё должно крутиться на ноуте или в Colab.
-Так что помощник ничего не «сочиняет», а просто находит ответ в трёх локальных источниках:
+Так что помощник сначала находит ответ в трёх локальных источниках:
 
 1. ``configs/assistant_faq.yaml`` — вопросы про само приложение (вход, 2FA,
    проверка документа, карта…);
@@ -11,6 +11,11 @@
 Ищем по взвешенному пересечению основ слов (грубый стемминг по первым буквам плюс
 IDF). Если ничего не нашлось, помощник так прямо и говорит и подкидывает темы — тот же
 принцип честного отказа, что и в ответах по документу (п. 2.4 Положения).
+
+Если скачана мини-LLM (``services/llm.py``, Qwen2.5-1.5B на llama.cpp, тоже локально),
+то при уверенном совпадении она переписывает найденное своими словами под вопрос.
+Факты берёт только из найденных фрагментов; ответ с числами, которых там нет,
+выкидываем и показываем фрагмент как есть. Нет модели — всё работает как раньше.
 """
 
 from __future__ import annotations
@@ -197,16 +202,33 @@ def _score(query: list[str], entry: Entry, idf: dict[str, float]) -> float:
 
 LLM_CONTEXT_SIZE = 3  # сколько лучших фрагментов отдаём модели
 MIN_SCORE = 0.34  # ниже этого порога считаем, что ответа в источниках нет
+# Модель зовём только при уверенном совпадении: на слабых совпадениях она уверенно пересказывает
+# не тот фрагмент (проверяли на вопросах «справка без печати», «сколько действует справка»),
+# а честный фрагмент с заголовком хотя бы видно, что он про другое. Карточке факультета
+# хватает и 0.6: модели отдаём её одну, перепутать не с чем.
+LLM_MIN_SCORE = 0.8
+LLM_MIN_SCORE_FACULTY = 0.6
+LLM_CONTEXT_GAP = 0.25  # соседние фрагменты берём, только если они почти так же хороши, как лучший
+# Каким записям даём модель. По умолчанию — только карточкам факультетов: там длинная простыня
+# (адрес, часы, телефоны, декан), и модель вытаскивает из неё ровно то, что спросили. Ответы
+# справки и пункты Положения и так короткие и точные, а 1.5B-модель при пересказе иногда
+# путает шаги («откройте Яндекс» вместо «откройте профиль»), так что их показываем как есть.
+# Включить везде: UMIR_LLM_KINDS=faq,faculty,rule
+LLM_KINDS = {kind.strip() for kind in os.environ.get("UMIR_LLM_KINDS", "faculty").split(",") if kind.strip()}
 
 SYSTEM_PROMPT = (
     "Ты - AI-помощник приложения «Академиум». Отвечай на русском языке, вежливо и кратко: "
-    "2–4 предложения. Используй ТОЛЬКО факты из фрагментов, которые даны ниже. Ничего не придумывай: "
+    "2–4 предложения. Используй ТОЛЬКО факты из фрагментов, которые даны ниже, и держись их формулировок. "
+    "Ничего не придумывай: "
     "не называй номера пунктов, телефоны, кабинеты, адреса и даты, которых нет во фрагментах. "
     "Если во фрагментах нет ответа на вопрос, так и скажи и посоветуй обратиться в деканат. "
     "Не упоминай слово «фрагмент» в ответе."
 )
 
 _NUMBER = re.compile(r"\d+(?:[.,:\-]\d+)*")
+# отказы, которых нет в источнике: на «можно ли…» и «какой телефон…» мелкая модель любит
+# уверенно ответить «нет» или «не указан», хотя всё есть в карточке
+_NEGATION = re.compile(r"(?<!\w)(?:нет|нельзя|невозможно|не)(?!\w)", re.IGNORECASE)
 
 
 def _numbers(text: str) -> set[str]:
@@ -229,6 +251,8 @@ def _generate(question: str, entries: list[Entry]) -> str | None:
     if invented:
         # модель «придумала» номер пункта, телефон или кабинет — такой ответ не показываем
         return None
+    if _NEGATION.search(text) and not _NEGATION.search(context):
+        return None
     return text
 
 
@@ -241,6 +265,7 @@ def _merge_sources(entries: list[Entry]) -> list[dict[str, str]]:
                 seen.add(key)
                 merged.append(source)
     return merged
+
 
 def suggestions() -> list[str]:
     data = yaml.safe_load(FAQ_PATH.read_text(encoding="utf-8")) if FAQ_PATH.is_file() else {}
@@ -293,8 +318,14 @@ def answer(question: str, university_id: str | None = None) -> dict[str, Any]:
         "suggestions": related,
         "generated": False,
     }
-    if llm.enabled():
-        context = [entry for score, entry in scored[:LLM_CONTEXT_SIZE] if score >= MIN_SCORE]
+    threshold = LLM_MIN_SCORE_FACULTY if best.kind == "faculty" else LLM_MIN_SCORE
+    if best.kind in LLM_KINDS and best_score >= threshold and llm.enabled():
+        floor = max(MIN_SCORE, best_score - LLM_CONTEXT_GAP)
+        context = [best]
+        if best.kind == "faq":
+            # про факультеты и пункты Положения даём модели только одну запись: иначе она
+            # берёт адрес соседнего факультета и выдаёт его за нужный
+            context += [entry for score, entry in scored[1:LLM_CONTEXT_SIZE] if score >= floor and entry.kind == "faq"]
         generated = _generate(question, context)
         if generated:
             reply.update(answer=generated, sources=_merge_sources(context), generated=True)

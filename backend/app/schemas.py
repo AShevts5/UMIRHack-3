@@ -247,4 +247,5 @@ class HealthResponse(StrictModel):
     status: Literal["ok", "degraded"]
     ocr: dict[str, Any]
     document_types: dict[str, str]
+    llm: dict[str, Any] = {}  # мини-LLM помощника: state = ready/available/no-model/no-package/off/error
     version: str = "1.0"

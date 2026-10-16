@@ -29,6 +29,20 @@ case "${1:-up}" in
   *) echo "неизвестная команда: $1 (есть: up, stop, logs, status, rebuild)" >&2; exit 2 ;;
 esac
 
+# мини-LLM для помощника качаем один раз (~1 ГБ), если в .env не выключили UMIR_LLM=0
+LLM_FILE="models/llm/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+LLM_URL="https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf"
+mkdir -p models/llm
+if [ ! -s "$LLM_FILE" ] && ! grep -qE '^UMIR_LLM=(0|false|no|off)' .env 2>/dev/null; then
+  echo "Качаю мини-LLM для помощника (~1 ГБ, один раз)…"
+  if curl -fL --progress-bar -o "$LLM_FILE.part" "$LLM_URL"; then
+    mv "$LLM_FILE.part" "$LLM_FILE"
+  else
+    rm -f "$LLM_FILE.part"
+    echo "Модель не скачалась, помощник пока поработает без неё. Повторите ./start.sh позже." >&2
+  fi
+fi
+
 echo "Запускаю (первая сборка займёт несколько минут)…"
 docker compose up -d --build
 

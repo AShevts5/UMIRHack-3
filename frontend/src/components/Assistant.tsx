@@ -15,6 +15,7 @@ interface Message {
   text: string
   sources?: AssistantSource[]
   pending?: boolean
+  generated?: boolean
 }
 
 const GREETING = 'Приветствую Повелителя своего! Чем могу быть полезен?'
@@ -148,7 +149,7 @@ export default function Assistant() {
       if (!text || busy) return
       const pendingId = idRef.current + 1
       idRef.current += 2
-      setMessages((items) => [...items, { id: pendingId - 1, from: 'me', text }, { id: pendingId, from: 'bot', text: '…', pending: true }])
+      setMessages((items) => [...items, { id: pendingId - 1, from: 'me', text }, { id: pendingId, from: 'bot', text: 'Думаю…', pending: true }])
       setInput('')
       setBusy(true)
       let reply: AssistantAnswer | null = null
@@ -162,7 +163,13 @@ export default function Assistant() {
       setMessages((items) =>
         items.map((item) =>
           item.id === pendingId
-            ? { id: pendingId, from: 'bot', text: reply?.answer ?? failure ?? '', sources: reply?.sources ?? [] }
+            ? {
+                id: pendingId,
+                from: 'bot',
+                text: reply?.answer ?? failure ?? '',
+                sources: reply?.sources ?? [],
+                generated: Boolean(reply?.generated),
+              }
             : item,
         ),
       )
@@ -283,6 +290,11 @@ export default function Assistant() {
                   <p>{message.text}</p>
                   {message.from === 'bot' && !message.pending && (message.sources?.length || canSpeak) ? (
                     <div className="ai__src">
+                      {message.generated ? (
+                        <span className="ai__gen" title="Ответ сформулировала нейросеть прямо на сервере, по источникам справа">
+                          ИИ
+                        </span>
+                      ) : null}
                       {message.sources?.map((source) => (
                         <button key={`${source.label}-${source.url ?? source.route}`} type="button" onClick={() => follow(source)}>
                           {source.label}

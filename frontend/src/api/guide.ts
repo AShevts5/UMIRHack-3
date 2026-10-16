@@ -207,6 +207,8 @@ export interface AssistantAnswer {
   confidence: number
   sources: AssistantSource[]
   suggestions: string[]
+  /** true — ответ переписала своими словами локальная мини-LLM по найденным источникам */
+  generated?: boolean
 }
 
 // ---------------------------------------------------------------- вызовы

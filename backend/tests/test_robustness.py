@@ -10,7 +10,13 @@ import pytest
 
 from backend.app.schemas import DocumentResult
 from backend.app.services.document_config import get_registry
-from backend.app.services.enhance import enhance_document, estimate_skew, find_page_quad, rotate_page
+from backend.app.services.enhance import (
+    enhance_document,
+    estimate_skew,
+    estimate_text_angle,
+    find_page_quad,
+    rotate_page,
+)
 from backend.app.services.loader import DocumentImage
 from backend.app.services.question_engine import Intent, classify_question
 from backend.app.services.refine_fields import CODE_RE, value_has_ink
@@ -51,6 +57,24 @@ class TestEnhance:
         tilted = rotate_page(_page(), angle)
         grey = cv2.cvtColor(tilted, cv2.COLOR_RGB2GRAY)
         assert estimate_skew(grey) == pytest.approx(-angle, abs=0.6)
+
+    @pytest.mark.parametrize("angle", [0.0, 37.0, -52.0, 75.0, 90.0, -90.0, 128.0, 180.0, -150.0])
+    def test_text_angle_on_full_circle(self, angle: float) -> None:
+        """Строки находим под любым углом; 180° для строк — то же, что 0° (это дело OCR)."""
+        tilted = rotate_page(_page(), angle)
+        found = estimate_text_angle(cv2.cvtColor(tilted, cv2.COLOR_RGB2GRAY))
+        residual = (angle + found + 90.0) % 180.0 - 90.0
+        assert residual == pytest.approx(0.0, abs=0.6)
+
+    def test_sideways_scan_is_turned_without_resampling(self) -> None:
+        page = _page()
+        out, report = enhance_document(_image(np.ascontiguousarray(np.rot90(page))))
+        assert report.steps == ["deskew"]
+        assert abs(report.angle) == 90.0
+        assert out.quality == "clean"
+        # поворот на 90° без интерполяции: пиксели те же, лист снова стоит
+        assert out.rgb.shape == page.shape
+        assert np.array_equal(out.rgb, page) or np.array_equal(out.rgb, np.rot90(page, 2))
 
     def test_photo_on_table_is_cropped(self) -> None:
         photo = rotate_photo(_page(), random.Random(5), max_angle=20)

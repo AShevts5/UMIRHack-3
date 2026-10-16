@@ -195,6 +195,20 @@ class TestSyntheticDocumentEndToEnd:
         assert analysed.fields["study_end"] == "2025-08-31"
         assert analysed.fields["issue_date"] == "2025-06-15"
 
+    @pytest.mark.parametrize("quarter_turns", [1, 2, 3])
+    def test_page_upside_down_or_sideways_is_read(self, quarter_turns: int) -> None:
+        """Лист вверх ногами или боком: разворачиваем и читаем те же значения."""
+        import cv2
+        import numpy as np
+
+        page = cv2.imdecode(np.frombuffer(render_study_certificate(SYNTHETIC_VALUES), np.uint8), cv2.IMREAD_COLOR)
+        ok, png = cv2.imencode(".png", np.ascontiguousarray(np.rot90(page, quarter_turns)))
+        result = Pipeline(use_cache=False).analyze_bytes(png.tobytes(), "turned.png", "study_certificate")
+        assert result.fields["student_name"] == SYNTHETIC_VALUES["student_name"]
+        assert result.fields["document_number"] == SYNTHETIC_VALUES["document_number"]
+        assert result.fields["issue_date"] == "2025-06-15"
+        assert result.rotation_deg % 90 == 0 and result.rotation_deg != 0
+
     def test_marks_and_validation(self, analysed) -> None:
         assert analysed.fields["signature_present"] is True
         assert analysed.fields["seal_present"] is True

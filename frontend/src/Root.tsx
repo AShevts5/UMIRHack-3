@@ -13,6 +13,7 @@ import { GuideProvider, useGuide } from './lib/session'
 import { useTheme } from './lib/theme'
 import AuthScreen from './screens/AuthScreen'
 import EnterTransition from './screens/EnterTransition'
+import type { PostcardRect } from './screens/EnterTransition'
 import Hall from './screens/Hall'
 
 // Карта тащит за собой Leaflet — поэтому грузим её, только когда открыли раздел. Остальные
@@ -98,6 +99,27 @@ function Shell() {
   const { ready, user, guest, university, signIn, continueAsGuest } = guide
   const [theme, setTheme] = useTheme()
   const [entering, setEntering] = useState(false)
+  const enterFrom = useRef<PostcardRect | null>(null)
+  // перед «входом в здание» запоминаем, где стояла открытка с корпусом: анимация стартует с неё
+  const beginEnter = useCallback(() => {
+    const art = document.querySelector<HTMLElement>('.auth__art')
+    if (art) {
+      const box = art.getBoundingClientRect()
+      const width = art.offsetWidth
+      const height = art.offsetHeight
+      // поворот открытки достаём из матрицы transform: matrix(cos, sin, …)
+      const matrix = /matrix\(([^,]+),\s*([^,]+)/.exec(getComputedStyle(art).transform)
+      const rotate = matrix ? (Math.atan2(Number(matrix[2]), Number(matrix[1])) * 180) / Math.PI : 0
+      enterFrom.current = {
+        left: box.left + (box.width - width) / 2,
+        top: box.top + (box.height - height) / 2,
+        width,
+        height,
+        rotate,
+      }
+    } else enterFrom.current = null
+    setEntering(true)
+  }, [])
   const install = useInstallPrompt()
   const path = route.path === '/' ? '/hall' : route.path
 
@@ -114,14 +136,14 @@ function Shell() {
       .me()
       .then((me) => {
         signIn({ access_token: token, user: me })
-        setEntering(true)
+        beginEnter()
         go('/hall', true)
       })
       .catch(() => {
         storeToken(null)
         go('/login?error=' + encodeURIComponent('Не удалось завершить вход через Яндекс.'), true)
       })
-  }, [go, path, route.params, signIn])
+  }, [beginEnter, go, path, route.params, signIn])
 
   useEffect(prefetchSections, [])
 
@@ -142,10 +164,10 @@ function Shell() {
   const onSignedIn = useCallback(
     (session: Session) => {
       signIn(session)
-      setEntering(true)
+      beginEnter()
       go('/hall', true)
     },
-    [go, signIn],
+    [beginEnter, go, signIn],
   )
 
   const finishEnter = useCallback(() => setEntering(false), [])
@@ -168,7 +190,7 @@ function Shell() {
           onSignedIn={onSignedIn}
           onGuest={() => {
             continueAsGuest()
-            setEntering(true)
+            beginEnter()
             go('/hall', true)
           }}
         />
@@ -180,7 +202,6 @@ function Shell() {
   }
 
   const building = university?.hall?.building_image ?? '/universities/_default/building.svg'
-  const hall = university?.hall?.hall_image ?? '/universities/_default/hall.svg'
 
   if (path === '/dean') {
     return (
@@ -223,14 +244,14 @@ function Shell() {
     )
   else if (path === '/history') screen = <History go={go} />
   else if (path === '/profile') screen = <Profile go={go} params={route.params} />
-  else screen = <Hall go={go} />
+  else screen = <Hall go={go} arriving={entering} />
 
   const isHall = !['/faculties', '/map', '/history', '/profile'].includes(path)
 
   return (
     <>
       {entering ? (
-        <EnterTransition building={building} hall={hall} doors={university?.hall_doors} onDone={finishEnter} />
+        <EnterTransition building={building} doors={university?.hall_doors} from={enterFrom.current} onDone={finishEnter} />
       ) : null}
       <button type="button" className="skip" onClick={() => mainRef.current?.focus()}>
         К содержимому

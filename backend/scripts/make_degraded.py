@@ -8,6 +8,8 @@
     python -m backend.scripts.make_degraded --src "../online-dean-participants-v1 (2)" \\
         --out reports/degraded --effect mix
     # можно и по одному эффекту: rotate | shadow | glare | lowres | mix
+    # turn — лист повёрнут на любой угол (боком, вверх ногами), flip — скан боком
+    # или вверх ногами ровно на 90/180/270° без стола
 """
 
 from __future__ import annotations
@@ -22,15 +24,33 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-EFFECTS = ("rotate", "shadow", "glare", "lowres", "mix")
+EFFECTS = ("rotate", "shadow", "glare", "lowres", "mix", "turn", "flip")
 
 
 def rotate(img: np.ndarray, rng: random.Random, max_angle: float = 30.0) -> np.ndarray:
     angle = rng.uniform(3.0, max_angle) * rng.choice((-1, 1))
+    return rotate_on_table(img, rng, angle)
+
+
+def turn(img: np.ndarray, rng: random.Random) -> np.ndarray:
+    """Лист лежит на столе как попало: боком, вверх ногами или под любым углом."""
+    if rng.random() < 0.6:
+        angle = rng.choice((90.0, 180.0, -90.0)) + rng.uniform(-25.0, 25.0)
+    else:
+        angle = rng.uniform(-180.0, 180.0)
+    return rotate_on_table(img, rng, angle)
+
+
+def flip(img: np.ndarray, rng: random.Random) -> np.ndarray:
+    """Скан положили в сканер боком или вверх ногами."""
+    return np.ascontiguousarray(np.rot90(img, rng.choice((1, 2, 3))))
+
+
+def rotate_on_table(img: np.ndarray, rng: random.Random, angle: float) -> np.ndarray:
     h, w = img.shape[:2]
-    rad = math.radians(abs(angle))
-    new_w = int(w * math.cos(rad) + h * math.sin(rad))
-    new_h = int(h * math.cos(rad) + w * math.sin(rad))
+    rad = math.radians(angle)
+    new_w = int(w * abs(math.cos(rad)) + h * abs(math.sin(rad)))
+    new_h = int(h * abs(math.cos(rad)) + w * abs(math.sin(rad)))
     matrix = cv2.getRotationMatrix2D((w / 2, h / 2), angle, 1.0)
     matrix[0, 2] += (new_w - w) / 2
     matrix[1, 2] += (new_h - h) / 2
@@ -85,6 +105,10 @@ def degrade(img: np.ndarray, effect: str, rng: random.Random) -> np.ndarray:
         return glare(img, rng)
     if effect == "lowres":
         return lowres(img, rng)
+    if effect == "turn":
+        return turn(img, rng)
+    if effect == "flip":
+        return flip(img, rng)
     out = img
     if rng.random() < 0.8:
         out = shadow(out, rng)

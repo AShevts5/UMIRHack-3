@@ -6,8 +6,10 @@
 1. **Обрезка листа** — бумага обычно светлее стола: берём самый большой светлый
    четырёхугольник и растягиваем в прямоугольник, заодно уходят поворот и
    перспектива снимка с рук.
-2. **Выравнивание наклона** — оставшийся угол текста (до ±35°) ищем по максимуму
-   дисперсии профиля строк и докручиваем страницу обратно.
+2. **Выравнивание наклона** — направление строк ищем по максимуму дисперсии профиля
+   строк на всём круге (лист может лежать и боком) и докручиваем страницу так, чтобы
+   строки легли горизонтально. Остаётся вопрос «не вверх ли ногами» — его решает OCR,
+   см. ``orientation.py``.
 3. **Масштаб** — слишком мелкие и слишком большие фото подгоняем, чтобы у страницы
    были те же ~1600 px по длинной стороне, что у эталонных сканов: тогда пороги
    ниже (высота строки, размер отметки) значат одно и то же на любом входе.
@@ -49,6 +51,8 @@ class EnhanceReport:
         out = [texts[step] for step in self.steps if step in texts]
         if "deskew" in self.steps:
             out.append(f"Снимок повёрнут на {abs(self.angle):.1f}° для распознавания.")
+        if "upright" in self.steps:
+            out.append("Лист был перевёрнут: развернули его для распознавания.")
         return out
 
 
@@ -143,24 +147,82 @@ def _profile_score(mask: np.ndarray, angle: float) -> float:
     return float(np.var(rows))
 
 
+def _square(mask: np.ndarray) -> np.ndarray:
+    """Кладём маску в квадрат по диагонали: при повороте на любой угол ничего не обрежется."""
+    h, w = mask.shape
+    side = int(np.ceil(np.hypot(h, w)))
+    top, left = (side - h) // 2, (side - w) // 2
+    return cv2.copyMakeBorder(mask, top, side - h - top, left, side - w - left, cv2.BORDER_CONSTANT, value=0)
+
+
+def _refine(mask: np.ndarray, best: float) -> tuple[float, float]:
+    """Уточняем грубый угол с шагом 0.1°: (угол, оценка профиля)."""
+    fine = np.arange(best - 1.0, best + 1.01, 0.1)
+    scores = [_profile_score(mask, a) for a in fine]
+    index = int(np.argmax(scores))
+    return float(fine[index]), float(scores[index])
+
+
+def _best_angle(mask: np.ndarray, coarse: np.ndarray) -> tuple[float, float]:
+    scores = [_profile_score(mask, a) for a in coarse]
+    return _refine(mask, float(coarse[int(np.argmax(scores))]))
+
+
 def estimate_skew(grey: np.ndarray, limit: float = 35.0) -> float:
     """Угол в градусах против часовой стрелки, при котором строки ложатся ровненько."""
     mask = _text_mask(grey)
     if mask.sum() == 0:
         return 0.0
-    coarse = np.arange(-limit, limit + 0.01, 1.0)
-    scores = [_profile_score(mask, a) for a in coarse]
-    best = float(coarse[int(np.argmax(scores))])
-    fine = np.arange(best - 1.0, best + 1.01, 0.1)
-    scores = [_profile_score(mask, a) for a in fine]
-    return float(fine[int(np.argmax(scores))])
+    return _best_angle(mask, np.arange(-limit, limit + 0.01, 1.0))[0]
+
+
+#: Насколько профиль строк при большом повороте должен быть лучше, чем при малом,
+#: чтобы мы поверили, что лист лежит боком. Запас нужен, чтобы ровный скан с таблицей
+#: или колонкой цифр никогда не развернуло на 90°.
+SIDEWAYS_MARGIN = 1.5
+#: Если уже грубый перебор большого диапазона не дотягивает до этой доли нужного,
+#: не уточняем его. На ровных листах (открытый набор и его плохие копии) доля не выше
+#: 0.3, на листах боком — от 1.6.
+SIDEWAYS_HOPELESS = 0.5
+
+
+def estimate_text_angle(grey: np.ndarray, small_limit: float = 35.0) -> float:
+    """Как ``estimate_skew``, но на всём полукруге: строки могут идти хоть вертикально.
+
+    Возвращает угол в (-90°, 90°]. Отличить «ровно» от «вверх ногами» по одним строкам
+    нельзя — это уже дело ``orientation.ocr_upright``.
+    """
+    raw = _text_mask(grey)
+    if raw.sum() == 0:
+        return 0.0
+    # малый диапазон ищем ровно как ``estimate_skew``: обычный снимок с наклоном до 35°
+    # выравнивается так же, как раньше, до пикселя
+    small_angle = _best_angle(raw, np.arange(-small_limit, small_limit + 0.01, 1.0))[0]
+    # у границы малого диапазона (35–37°) честно берём лучший из двух
+    need = 1.0 if abs(small_angle) >= small_limit - 1.0 else SIDEWAYS_MARGIN
+    # большой — по маске в квадрате, чтобы при повороте боком ничего не обрезалось;
+    # грубый перебор по маске вдвое меньше, иначе это ещё 110 поворотов полной маски
+    mask = _square(raw)
+    half = cv2.resize(mask, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_AREA)
+    wide = np.concatenate([np.arange(-90.0, -small_limit + 1.0, 1.0), np.arange(small_limit, 90.01, 1.0)])
+    coarse = [_profile_score(half, a) for a in wide]
+    if max(coarse) < SIDEWAYS_HOPELESS * need * _profile_score(half, small_angle):
+        return small_angle
+    angle, score = _refine(mask, float(wide[int(np.argmax(coarse))]))
+    if score > need * _profile_score(mask, small_angle):
+        if angle > 90.0:
+            angle -= 180.0
+        elif angle <= -90.0:
+            angle += 180.0
+        return angle
+    return small_angle
 
 
 def rotate_page(rgb: np.ndarray, angle: float) -> np.ndarray:
     h, w = rgb.shape[:2]
-    rad = np.deg2rad(abs(angle))
-    new_w = int(w * np.cos(rad) + h * np.sin(rad))
-    new_h = int(h * np.cos(rad) + w * np.sin(rad))
+    rad = np.deg2rad(angle)
+    new_w = int(w * abs(np.cos(rad)) + h * abs(np.sin(rad)))
+    new_h = int(h * abs(np.cos(rad)) + w * abs(np.sin(rad)))
     matrix = cv2.getRotationMatrix2D((w / 2, h / 2), angle, 1.0)
     matrix[0, 2] += (new_w - w) / 2
     matrix[1, 2] += (new_h - h) / 2
@@ -242,7 +304,15 @@ def enhance_document(image: DocumentImage) -> tuple[DocumentImage, EnhanceReport
         grey = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
         report.note("flatten_lighting")
 
-    angle = estimate_skew(grey)
+    angle = estimate_text_angle(grey)
+    # Скан, вставленный боком: крутим ровно на 90° без интерполяции, и это всё ещё
+    # чистый скан (бинаризация для OCR ему подходит лучше, чем фото-режим).
+    clean_turn = not report.steps and abs(abs(angle) - 90.0) < 0.4
+    if clean_turn:
+        rgb = np.ascontiguousarray(np.rot90(rgb, 1 if angle > 0 else -1))
+        report.angle = 90.0 if angle > 0 else -90.0
+        report.note("deskew")
+        return _with_rgb(image, rgb, image.quality), report
     if abs(angle) >= 0.4:
         rgb = rotate_page(rgb, angle)
         report.angle = round(angle, 1)

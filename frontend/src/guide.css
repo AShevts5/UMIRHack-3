@@ -103,9 +103,17 @@ body { min-height: 100vh; display: flex; flex-direction: column }
 }
 
 /* ---------- анимация входа */
-.enter { position: fixed; inset: 0; z-index: 60; background: #0E1420; overflow: hidden; cursor: pointer }
-.enter img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover }
-.enter__building { object-position: 50% 70% }
+.enter { position: fixed; inset: 0; z-index: 60; overflow: hidden; cursor: pointer }
+/* подложка повторяет фон входа, чтобы открытка взлетала с того же неба */
+.enter__backdrop { position: absolute; inset: 0; background: radial-gradient(circle at 12% 18%, rgba(64, 132, 255, .55), transparent 38%), radial-gradient(circle at 78% 88%, rgba(142, 107, 255, .45), transparent 42%), linear-gradient(160deg, #0B1E5B 0%, #0A1440 50%, #160F45 100%) }
+.enter__frame { position: absolute; overflow: hidden; box-sizing: border-box; border: 0 solid rgba(255, 255, 255, .92); background: #1B2550; box-shadow: 0 24px 60px rgba(4, 8, 30, .55) }
+.enter__frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 70% }
+/* холл после «входа в здание» чуть подъезжает навстречу, пока гаснет заставка */
+.hall--arrive .hall__bg { animation: hall-arrive .8s cubic-bezier(.2, .7, .2, 1) .85s both }
+.hall--arrive .hall__in { animation: hall-rise .6s ease-out 1s both }
+@keyframes hall-arrive { from { transform: scale(1.12) } to { transform: none } }
+@keyframes hall-rise { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+@media (prefers-reduced-motion: reduce) { .hall--arrive .hall__bg, .hall--arrive .hall__in { animation: none } }
 .enter__skip { position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); font-size: var(--t-xs); color: #fff; background: rgba(0,0,0,.4); padding: 6px 12px; border-radius: 999px }
 
 /* ---------- общая шапка путеводителя */

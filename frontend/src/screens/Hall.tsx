@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { award } from '../lib/badges'
 import type { SectionState } from '../api/guide'
@@ -48,14 +48,16 @@ const TILES: Tile[] = [
 const STATE_LABEL: Record<SectionState, string | null> = { available: null, soon: 'скоро', off: 'недоступно' }
 
 /** Холл вуза: фон и тексты тянем из конфига вуза, а сверху — кнопки разделов. */
-export default function Hall({ go }: { go: (to: string) => void }) {
+export default function Hall({ go, arriving = false }: { go: (to: string) => void; arriving?: boolean }) {
   const { university, user } = useGuide()
+  // запоминаем на момент появления: заставка входа потом выключится, а анимацию рвать нельзя
+  const [arrive] = useState(arriving)
   const hallImage = university?.hall?.hall_image ?? '/universities/_default/hall.svg'
   const sections = university?.sections
   useEffect(() => award('enter'), [])
 
   return (
-    <section className="hall" aria-labelledby="hall-title">
+    <section className={arrive ? 'hall hall--arrive' : 'hall'} aria-labelledby="hall-title">
       <div className="hall__bg" style={{ backgroundImage: `url("${hallImage}")` }} role="img" aria-label={university?.hall?.hall_caption ?? 'Холл главного корпуса'} />
       <div className="hall__in">
         <div className="hall__head">

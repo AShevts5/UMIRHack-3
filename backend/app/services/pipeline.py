@@ -37,6 +37,7 @@ from .parse_fields import (
     parse_document,
 )
 from .enhance import enhance_document
+from .orientation import ocr_upright
 from .refine_fields import refine_fields
 from .question_engine import answer_document, build_answer, default_completeness_question
 from .rules_engine import STATUS_OK, ValidationResult, clause_list, validate
@@ -87,6 +88,15 @@ class PipelineResult:
             "Предварительная проверка: не хватает " + ", ".join(labels) + f". "
             f"Требования: пункты {numbers} Положения. Решение принимает сотрудник деканата."
         )
+
+
+def _note_turn(report, turned: int) -> None:
+    """Дописываем в отчёт предобработки разворот, найденный по OCR (0/90/180/270°)."""
+    if not turned:
+        return
+    angle = (getattr(report, "angle", 0.0) + turned + 180.0) % 360.0 - 180.0
+    report.angle = round(angle, 1)
+    report.note("upright")
 
 
 class Pipeline:
@@ -156,7 +166,8 @@ class Pipeline:
             image, enhance_report = enhance_document(image)
             timings["preprocess"] = (time.perf_counter() - started) * 1000
             started = time.perf_counter()
-            ocr_result = ocr_service.run_ocr(image)
+            image, ocr_result, turned = ocr_upright(image)
+            _note_turn(enhance_report, turned)
             timings["ocr"] = (time.perf_counter() - started) * 1000
             self.stats["ocr_seconds"] += timings["ocr"] / 1000
             started = time.perf_counter()
@@ -182,7 +193,8 @@ class Pipeline:
         image, enhance_report = enhance_document(image)
         timings["preprocess"] = (time.perf_counter() - started) * 1000
         started = time.perf_counter()
-        ocr_result = ocr_service.run_ocr(image)
+        image, ocr_result, turned = ocr_upright(image)
+        _note_turn(enhance_report, turned)
         timings["ocr"] = (time.perf_counter() - started) * 1000
         self.stats["ocr_seconds"] += timings["ocr"] / 1000
         code, score = registry.detect_type(ocr_result.text)

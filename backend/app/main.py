@@ -24,7 +24,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .config import settings
@@ -32,6 +32,7 @@ from .guide_api import record_history
 from .guide_api import router as guide_router
 from .schemas import AnalysisResponse, Answer, HealthResponse
 from .services import llm
+from .services import oauth_yandex
 from .services import ocr as ocr_service
 from .services.document_config import get_registry
 from .services.loader import DocumentLoadError
@@ -356,7 +357,11 @@ if FRONTEND_DIST.is_dir():
     app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
 
     @app.get("/")
-    def index() -> FileResponse:
+    def index(request: Request) -> Response:
+        # в Яндексе Redirect URI указан просто как корень сайта, так что код входа
+        # прилетает сюда; пробрасываем его на настоящий callback (куки state там же)
+        if oauth_yandex.is_return_to_root(request.query_params):
+            return RedirectResponse(url="/api/auth/yandex/callback?" + request.url.query)
         return FileResponse(FRONTEND_DIST / "index.html")
 
     _DIST_ROOT = FRONTEND_DIST.resolve()

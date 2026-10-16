@@ -140,6 +140,23 @@ def test_yandex_callback_creates_user(client, monkeypatch):
     assert user["yandex_linked"] and user["email"] == "ya@yandex.ru"
 
 
+def test_yandex_redirect_to_site_root(client, monkeypatch):
+    # как на проде: в Яндексе Redirect URI = просто адрес сайта
+    from backend.app.main import FRONTEND_DIST
+
+    if not FRONTEND_DIST.is_dir():
+        pytest.skip("фронт не собран, главную бэк не раздаёт")
+    monkeypatch.setenv("UMIR_YANDEX_CLIENT_ID", "cid")
+    monkeypatch.setenv("UMIR_YANDEX_CLIENT_SECRET", "secret")
+    monkeypatch.setenv("UMIR_YANDEX_REDIRECT_URI", "https://dekanatonline.ru")
+    start = client.get("/api/auth/yandex/login", follow_redirects=False)
+    assert "redirect_uri=https%3A%2F%2Fdekanatonline.ru&" in start.headers["location"]
+    back = client.get("/?code=abc&state=xyz", follow_redirects=False)
+    assert back.status_code in (302, 307)
+    assert back.headers["location"] == "/api/auth/yandex/callback?code=abc&state=xyz"
+    assert client.get("/", follow_redirects=False).status_code == 200
+
+
 def test_universities_registry(client):
     items = client.get("/api/universities").json()["items"]
     ids = {item["id"] for item in items}

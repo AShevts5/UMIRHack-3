@@ -9,6 +9,10 @@
     внешний адрес сервиса, если он не совпадает с тем, откуда пришёл запрос
     (например ``https://dean.example.ru``). Redirect URI в настройках приложения
     Яндекса ставим такой: ``<адрес>/api/auth/yandex/callback``.
+``UMIR_YANDEX_REDIRECT_URI``
+    если в Яндексе уже прописан другой Redirect URI (у нас на проде это просто
+    ``https://dekanatonline.ru``), пишем его сюда. Яндекс вернёт юзера на главную с
+    ``?code=...&state=...``, а главная сама перекинет это на callback (см. main.py).
 
 Если ключей нет, кнопка «Войти через Яндекс» просто пишет, что вход не настроен, и
 наружу ничего не шлёт.
@@ -50,7 +54,13 @@ def public_url(request_base: str) -> str:
 
 
 def redirect_uri(request_base: str) -> str:
-    return public_url(request_base) + CALLBACK_PATH
+    # Яндекс сверяет redirect_uri с настройками приложения строго, поэтому если он задан руками, берём как есть
+    return os.environ.get("UMIR_YANDEX_REDIRECT_URI") or public_url(request_base) + CALLBACK_PATH
+
+
+def is_return_to_root(query: dict) -> bool:
+    """Яндекс вернул юзера на главную (Redirect URI = корень сайта), а не на callback."""
+    return bool(query.get("state") and (query.get("code") or query.get("error")))
 
 
 def new_state() -> str:

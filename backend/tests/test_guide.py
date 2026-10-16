@@ -149,8 +149,9 @@ def test_universities_registry(client):
     assert rinh["hall"]["building_image"].endswith(".svg")
     assert "_regulation_path" not in rinh
     sfedu = client.get("/api/universities/sfedu").json()
-    # у ЮФУ положения нет — поэтому проверка документов честно висит как «скоро»
-    assert sfedu["sections"]["dean"] == "soon"
+    # своего положения у ЮФУ пока нет, проверка идёт по учебному Положению кейса, как у РГЭУ
+    assert sfedu["sections"]["dean"] == "available" and sfedu["regulation_available"]
+    assert sfedu["regulation_note"]
     assert client.get("/api/universities/nope").status_code == 404
 
 

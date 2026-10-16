@@ -9,14 +9,16 @@ city: Ростов-на-Дону
 site: https://sfedu.ru
 logo: /universities/sfedu/logo.svg
 sections:
-  dean: soon
+  dean: available
   faculties: available
   map: available
   history: available
-regulation: null
+regulation: case-rules
+regulation_note: Проверка документов в учебной версии идёт по Положению кейса UMIR 3 (вымышленный университет «Меридиан»).
+  Настоящие правила ЮФУ подключаются заменой файла положения в этом конфиге.
 hall:
   title: Добро пожаловать в ЮФУ
-  welcome: справка по институтам и карта корпусов уже работают, проверка документов — скоро.
+  welcome: выберите, что нужно сделать — проверить документы, найти институт или корпус на карте.
   building_image: /universities/_default/building.svg
   building_caption: Условная иллюстрация учебного корпуса
   hall_image: /universities/_default/hall.svg
